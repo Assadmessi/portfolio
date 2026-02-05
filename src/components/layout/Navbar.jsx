@@ -1,44 +1,94 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const navItems = ["About", "Projects", "Services", "Contact"];
+const navItems = [
+  { label: "Home", id: "home" },
+  { label: "About", id: "about" },
+  { label: "How I Work", id: "skills" },
+  { label: "Projects", id: "projects" },
+  { label: "Contact", id: "contact" },
+];
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [active, setActive] = useState("about");
+  const [active, setActive] = useState("home");
 
   // Shrink navbar on scroll
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Deep linking on load (if URL has #section)
   useEffect(() => {
-  const sections = navItems.map(item =>
-    document.getElementById(item.toLowerCase())
-  );
+    const hash = window.location.hash.replace("#", "");
+    if (!hash) return;
 
-  const observer = new IntersectionObserver(
-    entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          setActive(entry.target.id);
-        }
-      });
-    },
-    { threshold: 0.6 }
-  );
+    const el = document.getElementById(hash);
+    if (!el) return;
 
-  sections.forEach(section => {
-    if (section) observer.observe(section);
-  });
+    setActive(hash);
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
 
-    return () => observer.disconnect();
-    }, []);
+  // Scroll spy (IntersectionObserver) - fixed navbar friendly + stable
+  useEffect(() => {
+    const ids = navItems.map((i) => i.id);
+    const sections = ids
+      .map((id) => document.getElementById(id))
+      .filter(Boolean);
+
+    if (sections.length === 0) return;
+
+    let rafId = null;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (rafId) cancelAnimationFrame(rafId);
+
+        rafId = requestAnimationFrame(() => {
+          const visible = entries.filter((e) => e.isIntersecting);
+          if (visible.length === 0) return;
+
+          visible.sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+          setActive(visible[0].target.id);
+        });
+      },
+      {
+        rootMargin: "-110px 0px -55% 0px",
+        threshold: [0.12, 0.2, 0.3, 0.45, 0.6],
+      }
+    );
+
+    sections.forEach((section) => observer.observe(section));
+
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      observer.disconnect();
+    };
+  }, []);
+
+  // Close mobile menu when user scrolls
+  useEffect(() => {
+    if (!open) return;
+
+    const closeOnScroll = () => setOpen(false);
+    window.addEventListener("scroll", closeOnScroll, { passive: true });
+
+    return () => window.removeEventListener("scroll", closeOnScroll);
+  }, [open]);
+
+  const goTo = (id) => {
+    setActive(id);
+    setOpen(false);
+    window.history.pushState(null, "", `#${id}`);
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
     <motion.nav
@@ -49,35 +99,50 @@ const Navbar = () => {
         scrolled ? "py-2" : "py-4"
       }`}
     >
-      <div className="max-w-7xl mx-auto flex items-center px-8">
-        {/* Left spacer */}
-        <div className="flex-1" />
+      <div className="max-w-7xl mx-auto flex items-center px-6 sm:px-8">
+        {/* Logo / Name */}
+        <button
+          onClick={() => goTo("home")}
+          className="flex items-center gap-3 select-none"
+          aria-label="Go to home"
+        >
+          <span className="h-9 w-9 rounded-full bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center font-bold text-indigo-200">
+            A
+          </span>
+          <span className="hidden sm:block text-sm text-gray-200">Asaad</span>
+        </button>
 
         {/* Desktop Menu */}
-        <div className="hidden md:flex space-x-8 text-sm text-gray-300 relative">
-            {navItems.map((item) => {
-                const id = item.toLowerCase();
-                return (
-                <motion.a
-                    key={item}
-                    href={`#${id}`}
-                    whileHover={{ y: -2 }}
-                    className={`relative hover:text-white transition ${
-                    active === id ? "text-white" : ""
-                    }`}
-                >
-                    {item}
+        <div className="hidden md:flex ml-auto space-x-8 text-sm text-gray-300 relative">
+          {navItems.map((item) => {
+            const isActive = active === item.id;
 
-                    {active === id && (
-                    <motion.span
-                        layoutId="nav-indicator"
-                        className="absolute -bottom-2 left-0 right-0 h-[2px] bg-indigo-400 rounded"
-                    />
-                    )}
-                </motion.a>
-                );
-            })}
-            </div>      
+            return (
+              <motion.a
+                key={item.id}
+                href={`#${item.id}`}
+                whileHover={{ y: -2 }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  goTo(item.id);
+                }}
+                className={`relative hover:text-white transition ${
+                  isActive ? "text-white" : ""
+                }`}
+              >
+                {item.label}
+
+                {isActive && (
+                  <motion.span
+                    layoutId="nav-indicator"
+                    transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                    className="absolute -bottom-2 left-0 right-0 h-[2px] bg-indigo-400 rounded"
+                  />
+                )}
+              </motion.a>
+            );
+          })}
+        </div>
 
         {/* Hamburger */}
         <button
@@ -111,16 +176,25 @@ const Navbar = () => {
             className="md:hidden border-t border-white/10 bg-black/80 backdrop-blur"
           >
             <div className="flex flex-col items-end px-8 py-6 space-y-5 text-gray-300">
-              {navItems.map((item) => (
-                <a
-                  key={item}
-                  href={`#${item.toLowerCase()}`}
-                  onClick={() => setOpen(false)}
-                  className="hover:text-white transition"
-                >
-                  {item}
-                </a>
-              ))}
+              {navItems.map((item) => {
+                const isActive = active === item.id;
+
+                return (
+                  <a
+                    key={item.id}
+                    href={`#${item.id}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      goTo(item.id);
+                    }}
+                    className={`hover:text-white transition ${
+                      isActive ? "text-white" : ""
+                    }`}
+                  >
+                    {item.label}
+                  </a>
+                );
+              })}
             </div>
           </motion.div>
         )}
