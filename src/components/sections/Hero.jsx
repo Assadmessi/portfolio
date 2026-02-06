@@ -3,10 +3,10 @@ import { fadeUp, staggerContainer } from "../../animations/variants";
 import { motion } from "framer-motion";
 
 const Hero = () => {
-  // TODO: Replace these links with your real profiles/files
-  const RESUME_URL = "/resume.pdf"; // put resume.pdf in /public
-  const GITHUB_URL = "https://github.com/your-username";
-  const LINKEDIN_URL = "https://www.linkedin.com/in/your-handle/";
+
+  const RESUME_URL = "/resume.pdf"; 
+  const GITHUB_URL = "https://github.com/Assadmessi";
+  const LINKEDIN_URL = "https://www.linkedin.com/in/aye-htet-h-511087101/";
 
   return (
     <MotionSection
@@ -42,19 +42,25 @@ const Hero = () => {
         </motion.p>
 
         <motion.p variants={fadeUp} className="mt-3 text-gray-400">
-          Currently seeking a{" "}
-          <span className="text-gray-200">junior frontend role</span> or{" "}
-          <span className="text-gray-200">internship</span> to grow under
-          experienced developers.
-        </motion.p>
+  Currently open to <span className="text-gray-200">freelance projects</span> (landing pages, portfolios, UI builds) and also seeking a{" "}
+  <span className="text-gray-200">junior frontend role</span> or{" "}
+  <span className="text-gray-200">internship</span> to grow under experienced developers.
+</motion.p>
 
         <motion.div
           variants={fadeUp}
           className="mt-10 flex flex-col sm:flex-row justify-center gap-4"
         >
           <a
-            href="#projects"
+            href="#services"
             className="px-6 py-3 bg-indigo-500 rounded-xl font-medium hover:bg-indigo-400 transition"
+          >
+            Hire Me (Freelance)
+          </a>
+
+          <a
+            href="#projects"
+            className="px-6 py-3 border border-white/20 rounded-xl hover:bg-white/10 transition"
           >
             View Projects
           </a>

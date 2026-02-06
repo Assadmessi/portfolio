@@ -4,10 +4,10 @@ import { motion } from "framer-motion";
 
 const Contact = () => {
   // TODO: Replace these with your real links
-  const EMAIL = "your.email@example.com";
+  const EMAIL = "ayehtetheinmessi@gmail.com";
   const RESUME_URL = "/resume.pdf"; // put resume.pdf in /public
-  const GITHUB_URL = "https://github.com/your-username";
-  const LINKEDIN_URL = "https://www.linkedin.com/in/your-handle/";
+  const GITHUB_URL = "https://github.com/Assadmessi";
+  const LINKEDIN_URL = "https://www.linkedin.com/in/aye-htet-h-511087101/";
 
   return (
     <MotionSection
@@ -20,8 +20,7 @@ const Contact = () => {
       </motion.h2>
 
       <motion.p variants={fadeUp} className="mt-6 text-gray-400 leading-relaxed">
-        I’m open to junior frontend roles, internships, freelance opportunities,
-        and collaborations.
+        I’m available for freelance work (websites, landing pages, React UI builds) and also open to junior frontend roles, internships, and collaborations.
         <br className="hidden sm:block" />
         If you’re looking for a motivated junior developer who cares about clean UI
         and code quality, feel free to reach out.
@@ -32,7 +31,7 @@ const Contact = () => {
         className="mt-10 flex flex-col sm:flex-row gap-4 justify-center"
       >
         <a
-          href={`mailto:${EMAIL}`}
+          href={`mailto:${EMAIL}?subject=${encodeURIComponent("Freelance inquiry — Website / UI build")}`}
           className="px-6 py-3 bg-indigo-500 rounded-xl font-medium hover:bg-indigo-400 transition"
         >
           Email Me
@@ -44,6 +43,15 @@ const Contact = () => {
         >
           Download Resume
         </a>
+      </motion.div>
+
+      <motion.div variants={fadeUp} className="mt-10 max-w-2xl mx-auto text-left rounded-2xl border border-white/10 bg-white/5 p-6">
+        <p className="font-medium">To get a fast quote, include:</p>
+        <ul className="mt-3 space-y-2 text-sm text-gray-400">
+          <li className="flex gap-2"><span className="mt-1 text-indigo-400">•</span><span>Project type (landing page / business site / React UI / fixes)</span></li>
+          <li className="flex gap-2"><span className="mt-1 text-indigo-400">•</span><span>Deadline + any reference links (Figma is perfect)</span></li>
+          <li className="flex gap-2"><span className="mt-1 text-indigo-400">•</span><span>Pages/features + budget range (optional)</span></li>
+        </ul>
       </motion.div>
 
       <motion.div
@@ -59,10 +67,7 @@ const Contact = () => {
         </a>
       </motion.div>
 
-      <motion.p variants={fadeUp} className="mt-6 text-xs text-gray-500">
-        Tip: Put your resume file in <span className="text-gray-300">/public</span> as{" "}
-        <span className="text-gray-300">resume.pdf</span>.
-      </motion.p>
+      
     </MotionSection>
   );
 };

@@ -1,6 +1,7 @@
 import Navbar from "./components/layout/Navbar";
 import Hero from "./components/sections/Hero";
 import About from "./components/sections/About";
+import Services from "./components/sections/Services";
 import HowIWork from "./components/sections/HowIWork";
 import Projects from "./components/sections/Projects";
 import Contact from "./components/sections/Contact";
@@ -21,6 +22,7 @@ const App = () => {
 
       <Hero />
       <About />
+      <Services />
       <HowIWork />
 
       {/* Leaving Projects section as-is for now (we'll build 3 real projects next) */}
