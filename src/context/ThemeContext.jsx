@@ -1,9 +1,29 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from "react";
 
 const ThemeContext = createContext(null);
 
 const getSystemTheme = () =>
   window.matchMedia?.("(prefers-color-scheme: dark)")?.matches ? "dark" : "light";
+
+const disableTransitionsTemporarily = () => {
+  const style = document.createElement("style");
+  style.setAttribute("data-theme-transition-fix", "true");
+  style.innerHTML = `*{transition:none!important}`;
+  document.head.appendChild(style);
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      const el = document.querySelector('style[data-theme-transition-fix="true"]');
+      if (el) el.remove();
+    });
+  });
+};
 
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(() => {
@@ -11,7 +31,8 @@ export const ThemeProvider = ({ children }) => {
     return saved || getSystemTheme();
   });
 
-  useEffect(() => {
+  // ✅ Runs before paint: prevents delayed repaint in dark mode
+  useLayoutEffect(() => {
     const root = document.documentElement;
     if (theme === "dark") root.classList.add("dark");
     else root.classList.remove("dark");
@@ -22,7 +43,11 @@ export const ThemeProvider = ({ children }) => {
     () => ({
       theme,
       setTheme,
-      toggleTheme: () => setTheme((t) => (t === "dark" ? "light" : "dark")),
+      toggleTheme: () => {
+        // ✅ Prevents the theme switch from animating slowly
+        disableTransitionsTemporarily();
+        setTheme((t) => (t === "dark" ? "light" : "dark"));
+      },
     }),
     [theme]
   );

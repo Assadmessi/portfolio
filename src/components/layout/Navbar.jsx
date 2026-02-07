@@ -126,6 +126,7 @@ const Navbar = () => {
               <motion.a
                 key={item.id}
                 href={`#${item.id}`}
+                aria-current={isActive ? "page" : undefined}
                 whileHover={{ y: -2 }}
                 onClick={(e) => {
                   e.preventDefault();
@@ -224,6 +225,7 @@ const Navbar = () => {
                   <a
                     key={item.id}
                     href={`#${item.id}`}
+                    aria-current={isActive ? "page" : undefined}
                     onClick={(e) => {
                       e.preventDefault();
                       goTo(item.id);

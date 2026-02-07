@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const backdrop = {
@@ -16,6 +17,25 @@ const modal = {
 };
 
 const ProjectModal = ({ project, onClose }) => {
+  useEffect(() => {
+    if (!project) return;
+
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+
+    // Lock background scroll while modal is open
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [project, onClose]);
+
   return (
     <AnimatePresence>
       {project && (
@@ -33,6 +53,9 @@ const ProjectModal = ({ project, onClose }) => {
             animate="visible"
             exit="hidden"
             onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label={project.title}
             className="w-full max-w-lg rounded-2xl p-6 backdrop-blur
                        border border-black/10 bg-white/80 text-slate-900
                        dark:border-white/10 dark:bg-[#0f1621] dark:text-slate-100"
@@ -41,6 +64,8 @@ const ProjectModal = ({ project, onClose }) => {
               <img
                 src={project.image}
                 alt={project.title}
+                loading="lazy"
+                decoding="async"
                 className="w-full h-44 sm:h-52 md:h-56 object-contain sm:object-cover rounded-xl mb-6 bg-black/5 dark:bg-white/5"
               />
             )}

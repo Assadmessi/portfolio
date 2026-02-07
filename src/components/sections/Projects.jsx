@@ -60,6 +60,8 @@ const Projects = () => {
                   src={p.image}
                   alt={p.title}
                   className="w-full h-32 sm:h-36 md:h-40 object-contain sm:object-cover rounded-xl mb-4 bg-black/5 dark:bg-white/5"
+                  loading="lazy"
+                  decoding="async"
                 />
 
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">

@@ -6,17 +6,11 @@ import HowIWork from "./components/sections/HowIWork";
 import Projects from "./components/sections/Projects";
 import Contact from "./components/sections/Contact";
 import Footer from "./components/layout/Footer";
-import { motion } from "framer-motion";
 import ScrollProgress from "./components/common/ScrollProgress";
 
 const App = () => {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.6 }}
-      className="min-h-screen bg-[#F6F7FB] text-slate-900 dark:bg-[#0B0F19] dark:text-slate-100"
-    >
+    <div className="min-h-screen bg-[#F6F7FB] text-slate-900 dark:bg-[#0B0F19] dark:text-slate-100">
       {/* Soft global background tint (prevents harsh white in light mode) */}
       <div className="pointer-events-none fixed inset-0 -z-10">
         {/* Light mode tint */}
@@ -32,13 +26,10 @@ const App = () => {
       <About />
       <Services />
       <HowIWork />
-
-      {/* Leaving Projects section as-is for now (we'll build 3 real projects next) */}
       <Projects />
-
       <Contact />
       <Footer />
-    </motion.div>
+    </div>
   );
 };
 
