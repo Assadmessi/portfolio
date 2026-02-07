@@ -6,3 +6,5 @@ html {
   scroll-behavior: smooth;
   scroll-padding-top: 110px; /* adjust if your navbar height differs */
 }
+
+body { @apply bg-white text-slate-900 dark:bg-[#0b0f14] dark:text-white; }

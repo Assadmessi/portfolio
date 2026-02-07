@@ -7,8 +7,9 @@ export const MotionSection = ({ children, className = "", variants, ...rest }) =
       variants={variants}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, amount: 0.3 }}
-      {...rest}   // ✅ THIS forwards id="about" etc.
+      // Mobile-friendly: tall sections still trigger in-view animations
+      viewport={{ once: true, amount: 0.12, margin: "0px 0px -15% 0px" }}
+      {...rest}
     >
       {children}
     </motion.section>

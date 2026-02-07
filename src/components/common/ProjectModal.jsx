@@ -6,11 +6,12 @@ const backdrop = {
 };
 
 const modal = {
-  hidden: { scale: 0.9, opacity: 0 },
+  hidden: { scale: 0.96, opacity: 0, y: 10 },
   visible: {
     scale: 1,
     opacity: 1,
-    transition: { duration: 0.3, ease: "easeOut" },
+    y: 0,
+    transition: { duration: 0.25, ease: "easeOut" },
   },
 };
 
@@ -19,7 +20,7 @@ const ProjectModal = ({ project, onClose }) => {
     <AnimatePresence>
       {project && (
         <motion.div
-          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center px-6"
+          className="fixed inset-0 z-50 bg-black/70 dark:bg-black/80 flex items-center justify-center px-4 sm:px-6"
           variants={backdrop}
           initial="hidden"
           animate="visible"
@@ -32,29 +33,33 @@ const ProjectModal = ({ project, onClose }) => {
             animate="visible"
             exit="hidden"
             onClick={(e) => e.stopPropagation()}
-            className="bg-[#0f1621] rounded-2xl max-w-lg w-full p-6 border border-white/10"
+            className="w-full max-w-lg rounded-2xl p-6 backdrop-blur
+                       border border-black/10 bg-white/80 text-slate-900
+                       dark:border-white/10 dark:bg-[#0f1621] dark:text-slate-100"
           >
             {project.image && (
-            <img
+              <img
                 src={project.image}
                 alt={project.title}
-                className="w-full h-56 object-cover rounded-xl mb-6"
-            />
+                className="w-full h-44 sm:h-52 md:h-56 object-contain sm:object-cover rounded-xl mb-6 bg-black/5 dark:bg-white/5"
+              />
             )}
-            <h3 className="text-2xl font-bold mb-3">
-              {project.title}
-            </h3>
 
-            <p className="text-gray-400 mb-6">
-              {project.desc}
-            </p>
+            <h3 className="text-2xl font-bold mb-3">{project.title}</h3>
 
-            <button
-              onClick={onClose}
-              className="px-5 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-400 transition"
-            >
-              Close
-            </button>
+            <p className="text-slate-700 dark:text-slate-400 mb-6">{project.desc}</p>
+
+            <div className="flex justify-end">
+              <button
+                onClick={onClose}
+                className="px-5 py-2 rounded-lg font-medium transition
+                           bg-indigo-600/90 text-white hover:bg-indigo-600
+                           ring-1 ring-indigo-600/20
+                           dark:bg-indigo-500 dark:hover:bg-indigo-400 dark:ring-indigo-400/20"
+              >
+                Close
+              </button>
+            </div>
           </motion.div>
         </motion.div>
       )}
