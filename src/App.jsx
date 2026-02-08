@@ -7,8 +7,29 @@ import Projects from "./components/sections/Projects";
 import Contact from "./components/sections/Contact";
 import Footer from "./components/layout/Footer";
 import ScrollProgress from "./components/common/ScrollProgress";
+import Admin from "./pages/Admin";
+import { startContentSync } from "./firebase/contentSync";
+import { subscribeContent } from "./content";
+import { useEffect, useState } from "react";
 
 const App = () => {
+  const [tick, setTick] = useState(0);
+
+  // Start Firestore realtime sync once
+  useEffect(() => {
+    const stopSync = startContentSync();
+    const unsub = subscribeContent(() => setTick((t) => t + 1));
+    return () => {
+      unsub();
+      stopSync();
+    };
+  }, []);
+
+  // Minimal routing without adding react-router
+  if (typeof window !== "undefined" && window.location.pathname === "/admin") {
+    return <Admin />;
+  }
+
   return (
     <div className="min-h-screen bg-[#F6F7FB] text-slate-900 dark:bg-[#0B0F19] dark:text-slate-100">
       {/* Soft global background tint (prevents harsh white in light mode) */}
