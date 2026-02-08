@@ -36,6 +36,47 @@ function looksLikeDirectImageUrl(url) {
   return false;
 }
 
+function normalizeCloudinaryUrl(url, opts = {}) {
+  if (!url) return url;
+  const s = String(url).trim();
+
+  // Only touch Cloudinary delivery URLs (keeps other hosts untouched)
+  if (!s.includes("res.cloudinary.com") || !s.includes("/image/upload/")) return s;
+
+  // If the URL already has transformations (c_* etc), keep it as-is.
+  // (Prevents double-applying or messing with user-provided transforms.)
+  const afterUpload = s.split("/image/upload/")[1] ?? "";
+  const firstSegment = afterUpload.split("/")[0] ?? "";
+  const alreadyTransformed =
+    firstSegment.includes(",") ||
+    firstSegment.startsWith("c_") ||
+    firstSegment.startsWith("ar_") ||
+    firstSegment.startsWith("w_") ||
+    firstSegment.startsWith("h_");
+
+  if (alreadyTransformed) return s;
+
+  const {
+    // Default: show FULL image inside your public card frame (no crop).
+    // Padding color is subtle dark to match your theme.
+    mode = "pad", // "pad" (no crop) or "fill" (crop) or "fit"
+    aspect = "16:9",
+    width = 1200,
+    height = 675,
+    background = "black",
+  } = opts;
+
+  const tx =
+    mode === "fill"
+      ? `c_fill,g_auto,ar_${aspect},w_${width},h_${height}`
+      : mode === "fit"
+      ? `c_fit,ar_${aspect},w_${width},h_${height}`
+      : `c_pad,ar_${aspect},w_${width},h_${height},b_${background}`;
+
+  return s.replace("/image/upload/", `/image/upload/${tx}/`);
+}
+
+
 export default function ProjectsManager() {
   const [draft, setDraft] = useState(() => deepClone(projectsContent));
   const [baseline, setBaseline] = useState(() => deepClone(projectsContent));
@@ -126,7 +167,7 @@ export default function ProjectsManager() {
       ...p,
       title: String(p.title ?? ""),
       desc: String(p.desc ?? ""),
-      image: String(p.image ?? ""),
+      image: normalizeCloudinaryUrl(String(p.image ?? "")),
       tags: normalizeTags(p.tags),
       links: {
         live: String(p.links?.live ?? ""),
@@ -250,6 +291,7 @@ export default function ProjectsManager() {
                         <Input
                           value={p.image ?? ""}
                           onChange={(e) => setProject(editingIndex, { ...p, image: e.target.value })}
+                          onBlur={(e) => setProject(editingIndex, { ...p, image: normalizeCloudinaryUrl(e.target.value) })}
                           placeholder="https://... or /uploads/..."
                         />
                         {errors[`${prefix}image`] ? <HelperText tone="error">{errors[`${prefix}image`]}</HelperText> : null}
@@ -262,7 +304,7 @@ export default function ProjectsManager() {
                         {p?.image ? (
                           <div className="mt-2 overflow-hidden rounded-xl border border-black/10 dark:border-white/10 bg-white/40 dark:bg-white/5">
                             <img
-                              src={p.image}
+                              src={normalizeCloudinaryUrl(p.image)}
                               alt="Thumbnail preview"
                               className="h-40 w-full object-cover"
                               onError={(e) => {
@@ -321,7 +363,7 @@ export default function ProjectsManager() {
                         Upload here and auto-fill the Thumbnail URL. This is admin-only and does not change your public site code.
                       </div>
                       <div className="mt-3">
-                        <CloudinaryUpload onUploaded={(url) => setProject(editingIndex, { ...p, image: url })} />
+                        <CloudinaryUpload onUploaded={(url) => setProject(editingIndex, { ...p, image: normalizeCloudinaryUrl(url) })} />
                         <div className="mt-3 text-xs text-slate-600 dark:text-slate-300">
                           Advanced: you can also use Firebase Storage if you have it enabled.
                         </div>
