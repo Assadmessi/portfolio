@@ -11,12 +11,20 @@
     "intro": "I build responsive, animated, and user-focused web interfaces using React, Tailwind CSS, and modern frontend tools.",
     "availability": "Currently open to freelance projects (landing pages, portfolios, UI builds) and also seeking a junior frontend role or internship to grow under experienced developers.",
     "buttons": {
-      "primary": { "label": "Hire Me (Freelance)", "href": "#services" },
-      "secondary": { "label": "View Projects", "href": "#projects" },
-      "resume": { "label": "Download Resume" }
+      "primary": {
+        "label": "Hire Me (Freelance)",
+        "href": "#services"
+      },
+      "secondary": {
+        "label": "View Projects",
+        "href": "#projects"
+      },
+      "resume": {
+        "label": "Download Resume"
+      }
     },
     "footerLinks": {
-      "githubLabel": "GitHub",
+      "githubLabel": "GitHub 1",
       "linkedinLabel": "LinkedIn",
       "contactLabel": "Contact",
       "contactHref": "#contact"
@@ -30,11 +38,15 @@
       "I’m continuously improving my skills by building real projects, studying frontend best practices, and learning how production-ready applications are structured.",
       "Currently, I’m looking for a junior front-end position or internship where I can contribute, learn from experienced developers, and grow into a professional frontend engineer."
     ],
-    "tags": ["React", "Tailwind CSS", "Framer Motion", "Vite", "JavaScript"]
+    "tags": [
+      "React",
+      "Tailwind CSS",
+      "Framer Motion",
+      "Vite",
+      "JavaScript"
+    ]
   },
   "services": {
-    "email": "ayehtetheinmessi@gmail.com",
-    "emailSubject": "Freelance Project Inquiry",
     "emailBodyLines": [
       "Hi Asaad,",
       "",
@@ -48,17 +60,6 @@
       "",
       "Thanks!"
     ],
-    "sectionTitle": "Freelance Services",
-    "sectionDescription": "Need a clean, modern website or a React UI built fast and properly? I help individuals and small businesses ship polished interfaces with responsive layouts, smooth animations, and readable code.",
-    "ctaLabel": "Request a Quote",
-    "basedIn": {
-      "location": "Bahrain",
-      "remote": "remote freelance worldwide"
-    },
-    "pricing": {
-      "range": "$100–$300",
-      "suffix": "depending on scope."
-    },
     "cards": [
       {
         "title": "Landing Pages & Marketing Sites",
@@ -93,14 +94,39 @@
         ]
       }
     ],
+    "ctaLabel": "Request a Quote",
+    "pricing": {
+      "range": "$100–$300",
+      "suffix": "depending on scope."
+    },
     "processTitle": "How the process works",
+    "tipLine": "Tip: If you have a Figma link, include it in your email — it speeds everything up.",
+    "emailSubject": "Freelance Project Inquiry",
+    "sectionTitle": "Freelance Services",
+    "sectionDescription": "Need a clean, modern website or a React UI built fast and properly? I help individuals and small businesses ship polished interfaces with responsive layouts, smooth animations, and readable code.",
+    "basedIn": {
+      "location": "Bahrain",
+      "remote": "remote freelance worldwide"
+    },
     "processSteps": [
-      { "title": "1) Quick Brief", "desc": "You share goals, references, and a deadline." },
-      { "title": "2) Quote & Plan", "desc": "I propose scope, timeline, and deliverables." },
-      { "title": "3) Build & Updates", "desc": "You get progress updates + a staging link." },
-      { "title": "4) Handoff", "desc": "Final delivery + small tweaks if needed." }
+      {
+        "title": "1) Quick Brief",
+        "desc": "You share goals, references, and a deadline."
+      },
+      {
+        "title": "2) Quote & Plan",
+        "desc": "I propose scope, timeline, and deliverables."
+      },
+      {
+        "title": "3) Build & Updates",
+        "desc": "You get progress updates + a staging link."
+      },
+      {
+        "title": "4) Handoff",
+        "desc": "Final delivery + small tweaks if needed."
+      }
     ],
-    "tipLine": "Tip: If you have a Figma link, include it in your email — it speeds everything up."
+    "email": "ayehtetheinmessi@gmail.com"
   },
   "howIWork": {
     "title": "How I Work",
