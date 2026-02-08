@@ -1,0 +1,20 @@
+{
+  "sectionTitle": "Client-Focused Projects",
+  "projects": [
+    {
+      "title": "Organization Management App",
+      "desc": "Reduced manual reporting and improved coordination with real-time dashboards.",
+      "image": "/uploads/project1.png"
+    },
+    {
+      "title": "Portfolio System",
+      "desc": "High-conversion UI with smooth animations and responsive layout.",
+      "image": "/uploads/project2.png"
+    },
+    {
+      "title": "Cloud Hosting Platform",
+      "desc": "Scalable backend architecture designed for growing user bases.",
+      "image": "/uploads/project3.png"
+    }
+  ]
+}

@@ -3,30 +3,11 @@ import ProjectModal from "../common/ProjectModal";
 import { motion } from "framer-motion";
 import { MotionSection } from "../../animations/MotionWrappers";
 import { fadeUp, staggerContainer } from "../../animations/variants";
-import project1 from "../../assets/images/project1.png";
-import project2 from "../../assets/images/project2.png";
-import project3 from "../../assets/images/project3.png";
+import { projectsContent } from "../../content";
 
 const Projects = () => {
   const [activeProject, setActiveProject] = useState(null);
-
-  const projects = [
-    {
-      title: "Organization Management App",
-      desc: "Reduced manual reporting and improved coordination with real-time dashboards.",
-      image: project1,
-    },
-    {
-      title: "Portfolio System",
-      desc: "High-conversion UI with smooth animations and responsive layout.",
-      image: project2,
-    },
-    {
-      title: "Cloud Hosting Platform",
-      desc: "Scalable backend architecture designed for growing user bases.",
-      image: project3,
-    },
-  ];
+  const { projects, sectionTitle } = projectsContent;
 
   return (
     <>
@@ -40,7 +21,7 @@ const Projects = () => {
             variants={fadeUp}
             className="text-3xl sm:text-4xl font-bold mb-12 text-slate-900 dark:text-slate-100"
           >
-            Client-Focused Projects
+            {sectionTitle}
           </motion.h2>
 
           <motion.div variants={fadeUp} className="grid gap-6 md:grid-cols-3">
