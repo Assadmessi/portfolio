@@ -5,6 +5,7 @@ import { deepClone, deepEqual } from "../utils/deep";
 import { Button, Card, HelperText, Input, PageFade, Textarea, Badge } from "../components/UI";
 import { normalizeTags, validateProjects } from "../utils/validate";
 import StorageUpload from "../components/StorageUpload";
+import CloudinaryUpload from "../components/CloudinaryUpload";
 
 function emptyProject() {
   return {
@@ -13,7 +14,26 @@ function emptyProject() {
     image: "",
     tags: [],
     links: { live: "", repo: "" },
-  };
+  
+function looksLikeDirectImageUrl(url) {
+  if (!url) return true; // empty allowed
+  const s = String(url).trim();
+  // allow common direct image extensions
+  if (/\.(png|jpe?g|webp|gif|avif)(\?.*)?$/i.test(s)) return true;
+
+  // allow Cloudinary delivery URLs even without extensions
+  try {
+    const u = new URL(s);
+    const host = u.hostname.toLowerCase();
+    if (host.includes("res.cloudinary.com")) return true;
+    if (host.includes("imagekit.io") || host.includes("ik.imagekit.io")) return true;
+    if (host.includes("cdn.jsdelivr.net")) return true;
+  } catch {
+    // ignore
+  }
+  return false;
+}
+};
 }
 
 export default function ProjectsManager() {
@@ -233,6 +253,28 @@ export default function ProjectsManager() {
                           placeholder="https://... or /uploads/..."
                         />
                         {errors[`${prefix}image`] ? <HelperText tone="error">{errors[`${prefix}image`]}</HelperText> : null}
+                        {p?.image && !looksLikeDirectImageUrl(p.image) ? (
+                          <HelperText tone="neutral">
+                            Note: this URL may not be a direct image link. Prefer a direct .jpg/.png/.webp URL or a Cloudinary delivery URL.
+                          </HelperText>
+                        ) : null}
+
+                        {p?.image ? (
+                          <div className="mt-2 overflow-hidden rounded-xl border border-black/10 dark:border-white/10 bg-white/40 dark:bg-white/5">
+                            <img
+                              src={p.image}
+                              alt="Thumbnail preview"
+                              className="h-40 w-full object-cover"
+                              onError={(e) => {
+                                e.currentTarget.style.display = "none";
+                              }}
+                            />
+                            <div className="px-3 py-2 text-xs text-slate-600 dark:text-slate-300">
+                              Live preview (if the URL is publicly accessible).
+                            </div>
+                          </div>
+                        ) : null}
+
                       </div>
 
                       <div className="md:col-span-2">
@@ -274,12 +316,18 @@ export default function ProjectsManager() {
                     </div>
 
                     <div className="rounded-2xl border border-black/10 dark:border-white/10 p-4">
-                      <div className="text-sm font-semibold">Optional: upload image to Firebase Storage</div>
+                      <div className="text-sm font-semibold">Upload image (recommended: Cloudinary)</div>
                       <div className="text-xs text-slate-600 dark:text-slate-300 mt-1">
-                        If your Firebase Storage rules allow, you can upload here and auto-fill the Thumbnail URL.
+                        Upload here and auto-fill the Thumbnail URL. This is admin-only and does not change your public site code.
                       </div>
                       <div className="mt-3">
-                        <StorageUpload onUploaded={(url) => setProject(editingIndex, { ...p, image: url })} />
+                        <CloudinaryUpload onUploaded={(url) => setProject(editingIndex, { ...p, image: url })} />
+                        <div className="mt-3 text-xs text-slate-600 dark:text-slate-300">
+                          Advanced: you can also use Firebase Storage if you have it enabled.
+                        </div>
+                        <div className="mt-2">
+                          <StorageUpload onUploaded={(url) => setProject(editingIndex, { ...p, image: url })} />
+                        </div>
                       </div>
                     </div>
 
