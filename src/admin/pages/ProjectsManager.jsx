@@ -14,7 +14,9 @@ function emptyProject() {
     image: "",
     tags: [],
     links: { live: "", repo: "" },
-  
+  };
+}
+
 function looksLikeDirectImageUrl(url) {
   if (!url) return true; // empty allowed
   const s = String(url).trim();
@@ -32,8 +34,6 @@ function looksLikeDirectImageUrl(url) {
     // ignore
   }
   return false;
-}
-};
 }
 
 export default function ProjectsManager() {
