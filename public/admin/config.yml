@@ -80,10 +80,20 @@ collections:
             fields:
               - { label: "Email", name: "email", widget: "string" }
               - { label: "Email Subject", name: "emailSubject", widget: "string" }
+
+              # ✅ FIXED: allow blank lines in the email template
               - label: "Email Body Lines"
                 name: "emailBodyLines"
                 widget: "list"
-                field: { label: "Line", name: "line", widget: "string" }
+                allow_add: true
+                collapsed: false
+                field:
+                  label: "Line"
+                  name: "line"
+                  widget: "string"
+                  required: false
+                  allow_blank: true
+
               - { label: "Section Title", name: "sectionTitle", widget: "string" }
               - { label: "Section Description", name: "sectionDescription", widget: "text" }
               - { label: "CTA Label", name: "ctaLabel", widget: "string" }
