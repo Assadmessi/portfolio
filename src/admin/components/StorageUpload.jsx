@@ -3,13 +3,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { app } from "../../firebase/firebase";
 import { Button, HelperText } from "./UI";
 
-export default function StorageUpload({
-  folder = "portfolio/uploads",
-  onUploaded,
-  accept = "image/*",
-  asAttachment = false,
-  downloadFilename,
-}) {
+export default function StorageUpload({ folder = "portfolio/uploads", onUploaded }) {
   const storage = useMemo(() => getStorage(app), []);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
@@ -23,14 +17,7 @@ export default function StorageUpload({
     try {
       const safeName = `${Date.now()}-${file.name}`.replace(/[^\w.\-]/g, "_");
       const storageRef = ref(storage, `${folder}/${safeName}`);
-      const metadata = asAttachment
-        ? {
-            contentType: file.type || "application/octet-stream",
-            contentDisposition: `attachment; filename="${downloadFilename || file.name || safeName}"`,
-          }
-        : undefined;
-
-      await uploadBytes(storageRef, file, metadata);
+      await uploadBytes(storageRef, file);
       const url = await getDownloadURL(storageRef);
       setMsg("Uploaded.");
       onUploaded?.(url);
@@ -47,12 +34,12 @@ export default function StorageUpload({
       <div className="flex items-center gap-3">
         <input
           type="file"
-          accept={accept}
+          accept="image/*"
           onChange={handlePick}
           disabled={busy}
           className="block w-full text-sm file:mr-4 file:rounded-xl file:border-0 file:bg-black/10 dark:file:bg-white/10 file:px-4 file:py-2 file:text-sm file:font-medium file:text-slate-900 dark:file:text-slate-100 hover:file:bg-black/15 dark:hover:file:bg-white/15"
         />
-        <Button type="button" variant="ghost" disabled={busy} onClick={() => setMsg("Tip: pick a file to upload.")}> 
+        <Button type="button" variant="ghost" disabled={busy} onClick={() => setMsg("Tip: pick an image file to upload.")}>
           Help
         </Button>
       </div>

@@ -3,8 +3,17 @@ import { siteContent, subscribeContent } from "../../content";
 import { saveSiteContent } from "../../firebase/contentSync";
 import { deepClone, deepEqual } from "../utils/deep";
 import { Button, Card, HelperText, Input, PageFade, Textarea } from "../components/UI";
-import StorageUpload from "../components/StorageUpload";
+import CloudinaryUpload from "../components/CloudinaryUpload";
 import { normalizeTags, safeStringArray, validateSite } from "../utils/validate";
+
+function toCloudinaryAttachmentUrl(url) {
+  // For Cloudinary raw assets, force download using fl_attachment
+  // Example: https://res.cloudinary.com/<cloud>/raw/upload/fl_attachment/sample.pdf
+  if (!url || typeof url !== "string") return url;
+  if (!url.includes("res.cloudinary.com")) return url;
+  if (url.includes("fl_attachment")) return url;
+  return url.replace("/upload/", "/upload/fl_attachment/");
+}
 
 function SectionHeader({ title, desc, right }) {
   return (
@@ -189,16 +198,23 @@ export default function SiteSettings() {
                 onChange={(e) => setByPath("links.resumeUrl", e.target.value)}
                 placeholder="/resume.pdf"
               />
-              <div className="mt-3">
-                <StorageUpload
-                  folder="portfolio/resumes"
-                  accept="application/pdf"
-                  asAttachment
-                  downloadFilename="resume.pdf"
-                  onUploaded={(url) => setByPath("links.resumeUrl", url)}
-                />
-              </div>
               {errors["links.resumeUrl"] ? <HelperText tone="error">{errors["links.resumeUrl"]}</HelperText> : null}
+            
+              <div className="mt-3">
+                <div className="text-xs font-medium mb-2">Upload resume PDF (Cloudinary)</div>
+                <CloudinaryUpload
+                  folder="portfolio/resume"
+                  allowedFormats={["pdf"]}
+                  resourceType="raw"
+                  onUploaded={(url) => {
+                    const attachmentUrl = toCloudinaryAttachmentUrl(url);
+                    setByPath("links.resumeUrl", attachmentUrl);
+                  }}
+                />
+                <div className="text-xs text-slate-600 dark:text-slate-300 mt-2">
+                  Tip: This sets a Cloudinary URL that forces download.
+                </div>
+              </div>
             </div>
           </div>
         </Card>
