@@ -3,6 +3,7 @@ import { siteContent, subscribeContent } from "../../content";
 import { saveSiteContent } from "../../firebase/contentSync";
 import { deepClone, deepEqual } from "../utils/deep";
 import { Button, Card, HelperText, Input, PageFade, Textarea } from "../components/UI";
+import StorageUpload from "../components/StorageUpload";
 import { normalizeTags, safeStringArray, validateSite } from "../utils/validate";
 
 function SectionHeader({ title, desc, right }) {
@@ -188,6 +189,15 @@ export default function SiteSettings() {
                 onChange={(e) => setByPath("links.resumeUrl", e.target.value)}
                 placeholder="/resume.pdf"
               />
+              <div className="mt-3">
+                <StorageUpload
+                  folder="portfolio/resumes"
+                  accept="application/pdf"
+                  asAttachment
+                  downloadFilename="resume.pdf"
+                  onUploaded={(url) => setByPath("links.resumeUrl", url)}
+                />
+              </div>
               {errors["links.resumeUrl"] ? <HelperText tone="error">{errors["links.resumeUrl"]}</HelperText> : null}
             </div>
           </div>
