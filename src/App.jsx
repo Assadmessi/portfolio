@@ -15,6 +15,18 @@ import { useEffect, useState } from "react";
 const App = () => {
   const [tick, setTick] = useState(0);
 
+  // Set a distinct browser tab title for the admin page
+  useEffect(() => {
+    if (typeof document === "undefined" || typeof window === "undefined") return;
+    const originalTitle = document.title;
+    if (window.location.pathname === "/admin") {
+      document.title = "Admin Dashboard";
+    }
+    return () => {
+      document.title = originalTitle;
+    };
+  }, []);
+
   // Start Firestore realtime sync once
   useEffect(() => {
     const stopSync = startContentSync();
