@@ -15,15 +15,23 @@ import { useEffect, useState } from "react";
 const App = () => {
   const [tick, setTick] = useState(0);
 
-  // Set a distinct browser tab title for the admin page
+  // Set a distinct browser tab title + favicon for the admin page (admin-only polish).
   useEffect(() => {
     if (typeof document === "undefined" || typeof window === "undefined") return;
     const originalTitle = document.title;
+
+    // Capture current favicon so we can restore it when leaving /admin.
+    const iconEl = document.querySelector('link[rel~="icon"]');
+    const originalIconHref = iconEl?.getAttribute("href") ?? "";
+
     if (window.location.pathname === "/admin") {
       document.title = "Admin Dashboard";
+      if (iconEl) iconEl.setAttribute("href", "/admin-favicon.svg");
     }
+
     return () => {
       document.title = originalTitle;
+      if (iconEl && originalIconHref) iconEl.setAttribute("href", originalIconHref);
     };
   }, []);
 

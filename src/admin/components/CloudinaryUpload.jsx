@@ -9,7 +9,16 @@ import { Button, HelperText } from "./UI";
  *
  * If env vars are missing, this component will show guidance and disable the upload button.
  */
-export default function CloudinaryUpload({ onUploaded, folder = "portfolio/projects", allowedFormats = ["png", "jpg", "jpeg", "webp", "gif"], resourceType }) {
+export default function CloudinaryUpload({
+  onUploaded,
+  folder = "portfolio/projects",
+  allowedFormats = ["png", "jpg", "jpeg", "webp", "gif"],
+  resourceType,
+  // Optional guard rails:
+  maxBytes,
+  // Optional customization for admin UX.
+  successMessage = "Uploaded. URL updated.",
+}) {
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
@@ -52,6 +61,9 @@ export default function CloudinaryUpload({ onUploaded, folder = "portfolio/proje
       sources: ["local", "url", "camera"],
       multiple: false,
       maxFiles: 1,
+      // Guard rails (client-friendly): keep uploads small + predictable.
+      // Cloudinary expects bytes.
+      ...(typeof maxBytes === "number" && maxBytes > 0 ? { maxFileSize: maxBytes } : {}),
       folder,
       clientAllowedFormats: allowedFormats,
       showAdvancedOptions: false,
@@ -59,7 +71,7 @@ export default function CloudinaryUpload({ onUploaded, folder = "portfolio/proje
       defaultSource: "local",
       secure: true,
     };
-  }, [enabled, cloudName, uploadPreset, folder, allowedFormats, resourceType]);
+  }, [enabled, cloudName, uploadPreset, folder, allowedFormats, resourceType, maxBytes]);
 
   function buildDeliveredUrl(info) {
     // The widget can return different URL shapes depending on asset type/preset.
@@ -105,10 +117,26 @@ export default function CloudinaryUpload({ onUploaded, folder = "portfolio/proje
         }
         if (result?.event === "success") {
           const info = result?.info;
+
+          // Double-check file size + format in case the preset/widget options are misconfigured.
+          const bytes = typeof info?.bytes === "number" ? info.bytes : null;
+          if (typeof maxBytes === "number" && maxBytes > 0 && bytes != null && bytes > maxBytes) {
+            setMsg(`File is too large. Max allowed is ${(maxBytes / (1024 * 1024)).toFixed(1)}MB.`);
+            setBusy(false);
+            return;
+          }
+
+          const fmt = String(info?.format ?? "").toLowerCase();
+          if (allowedFormats?.length && fmt && !allowedFormats.map((f) => String(f).toLowerCase()).includes(fmt)) {
+            setMsg(`Unsupported file format: ${fmt}. Allowed: ${allowedFormats.join(", ")}.`);
+            setBusy(false);
+            return;
+          }
+
           const url = buildDeliveredUrl(info) || info?.secure_url || info?.url;
           if (url) {
             onUploaded?.(url);
-            setMsg("Uploaded. Thumbnail URL updated.");
+            setMsg(successMessage);
           } else {
             setMsg("Upload succeeded but no URL returned.");
           }

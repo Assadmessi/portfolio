@@ -12,7 +12,14 @@ const tabs = [
 ];
 
 export default function AdminShell() {
-  const [tab, setTab] = useState("site");
+  // Small UX polish: remember the last opened admin tab.
+  const [tab, setTab] = useState(() => {
+    try {
+      return localStorage.getItem("adminTab") || "site";
+    } catch {
+      return "site";
+    }
+  });
   const [user, setUser] = useState(null);
   const [toast, setToast] = useState("");
 
@@ -22,6 +29,22 @@ export default function AdminShell() {
   }, []);
 
   const active = useMemo(() => tabs.find((t) => t.id === tab) ?? tabs[0], [tab]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("adminTab", tab);
+    } catch {
+      // ignore
+    }
+  }, [tab]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("adminTab", tab);
+    } catch {
+      // ignore
+    }
+  }, [tab]);
 
   async function logout() {
     await signOut(auth);

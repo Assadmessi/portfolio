@@ -11,8 +11,11 @@ function toCloudinaryAttachmentUrl(url) {
   // Example: https://res.cloudinary.com/<cloud>/raw/upload/fl_attachment/sample.pdf
   if (!url || typeof url !== "string") return url;
   if (!url.includes("res.cloudinary.com")) return url;
+  // Auto-rename the downloaded file for clients.
+  // Cloudinary supports an optional filename via fl_attachment:<filename>
+  const flag = "fl_attachment:Asaad_Resume.pdf";
   if (url.includes("fl_attachment")) return url;
-  return url.replace("/upload/", "/upload/fl_attachment/");
+  return url.replace("/upload/", `/upload/${flag}/`);
 }
 
 function SectionHeader({ title, desc, right }) {
@@ -206,6 +209,8 @@ export default function SiteSettings() {
                   folder="portfolio/resume"
                   allowedFormats={["pdf"]}
                   resourceType="raw"
+                  maxBytes={5 * 1024 * 1024}
+                  successMessage="Uploaded. Resume URL updated."
                   onUploaded={(url) => {
                     const attachmentUrl = toCloudinaryAttachmentUrl(url);
                     setByPath("links.resumeUrl", attachmentUrl);
