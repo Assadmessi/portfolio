@@ -45,9 +45,11 @@ const Contact = () => {
         <a
           href={RESUME_URL}
           download
+          target="_blank"
+          rel="noreferrer"
           className="px-6 py-3 rounded-xl transition
-                     border border-black/10 text-slate-800 hover:bg-black/5
-                     dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10"
+                    border border-black/10 text-slate-800 hover:bg-black/5
+                    dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10"
         >
           {contact.resumeButtonLabel}
         </a>
