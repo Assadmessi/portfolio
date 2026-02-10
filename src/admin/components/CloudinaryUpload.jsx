@@ -61,6 +61,28 @@ export default function CloudinaryUpload({ onUploaded, folder = "portfolio/proje
     };
   }, [enabled, cloudName, uploadPreset, folder, allowedFormats, resourceType]);
 
+  function buildDeliveredUrl(info) {
+    // The widget can return different URL shapes depending on asset type/preset.
+    // For RAW uploads (e.g., PDFs), construct a canonical RAW delivery URL so downloads remain valid.
+    try {
+      if (!info || !cloudName) return null;
+      const rt = info.resource_type;
+      if (rt !== "raw") return null;
+
+      const version = info.version ? `v${info.version}` : null;
+      const publicId = info.public_id;
+      const format = info.format;
+      if (!publicId) return null;
+
+      const hasExt = Boolean(format) && publicId.toLowerCase().endsWith(`.${String(format).toLowerCase()}`);
+      const filename = hasExt || !format ? publicId : `${publicId}.${format}`;
+
+      return `https://res.cloudinary.com/${cloudName}/raw/upload/${version ? `${version}/` : ""}${filename}`;
+    } catch {
+      return null;
+    }
+  }
+
   function open() {
     setMsg("");
     if (!enabled) {
@@ -82,7 +104,8 @@ export default function CloudinaryUpload({ onUploaded, folder = "portfolio/proje
           return;
         }
         if (result?.event === "success") {
-          const url = result?.info?.secure_url || result?.info?.url;
+          const info = result?.info;
+          const url = buildDeliveredUrl(info) || info?.secure_url || info?.url;
           if (url) {
             onUploaded?.(url);
             setMsg("Uploaded. Thumbnail URL updated.");
