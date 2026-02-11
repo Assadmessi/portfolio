@@ -4,7 +4,7 @@ import { auth } from "../../firebase/firebase";
 import { Button, Card, HelperText, Input, PageFade } from "../components/UI";
 import { isEmail } from "../utils/validate";
 
-export default function LoginView({ notice = "" }) {
+export default function LoginView() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -41,7 +41,6 @@ export default function LoginView({ notice = "" }) {
             title="Admin Login"
             subtitle="Email/Password via Firebase Auth. Only users you create in Firebase can sign in."
           >
-            {notice ? <HelperText tone="error">{notice}</HelperText> : null}
             <form onSubmit={onSubmit} className="space-y-3">
               <div>
                 <div className="text-xs font-medium mb-1">Email</div>

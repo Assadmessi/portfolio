@@ -9,16 +9,7 @@ import { Button, HelperText } from "./UI";
  *
  * If env vars are missing, this component will show guidance and disable the upload button.
  */
-export default function CloudinaryUpload({
-  onUploaded,
-  folder = "portfolio/projects",
-  allowedFormats = ["png", "jpg", "jpeg", "webp", "gif"],
-  resourceType,
-  // Optional guard rails:
-  maxBytes,
-  // Optional customization for admin UX.
-  successMessage = "Uploaded. URL updated.",
-}) {
+export default function CloudinaryUpload({ onUploaded, folder = "portfolio/projects" }) {
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
@@ -57,43 +48,17 @@ export default function CloudinaryUpload({
     return {
       cloudName,
       uploadPreset,
-      ...(resourceType ? { resourceType } : {}),
       sources: ["local", "url", "camera"],
       multiple: false,
       maxFiles: 1,
-      // Guard rails (client-friendly): keep uploads small + predictable.
-      // Cloudinary expects bytes.
-      ...(typeof maxBytes === "number" && maxBytes > 0 ? { maxFileSize: maxBytes } : {}),
       folder,
-      clientAllowedFormats: allowedFormats,
+      clientAllowedFormats: ["png", "jpg", "jpeg", "webp", "gif"],
       showAdvancedOptions: false,
       cropping: false,
       defaultSource: "local",
       secure: true,
     };
-  }, [enabled, cloudName, uploadPreset, folder, allowedFormats, resourceType, maxBytes]);
-
-  function buildDeliveredUrl(info) {
-    // The widget can return different URL shapes depending on asset type/preset.
-    // For RAW uploads (e.g., PDFs), construct a canonical RAW delivery URL so downloads remain valid.
-    try {
-      if (!info || !cloudName) return null;
-      const rt = info.resource_type;
-      if (rt !== "raw") return null;
-
-      const version = info.version ? `v${info.version}` : null;
-      const publicId = info.public_id;
-      const format = info.format;
-      if (!publicId) return null;
-
-      const hasExt = Boolean(format) && publicId.toLowerCase().endsWith(`.${String(format).toLowerCase()}`);
-      const filename = hasExt || !format ? publicId : `${publicId}.${format}`;
-
-      return `https://res.cloudinary.com/${cloudName}/raw/upload/${version ? `${version}/` : ""}${filename}`;
-    } catch {
-      return null;
-    }
-  }
+  }, [enabled, cloudName, uploadPreset, folder]);
 
   function open() {
     setMsg("");
@@ -116,27 +81,10 @@ export default function CloudinaryUpload({
           return;
         }
         if (result?.event === "success") {
-          const info = result?.info;
-
-          // Double-check file size + format in case the preset/widget options are misconfigured.
-          const bytes = typeof info?.bytes === "number" ? info.bytes : null;
-          if (typeof maxBytes === "number" && maxBytes > 0 && bytes != null && bytes > maxBytes) {
-            setMsg(`File is too large. Max allowed is ${(maxBytes / (1024 * 1024)).toFixed(1)}MB.`);
-            setBusy(false);
-            return;
-          }
-
-          const fmt = String(info?.format ?? "").toLowerCase();
-          if (allowedFormats?.length && fmt && !allowedFormats.map((f) => String(f).toLowerCase()).includes(fmt)) {
-            setMsg(`Unsupported file format: ${fmt}. Allowed: ${allowedFormats.join(", ")}.`);
-            setBusy(false);
-            return;
-          }
-
-          const url = buildDeliveredUrl(info) || info?.secure_url || info?.url;
+          const url = result?.info?.secure_url || result?.info?.url;
           if (url) {
             onUploaded?.(url);
-            setMsg(successMessage);
+            setMsg("Uploaded. Thumbnail URL updated.");
           } else {
             setMsg("Upload succeeded but no URL returned.");
           }

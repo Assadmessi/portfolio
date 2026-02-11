@@ -15,26 +15,6 @@ import { useEffect, useState } from "react";
 const App = () => {
   const [tick, setTick] = useState(0);
 
-  // Set a distinct browser tab title + favicon for the admin page (admin-only polish).
-  useEffect(() => {
-    if (typeof document === "undefined" || typeof window === "undefined") return;
-    const originalTitle = document.title;
-
-    // Capture current favicon so we can restore it when leaving /admin.
-    const iconEl = document.querySelector('link[rel~="icon"]');
-    const originalIconHref = iconEl?.getAttribute("href") ?? "";
-
-    if (window.location.pathname.startsWith("/admin")) {
-      document.title = "Admin Dashboard";
-      if (iconEl) iconEl.setAttribute("href", "/admin-favicon.svg");
-    }
-
-    return () => {
-      document.title = originalTitle;
-      if (iconEl && originalIconHref) iconEl.setAttribute("href", originalIconHref);
-    };
-  }, []);
-
   // Start Firestore realtime sync once
   useEffect(() => {
     const stopSync = startContentSync();
@@ -44,6 +24,44 @@ const App = () => {
       stopSync();
     };
   }, []);
+
+  // Swap title + favicon for admin routes (keeps public site branding unchanged)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const isAdmin = window.location.pathname.startsWith("/admin");
+    const originalTitle = document.title;
+
+    const setFavicon = (href) => {
+      const cacheBust = `?v=${Date.now()}`;
+
+      const ensureLink = (id, rel, type) => {
+        let el = document.getElementById(id);
+        if (!el) {
+          el = document.createElement("link");
+          el.id = id;
+          el.rel = rel;
+          if (type) el.type = type;
+          document.head.appendChild(el);
+        }
+        el.href = href + cacheBust;
+        return el;
+      };
+
+      // Update common favicon rels (some browsers prefer shortcut icon)
+      ensureLink("app-favicon", "icon", "image/png");
+      ensureLink("app-favicon-shortcut", "shortcut icon", "image/png");
+      ensureLink("app-apple-touch", "apple-touch-icon");
+    };
+
+    if (isAdmin) {
+      document.title = "Asaad Portfolio Admin";
+      setFavicon("/admin-favicon.png");
+    } else {
+      document.title = originalTitle;
+      setFavicon("/favicon.png");
+    }
+  }, [tick]);
 
   // Minimal routing without adding react-router
   if (typeof window !== "undefined" && window.location.pathname.startsWith("/admin")) {
