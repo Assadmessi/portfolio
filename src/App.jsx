@@ -24,7 +24,7 @@ const App = () => {
     const iconEl = document.querySelector('link[rel~="icon"]');
     const originalIconHref = iconEl?.getAttribute("href") ?? "";
 
-    if (window.location.pathname === "/admin") {
+    if (window.location.pathname.startsWith("/admin")) {
       document.title = "Admin Dashboard";
       if (iconEl) iconEl.setAttribute("href", "/admin-favicon.svg");
     }
@@ -46,7 +46,7 @@ const App = () => {
   }, []);
 
   // Minimal routing without adding react-router
-  if (typeof window !== "undefined" && window.location.pathname === "/admin") {
+  if (typeof window !== "undefined" && window.location.pathname.startsWith("/admin")) {
     return <Admin />;
   }
 
