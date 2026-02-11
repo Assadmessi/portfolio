@@ -32,34 +32,52 @@ const App = () => {
     const isAdmin = window.location.pathname.startsWith("/admin");
     const originalTitle = document.title;
 
-    const setFavicon = (href) => {
+    const setFavicon = (variant) => {
       const cacheBust = `?v=${Date.now()}`;
 
-      const ensureLink = (id, rel, type) => {
+      const isAdminVariant = variant === "admin";
+      const png32 = isAdminVariant ? "/admin-favicon-32.png" : "/favicon-32.png";
+      const png16 = isAdminVariant ? "/admin-favicon-16.png" : "/favicon-16.png";
+      const ico = isAdminVariant ? "/admin-favicon.ico" : "/favicon.ico";
+      const appleTouch = isAdminVariant ? "/admin-apple-touch-icon.png" : "/apple-touch-icon.png";
+
+      const ensureLink = (id, rel, type, sizes) => {
         let el = document.getElementById(id);
         if (!el) {
           el = document.createElement("link");
           el.id = id;
           el.rel = rel;
           if (type) el.type = type;
+          if (sizes) el.sizes = sizes;
           document.head.appendChild(el);
         }
-        el.href = href + cacheBust;
+        el.href = (id === "app-favicon-shortcut" || id === "app-favicon-ico") ? ico + cacheBust : el.href;
         return el;
       };
 
-      // Update common favicon rels (some browsers prefer shortcut icon)
-      ensureLink("app-favicon", "icon", "image/png");
-      ensureLink("app-favicon-shortcut", "shortcut icon", "image/png");
-      ensureLink("app-apple-touch", "apple-touch-icon");
+      // Safari updates more reliably when we provide .ico + apple-touch-icon alongside PNG sizes.
+      const icon32 = ensureLink("app-favicon", "icon", "image/png", "32x32");
+      icon32.href = png32 + cacheBust;
+
+      const icon16 = ensureLink("app-favicon-16", "icon", "image/png", "16x16");
+      icon16.href = png16 + cacheBust;
+
+      const iconIco = ensureLink("app-favicon-ico", "icon", "image/x-icon");
+      iconIco.href = ico + cacheBust;
+
+      const shortcut = ensureLink("app-favicon-shortcut", "shortcut icon", "image/x-icon");
+      shortcut.href = ico + cacheBust;
+
+      const touch = ensureLink("app-apple-touch", "apple-touch-icon");
+      touch.href = appleTouch + cacheBust;
     };
 
     if (isAdmin) {
       document.title = "Asaad Portfolio Admin";
-      setFavicon("/admin-favicon.png");
+      setFavicon("admin");
     } else {
       document.title = originalTitle;
-      setFavicon("/favicon.png");
+      setFavicon("public");
     }
   }, [tick]);
 
