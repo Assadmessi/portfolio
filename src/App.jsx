@@ -7,7 +7,6 @@ import Projects from "./components/sections/Projects";
 import Contact from "./components/sections/Contact";
 import Footer from "./components/layout/Footer";
 import ScrollProgress from "./components/common/ScrollProgress";
-import Admin from "./pages/Admin";
 import { startContentSync } from "./firebase/contentSync";
 import { subscribeContent } from "./content";
 import { useEffect, useState } from "react";
@@ -96,16 +95,17 @@ const App = () => {
   // Minimal routing without adding react-router
 if (typeof window !== "undefined") {
   const path = window.location.pathname;
-  const isAdminPath = path.startsWith("/admin");
-  const isExactAdmin = path === "/admin" || path === "/admin/";
+const isExactAdmin = path === "/admin" || path === "/admin/";
 
-  // Block deep admin paths like /admin/anything (don’t leak admin existence)
-  if (isAdminPath && !isExactAdmin) {
-    window.location.replace("/");
-    return null;
-  }
-
-  if (isExactAdmin) return <Admin />;
+if (!isExactAdmin) {
+  return (
+    <div className="min-h-screen grid place-items-center text-center px-6">
+      <div>
+        <h1 className="text-4xl font-bold">404</h1>
+        <p className="mt-2 opacity-70">Page not found.</p>
+      </div>
+    </div>
+  );
 }
 
 return (
@@ -130,6 +130,7 @@ return (
       <Footer />
     </div>
   );
+};
 };
 
 export default App;
