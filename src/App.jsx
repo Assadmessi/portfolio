@@ -99,32 +99,10 @@ if (typeof window !== "undefined") {
   const isAdminPath = path.startsWith("/admin");
   const isExactAdmin = path === "/admin" || path === "/admin/";
 
-  // Block deep admin paths like /admin/anything (shows a clean 404-style page)
+  // Block deep admin paths like /admin/anything (don’t leak admin existence)
   if (isAdminPath && !isExactAdmin) {
-    return (
-      <div className="min-h-screen bg-[#0B0F19] text-slate-100 grid place-items-center px-6">
-        <div className="max-w-md text-center">
-          <div className="text-6xl font-bold tracking-tight">404</div>
-          <p className="mt-3 text-slate-300">
-            This page doesn’t exist.
-          </p>
-          <div className="mt-8 flex items-center justify-center gap-3">
-            <a
-              href="/"
-              className="rounded-xl border border-white/15 px-4 py-2 text-sm hover:bg-white/5 transition"
-            >
-              Go to Public Site
-            </a>
-            <a
-              href="/admin"
-              className="rounded-xl bg-white text-black px-4 py-2 text-sm hover:opacity-90 transition"
-            >
-              Go to Admin
-            </a>
-          </div>
-        </div>
-      </div>
-    );
+    window.location.replace("/");
+    return null;
   }
 
   if (isExactAdmin) return <Admin />;
