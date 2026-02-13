@@ -7,6 +7,7 @@ import Projects from "./components/sections/Projects";
 import Contact from "./components/sections/Contact";
 import Footer from "./components/layout/Footer";
 import ScrollProgress from "./components/common/ScrollProgress";
+import Admin from "./pages/Admin";
 import { startContentSync } from "./firebase/contentSync";
 import { subscribeContent } from "./content";
 import { useEffect, useState } from "react";
@@ -93,22 +94,28 @@ const App = () => {
   }, [tick]);
 
   // Minimal routing without adding react-router
-if (typeof window !== "undefined") {
-  const path = window.location.pathname;
-const isExactAdmin = path === "/admin" || path === "/admin/";
+  if (typeof window !== "undefined") {
+    const path = window.location.pathname;
+    const isAdminPath = path.startsWith("/admin");
+    const isExactAdmin = path === "/admin" || path === "/admin/";
 
-if (!isExactAdmin) {
+    // Block deep admin paths like /admin/anything
+    // Show a neutral 404 (no links, no mention of admin)
+    if (isAdminPath && !isExactAdmin) {
+      return (
+        <div className="min-h-screen grid place-items-center text-center px-6">
+          <div>
+            <h1 className="text-4xl font-bold">404</h1>
+            <p className="mt-2 opacity-70">Page not found.</p>
+          </div>
+        </div>
+      );
+    }
+
+    if (isExactAdmin) return <Admin />;
+  }
+
   return (
-    <div className="min-h-screen grid place-items-center text-center px-6">
-      <div>
-        <h1 className="text-4xl font-bold">404</h1>
-        <p className="mt-2 opacity-70">Page not found.</p>
-      </div>
-    </div>
-  );
-}
-
-return (
     <div className="min-h-screen bg-[#F6F7FB] text-slate-900 dark:bg-[#0B0F19] dark:text-slate-100">
       {/* Soft global background tint (prevents harsh white in light mode) */}
       <div className="pointer-events-none fixed inset-0 -z-10">
@@ -130,7 +137,6 @@ return (
       <Footer />
     </div>
   );
-};
 };
 
 export default App;
