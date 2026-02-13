@@ -32,7 +32,10 @@ const App = () => {
     const isAdmin = window.location.pathname.startsWith("/admin");
     const originalTitle = document.title;
 
+    
     const setFavicon = (variant) => {
+      // Safari can be aggressive about caching favicons and sometimes ignores just changing `href`.
+      // Re-creating the <link> nodes forces Safari to pick up the correct icon per route.
       const cacheBust = `?v=${Date.now()}`;
 
       const isAdminVariant = variant === "admin";
@@ -41,19 +44,45 @@ const App = () => {
       const ico = isAdminVariant ? "/admin-favicon.ico" : "/favicon.ico";
       const appleTouch = isAdminVariant ? "/admin-apple-touch-icon.png" : "/apple-touch-icon.png";
 
-      const ensureLink = (id, rel, type, sizes) => {
-        let el = document.getElementById(id);
-        if (!el) {
-          el = document.createElement("link");
-          el.id = id;
-          el.rel = rel;
-          if (type) el.type = type;
-          if (sizes) el.sizes = sizes;
-          document.head.appendChild(el);
-        }
-        el.href = (id === "app-favicon-shortcut" || id === "app-favicon-ico") ? ico + cacheBust : el.href;
+      // Remove any previously injected favicon links
+      const ids = [
+        "app-favicon-main",
+        "app-favicon",
+        "app-favicon-16",
+        "app-favicon-ico",
+        "app-favicon-shortcut",
+        "app-apple-touch",
+      ];
+      ids.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el && el.parentNode) el.parentNode.removeChild(el);
+      });
+
+      const addLink = ({ id, rel, href, type, sizes }) => {
+        const el = document.createElement("link");
+        el.id = id;
+        el.rel = rel;
+        if (type) el.type = type;
+        if (sizes) el.sizes = sizes;
+        el.href = href + cacheBust;
+        document.head.appendChild(el);
         return el;
       };
+
+      // 1) A generic icon (no sizes) helps Safari choose correctly.
+      addLink({ id: "app-favicon-main", rel: "icon", href: ico, type: "image/x-icon" });
+
+      // 2) Explicit sizes for browsers that use them.
+      addLink({ id: "app-favicon", rel: "icon", href: png32, type: "image/png", sizes: "32x32" });
+      addLink({ id: "app-favicon-16", rel: "icon", href: png16, type: "image/png", sizes: "16x16" });
+
+      // 3) Fallbacks
+      addLink({ id: "app-favicon-ico", rel: "icon", href: ico, type: "image/x-icon" });
+      addLink({ id: "app-favicon-shortcut", rel: "shortcut icon", href: ico, type: "image/x-icon" });
+
+      // 4) iOS / Safari touch icon
+      addLink({ id: "app-apple-touch", rel: "apple-touch-icon", href: appleTouch });
+    };
 
       // Safari updates more reliably when we provide .ico + apple-touch-icon alongside PNG sizes.
       const icon32 = ensureLink("app-favicon", "icon", "image/png", "32x32");
