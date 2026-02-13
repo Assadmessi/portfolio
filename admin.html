@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <!-- Favicons (Safari prefers .ico + apple-touch-icon; admin page uses its own HTML to ensure Safari loads the correct favicon) -->
+    <link id="app-favicon" rel="icon" type="image/png" sizes="32x32" href="/admin-favicon-32.png" />
+    <link id="app-favicon-16" rel="icon" type="image/png" sizes="16x16" href="/admin-favicon-16.png" />
+    <link id="app-favicon-ico" rel="icon" type="image/x-icon" href="/admin-favicon.ico" />
+    <link id="app-favicon-shortcut" rel="shortcut icon" type="image/x-icon" href="/admin-favicon.ico" />
+    <link id="app-apple-touch" rel="apple-touch-icon" sizes="180x180" href="/admin-apple-touch-icon.png" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Junior front-end developer specializing in React, Tailwind CSS, and modern UI animations." />
+    <meta name="theme-color" content="#0B0F19" />
+    <meta property="og:title" content="Asaad Portfolio Admin" />
+    <meta property="og:description" content="React + Tailwind developer building responsive, animated, user-focused interfaces." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="/og.png" />
+
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem("theme");
+          var systemDark =
+            window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+          var theme = saved || (systemDark ? "dark" : "light");
+          if (theme === "dark") document.documentElement.classList.add("dark");
+          else document.documentElement.classList.remove("dark");
+        } catch (e) {}
+      })();
+    </script>
+
+    <title>Asaad Portfolio Admin</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
