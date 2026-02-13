@@ -39,10 +39,10 @@ const App = () => {
       const cacheBust = `?v=${Date.now()}`;
 
       const isAdminVariant = variant === "admin";
-      const png32 = isAdminVariant ? "/admin-favicon-32.png" : "/favicon-32.png";
-      const png16 = isAdminVariant ? "/admin-favicon-16.png" : "/favicon-16.png";
-      const ico = isAdminVariant ? "/admin-favicon.ico" : "/favicon.ico";
-      const appleTouch = isAdminVariant ? "/admin-apple-touch-icon.png" : "/apple-touch-icon.png";
+      const png32 = isAdminVariant ? "/favicons/admin/favicon-32.png" : "/favicons/public/favicon-32.png";
+      const png16 = isAdminVariant ? "/favicons/admin/favicon-16.png" : "/favicons/public/favicon-16.png";
+      const ico = isAdminVariant ? "/favicons/admin/favicon.ico" : "/favicons/public/favicon.ico";
+      const appleTouch = isAdminVariant ? "/favicons/admin/apple-touch-icon.png" : "/favicons/public/apple-touch-icon.png";
 
       // Remove any previously injected favicon links
       const ids = [
@@ -94,11 +94,43 @@ const App = () => {
   }, [tick]);
 
   // Minimal routing without adding react-router
-  if (typeof window !== "undefined" && window.location.pathname.startsWith("/admin")) {
-    return <Admin />;
+if (typeof window !== "undefined") {
+  const path = window.location.pathname;
+  const isAdminPath = path.startsWith("/admin");
+  const isExactAdmin = path === "/admin" || path === "/admin/";
+
+  // Block deep admin paths like /admin/anything (shows a clean 404-style page)
+  if (isAdminPath && !isExactAdmin) {
+    return (
+      <div className="min-h-screen bg-[#0B0F19] text-slate-100 grid place-items-center px-6">
+        <div className="max-w-md text-center">
+          <div className="text-6xl font-bold tracking-tight">404</div>
+          <p className="mt-3 text-slate-300">
+            This page doesn’t exist.
+          </p>
+          <div className="mt-8 flex items-center justify-center gap-3">
+            <a
+              href="/"
+              className="rounded-xl border border-white/15 px-4 py-2 text-sm hover:bg-white/5 transition"
+            >
+              Go to Public Site
+            </a>
+            <a
+              href="/admin"
+              className="rounded-xl bg-white text-black px-4 py-2 text-sm hover:opacity-90 transition"
+            >
+              Go to Admin
+            </a>
+          </div>
+        </div>
+      </div>
+    );
   }
 
-  return (
+  if (isExactAdmin) return <Admin />;
+}
+
+return (
     <div className="min-h-screen bg-[#F6F7FB] text-slate-900 dark:bg-[#0B0F19] dark:text-slate-100">
       {/* Soft global background tint (prevents harsh white in light mode) */}
       <div className="pointer-events-none fixed inset-0 -z-10">
