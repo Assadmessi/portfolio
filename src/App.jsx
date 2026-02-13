@@ -84,23 +84,6 @@ const App = () => {
       addLink({ id: "app-apple-touch", rel: "apple-touch-icon", href: appleTouch });
     };
 
-      // Safari updates more reliably when we provide .ico + apple-touch-icon alongside PNG sizes.
-      const icon32 = ensureLink("app-favicon", "icon", "image/png", "32x32");
-      icon32.href = png32 + cacheBust;
-
-      const icon16 = ensureLink("app-favicon-16", "icon", "image/png", "16x16");
-      icon16.href = png16 + cacheBust;
-
-      const iconIco = ensureLink("app-favicon-ico", "icon", "image/x-icon");
-      iconIco.href = ico + cacheBust;
-
-      const shortcut = ensureLink("app-favicon-shortcut", "shortcut icon", "image/x-icon");
-      shortcut.href = ico + cacheBust;
-
-      const touch = ensureLink("app-apple-touch", "apple-touch-icon");
-      touch.href = appleTouch + cacheBust;
-    };
-
     if (isAdmin) {
       document.title = "Asaad Portfolio Admin";
       setFavicon("admin");
