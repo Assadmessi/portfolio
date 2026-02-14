@@ -13,7 +13,6 @@ import { startContentSync } from "./firebase/contentSync";
 import { subscribeContent } from "./content";
 
 const Admin = lazy(() => import("./pages/Admin"));
-
 const App = () => {
   const [tick, setTick] = useState(0);
 
@@ -31,7 +30,7 @@ const App = () => {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const isAdmin = window.location.pathname.startsWith("/admin");
+    const isAdmin = path.startsWith("/admin");
     const originalTitle = document.title;
 
     
@@ -93,7 +92,7 @@ const App = () => {
       document.title = originalTitle;
       setFavicon("public");
     }
-  }, [tick]);
+  }, [tick, path]);
 
   // Minimal routing without adding react-router
 // Minimal routing without adding react-router
