@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { MotionSection } from "../../animations/MotionWrappers";
 import { fadeUp, staggerContainer } from "../../animations/variants";
 import { motion } from "framer-motion";
@@ -113,4 +114,4 @@ const Services = () => {
   );
 };
 
-export default Services;
+export default memo(Services);

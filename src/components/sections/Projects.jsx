@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import ProjectModal from "../common/ProjectModal";
 import { motion } from "framer-motion";
 import { MotionSection } from "../../animations/MotionWrappers";
@@ -63,4 +63,4 @@ const Projects = () => {
   );
 };
 
-export default Projects;
+export default memo(Projects);

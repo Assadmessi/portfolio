@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Head } from "@unhead/react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../firebase/firebase";
 import AdminShell from "../admin/AdminShell";
@@ -26,6 +27,9 @@ export default function Admin() {
 
   return (
     <div className="min-h-screen bg-[#F6F7FB] text-slate-900 dark:bg-[#0B0F19] dark:text-slate-100">
+      <Head>
+        <meta name="robots" content="noindex, nofollow" />
+      </Head>
       {/* keep same global tint as public site for consistency */}
       <div className="pointer-events-none fixed inset-0 -z-10">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.08),transparent_55%)] dark:hidden" />

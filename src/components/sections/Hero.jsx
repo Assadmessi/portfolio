@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { MotionSection } from "../../animations/MotionWrappers";
 import { fadeUp, staggerContainer } from "../../animations/variants";
 import { motion } from "framer-motion";
@@ -94,4 +95,4 @@ const Hero = () => {
   );
 };
 
-export default Hero;
+export default memo(Hero);

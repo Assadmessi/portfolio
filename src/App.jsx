@@ -7,7 +7,8 @@ import Projects from "./components/sections/Projects";
 import Contact from "./components/sections/Contact";
 import Footer from "./components/layout/Footer";
 import ScrollProgress from "./components/common/ScrollProgress";
-import Admin from "./pages/Admin";
+import { lazy, Suspense } from "react";
+const Admin = lazy(() => import("./pages/Admin"));
 import { startContentSync } from "./firebase/contentSync";
 import { subscribeContent } from "./content";
 import { useEffect, useState } from "react";
@@ -102,7 +103,11 @@ if (typeof window !== "undefined") {
   const isHome = path === "/" || path === "/index.html";
 
   // Admin exact route
-  if (isExactAdmin) return <Admin />;
+  if (isExactAdmin) return (
+    <Suspense fallback={<div className="min-h-screen grid place-items-center">Loading...</div>}>
+      <Admin />
+    </Suspense>
+  );
 
   // Block deep admin paths like /admin/anything
   if (isAdminPath && !isExactAdmin) {
