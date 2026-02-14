@@ -18,8 +18,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 
 const HomeLayout = () => {
-  // If you want: build absolute URL for OG tags when deployed
-  const absoluteUrl = typeof window !== "undefined" ? window.location.href : "";
+  const absoluteUrl =
+    typeof window !== "undefined" ? window.location.href : "";
 
   return (
     <div className="min-h-screen bg-[#F6F7FB] text-slate-900 dark:bg-[#0B0F19] dark:text-slate-100">
@@ -29,11 +29,8 @@ const HomeLayout = () => {
         url={absoluteUrl}
       />
 
-      {/* Soft global background tint (prevents harsh white in light mode) */}
       <div className="pointer-events-none fixed inset-0 -z-10">
-        {/* Light mode tint */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.08),transparent_55%)] dark:hidden" />
-        {/* Dark mode tint */}
         <div className="absolute inset-0 hidden dark:block bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.12),transparent_55%)]" />
       </div>
 
@@ -51,7 +48,6 @@ const HomeLayout = () => {
   );
 };
 
-// Blocks deep admin routes like /admin/anything (your exact current behavior)
 const AdminGate = () => {
   const { pathname } = useLocation();
   const isExactAdmin = pathname === "/admin" || pathname === "/admin/";
@@ -62,7 +58,6 @@ const App = () => {
   const [tick, setTick] = useState(0);
   const location = useLocation();
 
-  // Start Firestore realtime sync once
   useEffect(() => {
     const stopSync = startContentSync();
     const unsub = subscribeContent(() => setTick((t) => t + 1));
@@ -72,12 +67,11 @@ const App = () => {
     };
   }, []);
 
-  const isAdminRoute = useMemo(() => {
-    const path = location.pathname || "";
-    return path.startsWith("/admin");
-  }, [location.pathname]);
+  const isAdminRoute = useMemo(
+    () => location.pathname.startsWith("/admin"),
+    [location.pathname]
+  );
 
-  // Swap title + favicon for admin routes (keeps public site branding unchanged)
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -85,18 +79,18 @@ const App = () => {
 
     const setFavicon = (variant) => {
       const cacheBust = `?v=${Date.now()}`;
+      const isAdmin = variant === "admin";
 
-      const isAdminVariant = variant === "admin";
-      const png32 = isAdminVariant
+      const png32 = isAdmin
         ? "/favicons/admin/favicon-32.png"
         : "/favicons/public/favicon-32.png";
-      const png16 = isAdminVariant
+      const png16 = isAdmin
         ? "/favicons/admin/favicon-16.png"
         : "/favicons/public/favicon-16.png";
-      const ico = isAdminVariant
+      const ico = isAdmin
         ? "/favicons/admin/favicon.ico"
         : "/favicons/public/favicon.ico";
-      const appleTouch = isAdminVariant
+      const appleTouch = isAdmin
         ? "/favicons/admin/apple-touch-icon.png"
         : "/favicons/public/apple-touch-icon.png";
 
@@ -111,7 +105,7 @@ const App = () => {
 
       ids.forEach((id) => {
         const el = document.getElementById(id);
-        if (el && el.parentNode) el.parentNode.removeChild(el);
+        if (el) el.remove();
       });
 
       const addLink = ({ id, rel, href, type, sizes }) => {
@@ -122,14 +116,11 @@ const App = () => {
         if (sizes) el.sizes = sizes;
         el.href = href + cacheBust;
         document.head.appendChild(el);
-        return el;
       };
 
-      addLink({ id: "app-favicon-main", rel: "icon", href: ico, type: "image/x-icon" });
+      addLink({ id: "app-favicon-main", rel: "icon", href: ico });
       addLink({ id: "app-favicon", rel: "icon", href: png32, type: "image/png", sizes: "32x32" });
       addLink({ id: "app-favicon-16", rel: "icon", href: png16, type: "image/png", sizes: "16x16" });
-      addLink({ id: "app-favicon-ico", rel: "icon", href: ico, type: "image/x-icon" });
-      addLink({ id: "app-favicon-shortcut", rel: "shortcut icon", href: ico, type: "image/x-icon" });
       addLink({ id: "app-apple-touch", rel: "apple-touch-icon", href: appleTouch });
     };
 
