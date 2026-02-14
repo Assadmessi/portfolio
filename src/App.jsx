@@ -139,7 +139,11 @@ const App = () => {
   // Minimal routing without adding react-router
   if (typeof window !== "undefined") {
     const isAdminPath = path.startsWith("/admin");
-    const isExactAdmin = path === "/admin" || path === "/admin/";
+
+    // ✅ IMPORTANT FIX: allow /admin.html too (Netlify/Vite can serve this)
+    const isExactAdmin =
+      path === "/admin" || path === "/admin/" || path === "/admin.html";
+
     const isHome = path === "/" || path === "/index.html";
 
     // Admin exact route
