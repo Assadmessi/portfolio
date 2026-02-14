@@ -7,11 +7,12 @@ import Projects from "./components/sections/Projects";
 import Contact from "./components/sections/Contact";
 import Footer from "./components/layout/Footer";
 import ScrollProgress from "./components/common/ScrollProgress";
-import { lazy, Suspense } from "react";
-const Admin = lazy(() => import("./pages/Admin"));
+
+import { useEffect, useState, lazy, Suspense } from "react";
 import { startContentSync } from "./firebase/contentSync";
 import { subscribeContent } from "./content";
-import { useEffect, useState } from "react";
+
+const Admin = lazy(() => import("./pages/Admin"));
 
 const App = () => {
   const [tick, setTick] = useState(0);
