@@ -1,13 +1,15 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
-import { ThemeProvider } from "./context/ThemeContext.jsx";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { createHead } from "unhead";
+import { HeadProvider } from "@unhead/react";
+import App from "./App";
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <ThemeProvider>
+const head = createHead();
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <HeadProvider head={head}>
       <App />
-    </ThemeProvider>
-  </StrictMode>,
-)
+    </HeadProvider>
+  </React.StrictMode>
+);
