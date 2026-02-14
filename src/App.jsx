@@ -13,8 +13,12 @@ import { startContentSync } from "./firebase/contentSync";
 import { subscribeContent } from "./content";
 
 const Admin = lazy(() => import("./pages/Admin"));
+
 const App = () => {
   const [tick, setTick] = useState(0);
+
+  // ✅ Define path ONCE (so it's available everywhere)
+  const path = typeof window !== "undefined" ? window.location.pathname : "/";
 
   // Start Firestore realtime sync once
   useEffect(() => {
@@ -33,17 +37,24 @@ const App = () => {
     const isAdmin = path.startsWith("/admin");
     const originalTitle = document.title;
 
-    
     const setFavicon = (variant) => {
       // Safari can be aggressive about caching favicons and sometimes ignores just changing `href`.
       // Re-creating the <link> nodes forces Safari to pick up the correct icon per route.
       const cacheBust = `?v=${Date.now()}`;
 
       const isAdminVariant = variant === "admin";
-      const png32 = isAdminVariant ? "/favicons/admin/favicon-32.png" : "/favicons/public/favicon-32.png";
-      const png16 = isAdminVariant ? "/favicons/admin/favicon-16.png" : "/favicons/public/favicon-16.png";
-      const ico = isAdminVariant ? "/favicons/admin/favicon.ico" : "/favicons/public/favicon.ico";
-      const appleTouch = isAdminVariant ? "/favicons/admin/apple-touch-icon.png" : "/favicons/public/apple-touch-icon.png";
+      const png32 = isAdminVariant
+        ? "/favicons/admin/favicon-32.png"
+        : "/favicons/public/favicon-32.png";
+      const png16 = isAdminVariant
+        ? "/favicons/admin/favicon-16.png"
+        : "/favicons/public/favicon-16.png";
+      const ico = isAdminVariant
+        ? "/favicons/admin/favicon.ico"
+        : "/favicons/public/favicon.ico";
+      const appleTouch = isAdminVariant
+        ? "/favicons/admin/apple-touch-icon.png"
+        : "/favicons/public/apple-touch-icon.png";
 
       // Remove any previously injected favicon links
       const ids = [
@@ -71,18 +82,49 @@ const App = () => {
       };
 
       // 1) A generic icon (no sizes) helps Safari choose correctly.
-      addLink({ id: "app-favicon-main", rel: "icon", href: ico, type: "image/x-icon" });
+      addLink({
+        id: "app-favicon-main",
+        rel: "icon",
+        href: ico,
+        type: "image/x-icon",
+      });
 
       // 2) Explicit sizes for browsers that use them.
-      addLink({ id: "app-favicon", rel: "icon", href: png32, type: "image/png", sizes: "32x32" });
-      addLink({ id: "app-favicon-16", rel: "icon", href: png16, type: "image/png", sizes: "16x16" });
+      addLink({
+        id: "app-favicon",
+        rel: "icon",
+        href: png32,
+        type: "image/png",
+        sizes: "32x32",
+      });
+      addLink({
+        id: "app-favicon-16",
+        rel: "icon",
+        href: png16,
+        type: "image/png",
+        sizes: "16x16",
+      });
 
       // 3) Fallbacks
-      addLink({ id: "app-favicon-ico", rel: "icon", href: ico, type: "image/x-icon" });
-      addLink({ id: "app-favicon-shortcut", rel: "shortcut icon", href: ico, type: "image/x-icon" });
+      addLink({
+        id: "app-favicon-ico",
+        rel: "icon",
+        href: ico,
+        type: "image/x-icon",
+      });
+      addLink({
+        id: "app-favicon-shortcut",
+        rel: "shortcut icon",
+        href: ico,
+        type: "image/x-icon",
+      });
 
       // 4) iOS / Safari touch icon
-      addLink({ id: "app-apple-touch", rel: "apple-touch-icon", href: appleTouch });
+      addLink({
+        id: "app-apple-touch",
+        rel: "apple-touch-icon",
+        href: appleTouch,
+      });
     };
 
     if (isAdmin) {
@@ -95,46 +137,51 @@ const App = () => {
   }, [tick, path]);
 
   // Minimal routing without adding react-router
-// Minimal routing without adding react-router
-if (typeof window !== "undefined") {
-  const path = window.location.pathname;
-  const isAdminPath = path.startsWith("/admin");
-  const isExactAdmin = path === "/admin" || path === "/admin/";
-  const isHome = path === "/" || path === "/index.html";
+  if (typeof window !== "undefined") {
+    const isAdminPath = path.startsWith("/admin");
+    const isExactAdmin = path === "/admin" || path === "/admin/";
+    const isHome = path === "/" || path === "/index.html";
 
-  // Admin exact route
-  if (isExactAdmin) return (
-    <Suspense fallback={<div className="min-h-screen grid place-items-center">Loading...</div>}>
-      <Admin />
-    </Suspense>
-  );
+    // Admin exact route
+    if (isExactAdmin)
+      return (
+        <Suspense
+          fallback={
+            <div className="min-h-screen grid place-items-center">
+              Loading...
+            </div>
+          }
+        >
+          <Admin />
+        </Suspense>
+      );
 
-  // Block deep admin paths like /admin/anything
-  if (isAdminPath && !isExactAdmin) {
-    return (
-      <div className="min-h-screen grid place-items-center text-center px-6">
-        <div>
-          <h1 className="text-4xl font-bold">404</h1>
-          <p className="mt-2 opacity-70">Page not found.</p>
+    // Block deep admin paths like /admin/anything
+    if (isAdminPath && !isExactAdmin) {
+      return (
+        <div className="min-h-screen grid place-items-center text-center px-6">
+          <div>
+            <h1 className="text-4xl font-bold">404</h1>
+            <p className="mt-2 opacity-70">Page not found.</p>
+          </div>
         </div>
-      </div>
-    );
+      );
+    }
+
+    // Public 404 for unknown routes like /anything
+    if (!isHome && !isAdminPath) {
+      return (
+        <div className="min-h-screen grid place-items-center text-center px-6">
+          <div>
+            <h1 className="text-4xl font-bold">404</h1>
+            <p className="mt-2 opacity-70">Page not found.</p>
+          </div>
+        </div>
+      );
+    }
   }
 
-  // Public 404 for unknown routes like /anything
-  if (!isHome && !isAdminPath) {
-    return (
-      <div className="min-h-screen grid place-items-center text-center px-6">
-        <div>
-          <h1 className="text-4xl font-bold">404</h1>
-          <p className="mt-2 opacity-70">Page not found.</p>
-        </div>
-      </div>
-    );
-  }
-}
-
-return (
+  return (
     <div className="min-h-screen bg-[#F6F7FB] text-slate-900 dark:bg-[#0B0F19] dark:text-slate-100">
       {/* Soft global background tint (prevents harsh white in light mode) */}
       <div className="pointer-events-none fixed inset-0 -z-10">
