@@ -1,8 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { createHead } from "unhead";
-import { HeadProvider } from "@unhead/react";
 import App from "./App";
+
+import { createHead, HeadProvider } from "@unhead/react/client";
 
 const head = createHead();
 
