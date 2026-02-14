@@ -38,8 +38,6 @@ const App = () => {
     const originalTitle = document.title;
 
     const setFavicon = (variant) => {
-      // Safari can be aggressive about caching favicons and sometimes ignores just changing `href`.
-      // Re-creating the <link> nodes forces Safari to pick up the correct icon per route.
       const cacheBust = `?v=${Date.now()}`;
 
       const isAdminVariant = variant === "admin";
@@ -56,7 +54,6 @@ const App = () => {
         ? "/favicons/admin/apple-touch-icon.png"
         : "/favicons/public/apple-touch-icon.png";
 
-      // Remove any previously injected favicon links
       const ids = [
         "app-favicon-main",
         "app-favicon",
@@ -81,7 +78,6 @@ const App = () => {
         return el;
       };
 
-      // 1) A generic icon (no sizes) helps Safari choose correctly.
       addLink({
         id: "app-favicon-main",
         rel: "icon",
@@ -89,7 +85,6 @@ const App = () => {
         type: "image/x-icon",
       });
 
-      // 2) Explicit sizes for browsers that use them.
       addLink({
         id: "app-favicon",
         rel: "icon",
@@ -105,7 +100,6 @@ const App = () => {
         sizes: "16x16",
       });
 
-      // 3) Fallbacks
       addLink({
         id: "app-favicon-ico",
         rel: "icon",
@@ -119,7 +113,6 @@ const App = () => {
         type: "image/x-icon",
       });
 
-      // 4) iOS / Safari touch icon
       addLink({
         id: "app-apple-touch",
         rel: "apple-touch-icon",
@@ -140,9 +133,12 @@ const App = () => {
   if (typeof window !== "undefined") {
     const isAdminPath = path.startsWith("/admin");
 
-    // ✅ IMPORTANT FIX: allow /admin.html too (Netlify/Vite can serve this)
+    // ✅ FIX: allow all common Netlify/Vite admin URL variants
     const isExactAdmin =
-      path === "/admin" || path === "/admin/" || path === "/admin.html";
+      path === "/admin" ||
+      path === "/admin/" ||
+      path === "/admin.html" ||
+      path === "/admin/index.html";
 
     const isHome = path === "/" || path === "/index.html";
 
@@ -187,11 +183,8 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-[#F6F7FB] text-slate-900 dark:bg-[#0B0F19] dark:text-slate-100">
-      {/* Soft global background tint (prevents harsh white in light mode) */}
       <div className="pointer-events-none fixed inset-0 -z-10">
-        {/* Light mode tint */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.08),transparent_55%)] dark:hidden" />
-        {/* Dark mode tint */}
         <div className="absolute inset-0 hidden dark:block bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.12),transparent_55%)]" />
       </div>
 
