@@ -5,19 +5,19 @@
     "linkedinUrl": "https://www.linkedin.com/in/aye-htet-h-511087101/"
   },
   "hero": {
-    "badge": "Junior Front-End Developer 1",
+    "badge": "Product Builder",
     "name": "Asaad",
-    "headlineAccent": "Front-End Developer",
-    "intro": "I build responsive, animated, and user-focused web interfaces using React, Tailwind CSS, and modern frontend tools.",
-    "availability": "Currently open to freelance projects (landing pages, portfolios, UI builds) and also seeking a junior frontend role or internship to grow under experienced developers.",
+    "headlineAccent": "Product-Focused Frontend Engineer",
+    "intro": "I build modern web products with clean UI, fast performance, and scalable front-end architecture.",
+    "availability": "Currently building product-grade projects and systems. Open to collaborating with startups and teams that ship.",
     "buttons": {
       "primary": {
-        "label": "Hire Me (Freelance)",
-        "href": "#services"
+        "label": "Explore My Systems",
+        "href": "#projects"
       },
       "secondary": {
-        "label": "View Projects",
-        "href": "#projects"
+        "label": "Engineering Principles",
+        "href": "#principles"
       },
       "resume": {
         "label": "Download Resume"
@@ -28,7 +28,8 @@
       "linkedinLabel": "LinkedIn",
       "contactLabel": "Contact",
       "contactHref": "#contact"
-    }
+    },
+    "stack": "React • Tailwind • Firebase • Framer Motion • Vite"
   },
   "about": {
     "title": "About",
@@ -152,6 +153,52 @@
       "Project type (landing page / business site / React UI / fixes)",
       "Deadline + any reference links (Figma is perfect)",
       "Pages/features + budget range (optional)"
+    ]
+  },
+  "principles": {
+    "sectionTitle": "Engineering Principles",
+    "subtitle": "How I think when I build products (not just pages).",
+    "items": [
+      {
+        "title": "Product-first UI",
+        "desc": "I design interfaces that guide users, reduce friction, and feel premium."
+      },
+      {
+        "title": "Performance by default",
+        "desc": "Fast load, smooth motion, smart rendering — optimized without sacrificing design."
+      },
+      {
+        "title": "Scalable architecture",
+        "desc": "Reusable components, clean state boundaries, and patterns that survive real growth."
+      },
+      {
+        "title": "Secure admin workflows",
+        "desc": "Role-based access, safe uploads, and content systems built for real teams."
+      },
+      {
+        "title": "Ship & iterate",
+        "desc": "Deploy early, measure, improve — structured updates without breaking production."
+      }
+    ]
+  },
+  "metrics": {
+    "items": [
+      {
+        "label": "Product-grade builds",
+        "value": "3+"
+      },
+      {
+        "label": "Admin systems",
+        "value": "Role-based"
+      },
+      {
+        "label": "Realtime content",
+        "value": "Firebase"
+      },
+      {
+        "label": "Motion + UX polish",
+        "value": "Framer"
+      }
     ]
   }
 }

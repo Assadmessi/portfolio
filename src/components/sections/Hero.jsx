@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { siteContent } from "../../content";
 
 const Hero = () => {
-  const { hero, links } = siteContent;
+  const { hero, links, metrics } = siteContent;
 
   const RESUME_URL = links.resumeUrl;
   const GITHUB_URL = links.githubUrl;
@@ -43,9 +43,35 @@ const Hero = () => {
           {hero.intro}
         </motion.p>
 
+        {hero.stack && (
+          <motion.p
+            variants={fadeUp}
+            className="mt-4 text-sm sm:text-base text-slate-600 dark:text-slate-400"
+          >
+            {hero.stack}
+          </motion.p>
+        )}
+
         <motion.p variants={fadeUp} className="mt-3 text-slate-700 dark:text-slate-400">
           {hero.availability}
         </motion.p>
+
+        {metrics?.items?.length ? (
+          <motion.div
+            variants={fadeUp}
+            className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 text-left"
+          >
+            {metrics.items.map((m, idx) => (
+              <div
+                key={idx}
+                className="rounded-2xl border border-black/5 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur px-4 py-3"
+              >
+                <div className="text-lg font-semibold text-slate-900 dark:text-slate-100">{m.value}</div>
+                <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">{m.label}</div>
+              </div>
+            ))}
+          </motion.div>
+        ) : null}
 
         <motion.div
           variants={fadeUp}

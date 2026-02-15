@@ -3,6 +3,7 @@ import Hero from "./components/sections/Hero";
 import About from "./components/sections/About";
 import Services from "./components/sections/Services";
 import HowIWork from "./components/sections/HowIWork";
+import Principles from "./components/sections/Principles";
 import Projects from "./components/sections/Projects";
 import Contact from "./components/sections/Contact";
 import Footer from "./components/layout/Footer";
@@ -32,6 +33,7 @@ const HomeLayout = () => {
       <About />
       <Services />
       <HowIWork />
+      <Principles />
       <Projects />
       <Contact />
       <Footer />

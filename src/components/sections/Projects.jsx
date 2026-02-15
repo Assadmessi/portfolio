@@ -52,6 +52,20 @@ const Projects = () => {
                 <p className="text-slate-700 dark:text-slate-400 text-sm mt-3">
                   {p.desc}
                 </p>
+
+                {p.problem && (
+                  <div className="mt-4 space-y-2 text-xs sm:text-sm">
+                    <div className="text-slate-700 dark:text-slate-400">
+                      <span className="font-semibold text-slate-900 dark:text-slate-200">Problem:</span> {p.problem}
+                    </div>
+                    {p.impact && (
+                      <div className="text-slate-700 dark:text-slate-400">
+                        <span className="font-semibold text-slate-900 dark:text-slate-200">Impact:</span> {p.impact}
+                      </div>
+                    )}
+                  </div>
+                )}
+
               </motion.div>
             ))}
           </motion.div>

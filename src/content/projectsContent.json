@@ -1,20 +1,35 @@
 {
-  "sectionTitle": "Client-Focused Projects",
+  "sectionTitle": "Products & Systems",
   "projects": [
     {
       "title": "Organization Management App",
       "desc": "Reduced manual reporting and improved coordination with real-time dashboards.",
-      "image": "/uploads/project1.png"
+      "image": "/uploads/project1.png",
+      "problem": "Manual reporting + coordination friction in a real organization.",
+      "system": "Realtime dashboards + structured data workflow.",
+      "solution": "Built an admin-ready management app with live updates and clean UI modules.",
+      "impact": "Reduced repetitive work and made updates visible instantly across the team.",
+      "stack": "React, Tailwind, Firebase"
     },
     {
       "title": "Portfolio System",
       "desc": "High-conversion UI with smooth animations and responsive layout.",
-      "image": "/uploads/project2.png"
+      "image": "/uploads/project2.png",
+      "problem": "Editing portfolio content required code changes + redeploys.",
+      "system": "Role-based /admin panel + content sync layer.",
+      "solution": "Implemented a CMS-style admin experience with instant content refresh.",
+      "impact": "Content updates ship without touching source code.",
+      "stack": "React, Firebase, Netlify"
     },
     {
       "title": "Cloud Hosting Platform",
       "desc": "Scalable backend architecture designed for growing user bases.",
-      "image": "/uploads/project3.png"
+      "image": "/uploads/project3.png",
+      "problem": "Need a modern, credible personal brand that feels like a product site.",
+      "system": "Design system + motion system + responsive sections.",
+      "solution": "Built a startup-grade portfolio with scalable components and polished UX.",
+      "impact": "Stronger trust signal for founders/teams and clearer project storytelling.",
+      "stack": "React, Tailwind, Framer Motion"
     }
   ]
 }
