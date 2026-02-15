@@ -5,19 +5,19 @@
     "linkedinUrl": "https://www.linkedin.com/in/aye-htet-h-511087101/"
   },
   "hero": {
-    "badge": "Product Builder",
+    "badge": "Junior Front-End Developer 1",
     "name": "Asaad",
-    "headlineAccent": "Product-Focused Frontend Engineer",
-    "intro": "I build modern web products with clean UI, fast performance, and scalable front-end architecture.",
-    "availability": "Currently building product-grade projects and systems. Open to collaborating with startups and teams that ship.",
+    "headlineAccent": "Front-End Developer",
+    "intro": "I build responsive, animated, and user-focused web interfaces using React, Tailwind CSS, and modern frontend tools.",
+    "availability": "Currently open to freelance projects (landing pages, portfolios, UI builds) and also seeking a junior frontend role or internship to grow under experienced developers.",
     "buttons": {
       "primary": {
-        "label": "Explore My Systems",
-        "href": "#projects"
+        "label": "Hire Me (Freelance)",
+        "href": "#services"
       },
       "secondary": {
-        "label": "Engineering Principles",
-        "href": "#principles"
+        "label": "View Projects",
+        "href": "#projects"
       },
       "resume": {
         "label": "Download Resume"
@@ -29,7 +29,7 @@
       "contactLabel": "Contact",
       "contactHref": "#contact"
     },
-    "stack": "React • Tailwind • Firebase • Framer Motion • Vite"
+    "photoUrl": "/uploads/profile.jpg"
   },
   "about": {
     "title": "About",
@@ -182,23 +182,6 @@
     ]
   },
   "metrics": {
-    "items": [
-      {
-        "label": "Product-grade builds",
-        "value": "3+"
-      },
-      {
-        "label": "Admin systems",
-        "value": "Role-based"
-      },
-      {
-        "label": "Realtime content",
-        "value": "Firebase"
-      },
-      {
-        "label": "Motion + UX polish",
-        "value": "Framer"
-      }
-    ]
+    "items": []
   }
 }

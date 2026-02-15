@@ -3,9 +3,10 @@ import { MotionSection } from "../../animations/MotionWrappers";
 import { fadeUp, staggerContainer } from "../../animations/variants";
 import { motion } from "framer-motion";
 import { siteContent } from "../../content";
+import logo from "../../assets/images/logo.png";
 
 const Hero = () => {
-  const { hero, links, metrics } = siteContent;
+  const { hero, links } = siteContent;
 
   const RESUME_URL = links.resumeUrl;
   const GITHUB_URL = links.githubUrl;
@@ -15,9 +16,41 @@ const Hero = () => {
     <MotionSection
       id="home"
       variants={staggerContainer}
-      className="min-h-[calc(100vh-4rem)] pt-24 flex items-center justify-center text-center px-6 scroll-mt-24"
+      className="relative min-h-[calc(100vh-4rem)] pt-24 flex items-center justify-center text-center px-6 scroll-mt-24"
     >
+
+      {/* Decorative background (subtle, non-breaking) */}
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <motion.div
+          aria-hidden="true"
+          className="absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-indigo-500/10 blur-3xl"
+          animate={{ scale: [1, 1.08, 1], opacity: [0.6, 0.85, 0.6] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          aria-hidden="true"
+          className="absolute -bottom-24 right-1/2 h-72 w-72 translate-x-1/2 rounded-full bg-fuchsia-500/10 blur-3xl"
+          animate={{ scale: [1, 1.06, 1], opacity: [0.5, 0.8, 0.5] }}
+          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
+        />
+      </div>
+
       <div className="max-w-3xl">
+
+        <motion.div
+          variants={fadeUp}
+          className="mx-auto mb-6 w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden ring-2 ring-indigo-600/20 dark:ring-indigo-400/20 shadow-lg bg-white/60 dark:bg-white/5 backdrop-blur"
+          animate={{ y: [0, -6, 0] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <img
+            src={hero.photoUrl || logo}
+            alt="Profile"
+            className="w-full h-full object-cover"
+            loading="eager"
+          />
+        </motion.div>
+
         <motion.p
           variants={fadeUp}
           className="text-sm tracking-wider uppercase text-indigo-700/80 dark:text-indigo-300/80"
@@ -43,35 +76,9 @@ const Hero = () => {
           {hero.intro}
         </motion.p>
 
-        {hero.stack && (
-          <motion.p
-            variants={fadeUp}
-            className="mt-4 text-sm sm:text-base text-slate-600 dark:text-slate-400"
-          >
-            {hero.stack}
-          </motion.p>
-        )}
-
         <motion.p variants={fadeUp} className="mt-3 text-slate-700 dark:text-slate-400">
           {hero.availability}
         </motion.p>
-
-        {metrics?.items?.length ? (
-          <motion.div
-            variants={fadeUp}
-            className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 text-left"
-          >
-            {metrics.items.map((m, idx) => (
-              <div
-                key={idx}
-                className="rounded-2xl border border-black/5 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur px-4 py-3"
-              >
-                <div className="text-lg font-semibold text-slate-900 dark:text-slate-100">{m.value}</div>
-                <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">{m.label}</div>
-              </div>
-            ))}
-          </motion.div>
-        ) : null}
 
         <motion.div
           variants={fadeUp}
