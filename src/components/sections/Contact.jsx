@@ -15,7 +15,7 @@ const Contact = () => {
     <MotionSection
       id="contact"
       variants={staggerContainer}
-      className="py-24 px-6 max-w-4xl mx-auto text-center scroll-mt-24"
+      className="py-24 px-6 max-w-4xl mx-auto text-center scroll-mt-24 section-spacing"
     >
       <motion.h2
         variants={fadeUp}

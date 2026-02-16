@@ -14,7 +14,7 @@ const Projects = () => {
       <MotionSection
         id="projects"
         variants={staggerContainer}
-        className="py-24 bg-transparent dark:bg-[#0f1621] scroll-mt-24"
+        className="py-24 bg-transparent dark:bg-[#0f1621] scroll-mt-24 section-spacing"
       >
         <div className="max-w-6xl mx-auto px-6">
           <motion.h2
