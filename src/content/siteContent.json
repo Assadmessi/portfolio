@@ -49,15 +49,18 @@
     "proofBlocks": [
       {
         "title": "UI + Motion",
-        "desc": "Smooth interactions, scroll reveals, and clean component systems."
+        "desc": "Smooth interactions, scroll reveals, and clean component systems.",
+        "iconKey": "ui"
       },
       {
         "title": "Admin-ready UX",
-        "desc": "Dashboards, role-based flows, and content editing patterns."
+        "desc": "Dashboards, role-based flows, and content editing patterns.",
+        "iconKey": "dashboard"
       },
       {
         "title": "Production mindset",
-        "desc": "Performance, maintainability, and deploy-friendly code."
+        "desc": "Performance, maintainability, and deploy-friendly code.",
+        "iconKey": "shield"
       }
     ]
   },

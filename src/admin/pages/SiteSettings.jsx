@@ -2,9 +2,20 @@ import { useEffect, useMemo, useState } from "react";
 import { siteContent, subscribeContent } from "../../content";
 import { saveSiteContent } from "../../firebase/contentSync";
 import { deepClone, deepEqual } from "../utils/deep";
-import { Button, Card, HelperText, Input, PageFade, Textarea } from "../components/UI";
+import { Button, Card, HelperText, Input, PageFade, Select, Textarea } from "../components/UI";
 import CloudinaryUpload from "../components/CloudinaryUpload";
 import { normalizeTags, safeStringArray, validateSite } from "../utils/validate";
+
+const PROOF_ICON_OPTIONS = [
+  { value: "ui", label: "UI / Motion" },
+  { value: "dashboard", label: "Dashboard" },
+  { value: "rocket", label: "Rocket" },
+  { value: "shield", label: "Shield" },
+  { value: "zap", label: "Zap" },
+  { value: "code", label: "Code" },
+  { value: "globe", label: "Globe" },
+  { value: "sparkles", label: "Sparkles" },
+];
 
 function SectionHeader({ title, desc, right }) {
   return (
@@ -319,6 +330,17 @@ export default function SiteSettings() {
                   <div key={idx} className="rounded-xl border border-black/5 dark:border-white/10 p-3 bg-white/60 dark:bg-white/5">
                     <div className="text-[11px] font-medium mb-1">Card {idx + 1} Title</div>
                     <Input value={card?.title ?? ""} onChange={(e) => setByPath(`about.proofBlocks.${idx}.title`, e.target.value)} />
+
+                    <div className="text-[11px] font-medium mt-3 mb-1">Icon</div>
+                    <Select
+                      value={card?.iconKey ?? "sparkles"}
+                      onChange={(e) => setByPath(`about.proofBlocks.${idx}.iconKey`, e.target.value)}
+                    >
+                      {PROOF_ICON_OPTIONS.map((opt) => (
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      ))}
+                    </Select>
+
                     <div className="text-[11px] font-medium mt-3 mb-1">Description</div>
                     <Textarea rows={3} value={card?.desc ?? ""} onChange={(e) => setByPath(`about.proofBlocks.${idx}.desc`, e.target.value)} />
                   </div>
@@ -330,7 +352,7 @@ export default function SiteSettings() {
                   variant="secondary"
                   onClick={() => {
                     const cur = Array.isArray(draft?.about?.proofBlocks) ? draft.about.proofBlocks : [];
-                    setByPath("about.proofBlocks", [...cur, { title: "New card", desc: "Describe the proof." }]);
+                    setByPath("about.proofBlocks", [...cur, { title: "New card", desc: "Describe the proof.", iconKey: "sparkles" }]);
                   }}
                 >
                   + Add card

@@ -4,41 +4,90 @@ import { motion } from "framer-motion";
 import { siteContent } from "../../content";
 
 const About = () => {
+  const ICONS = {
+    ui: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M4 7h16M4 12h16M4 17h10" />
+      </svg>
+    ),
+    dashboard: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M4 4h16v6H4zM4 14h7v6H4zM13 14h7v6h-7z" />
+      </svg>
+    ),
+    rocket: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M14 10l-3 3" />
+        <path d="M5 20l3-3" />
+        <path d="M9 15l-4 1 1-4 9-9a4 4 0 015 5z" />
+      </svg>
+    ),
+    shield: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M12 2l8 4v6c0 5-3.5 9.5-8 10-4.5-.5-8-5-8-10V6z" />
+        <path d="M9 12l2 2 4-5" />
+      </svg>
+    ),
+    zap: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M13 2L3 14h7l-1 8 10-12h-7z" />
+      </svg>
+    ),
+    code: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M16 18l6-6-6-6" />
+        <path d="M8 6l-6 6 6 6" />
+      </svg>
+    ),
+    globe: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M2 12h20" />
+        <path d="M12 2a15 15 0 010 20" />
+        <path d="M12 2a15 15 0 000 20" />
+      </svg>
+    ),
+    sparkles: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5z" />
+        <path d="M19 13l.8 2.4L22 16l-2.2.6L19 19l-.8-2.4L16 16l2.2-.6z" />
+      </svg>
+    ),
+  };
+
   const defaultProof = [
     {
       title: "UI + Motion",
       desc: "Smooth interactions, scroll reveals, and clean component systems.",
-      icon: (
-        <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M4 7h16M4 12h16M4 17h10" />
-        </svg>
-      ),
+      iconKey: "ui",
+      icon: ICONS.ui,
     },
     {
       title: "Admin-ready UX",
       desc: "Dashboards, role-based flows, and content editing patterns.",
-      icon: (
-        <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M4 4h16v6H4zM4 14h7v6H4zM13 14h7v6h-7z" />
-        </svg>
-      ),
+      iconKey: "dashboard",
+      icon: ICONS.dashboard,
     },
     {
       title: "Production mindset",
       desc: "Performance, maintainability, and deploy-friendly structure.",
-      icon: (
-        <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M12 2l3 7h7l-5.5 4.3L18.5 21 12 16.8 5.5 21l2-7.7L2 9h7z" />
-        </svg>
-      ),
+      iconKey: "shield",
+      icon: ICONS.shield,
     },
   ];
 
   // Allow CMS to override only text while keeping icons/structure stable.
-  const proofMerged = (siteContent.about?.proofBlocks?.length ? siteContent.about.proofBlocks : []).map((b, i) => ({
-    ...defaultProof[i % defaultProof.length],
-    ...b,
-  }));
+  const proofMerged = (siteContent.about?.proofBlocks?.length ? siteContent.about.proofBlocks : []).map((b, i) => {
+    const base = defaultProof[i % defaultProof.length];
+    const iconKey = b?.iconKey || base.iconKey;
+    return {
+      ...base,
+      title: b?.title ?? base.title,
+      desc: b?.desc ?? base.desc,
+      iconKey,
+      icon: ICONS[iconKey] || base.icon,
+    };
+  });
   const proofItems = proofMerged.length ? proofMerged : defaultProof;
 
   const { about } = siteContent;

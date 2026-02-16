@@ -90,6 +90,9 @@ export function validateSite(site) {
     blocks.forEach((b, i) => {
       if (b?.title && !isNonEmptyString(b.title)) errors[`about.proofBlocks.${i}.title`] = "Title must be text.";
       if (b?.desc && !isNonEmptyString(b.desc)) errors[`about.proofBlocks.${i}.desc`] = "Description must be text.";
+      if (b?.iconKey && !["ui","dashboard","rocket","shield","zap","code","globe","sparkles"].includes(b.iconKey)) {
+        errors[`about.proofBlocks.${i}.iconKey`] = "Icon must be a known option.";
+      }
     });
   }
 
