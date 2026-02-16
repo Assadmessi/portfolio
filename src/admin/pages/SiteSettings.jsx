@@ -16,6 +16,7 @@ const PROOF_ICON_OPTIONS = [
   { value: "globe", label: "Globe" },
   { value: "sparkles", label: "Sparkles" },
 
+];
 
 const PROOF_ICON_PREVIEWS = {
   ui: (
