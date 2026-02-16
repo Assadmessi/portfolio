@@ -43,7 +43,22 @@ function notify() {
 }
 
 export function setSiteContent(next) {
-  siteContent = deepMerge(site, next);
+  // Deep-merge so missing keys fall back to local JSON defaults.
+  // Special case: when Firestore contains an empty array for certain fields
+  // (often created before defaults existed), we prefer defaults so the admin
+  // shows the starter items instead of a blank state.
+  const merged = deepMerge(site, next);
+
+  // about.proofBlocks: keep defaults when Firestore has an empty array.
+  // This preserves the starter cards until the user edits/saves their own.
+  const incomingProof = next?.about?.proofBlocks;
+  const defaultProof = site?.about?.proofBlocks;
+  if (Array.isArray(incomingProof) && incomingProof.length === 0 && Array.isArray(defaultProof) && defaultProof.length) {
+    merged.about = merged.about ?? {};
+    merged.about.proofBlocks = defaultProof;
+  }
+
+  siteContent = merged;
   notify();
 }
 
