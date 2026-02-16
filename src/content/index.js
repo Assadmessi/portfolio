@@ -1,31 +1,6 @@
 import site from "./siteContent.json";
 import projects from "./projectsContent.json";
 
-// Deep-merge helper: Firestore content should override defaults, but missing
-// keys should fall back to local JSON so new fields appear automatically.
-function isObject(v) {
-  return v && typeof v === "object" && !Array.isArray(v);
-}
-
-function deepMerge(defaults, incoming) {
-  if (incoming === undefined || incoming === null) return defaults;
-  if (Array.isArray(defaults)) {
-    // Arrays: if Firestore provides an array, use it; otherwise keep defaults.
-    return Array.isArray(incoming) ? incoming : defaults;
-  }
-  if (isObject(defaults)) {
-    if (!isObject(incoming)) return defaults;
-    const out = { ...defaults };
-    for (const key of Object.keys(incoming)) {
-      if (key in defaults) out[key] = deepMerge(defaults[key], incoming[key]);
-      else out[key] = incoming[key];
-    }
-    return out;
-  }
-  // Primitives: prefer incoming when defined.
-  return incoming;
-}
-
 // Live content bindings (components can keep importing { siteContent, projectsContent } unchanged).
 export let siteContent = site;
 export let projectsContent = projects;
@@ -43,27 +18,12 @@ function notify() {
 }
 
 export function setSiteContent(next) {
-  // Deep-merge so missing keys fall back to local JSON defaults.
-  // Special case: when Firestore contains an empty array for certain fields
-  // (often created before defaults existed), we prefer defaults so the admin
-  // shows the starter items instead of a blank state.
-  const merged = deepMerge(site, next);
-
-  // about.proofBlocks: keep defaults when Firestore has an empty array.
-  // This preserves the starter cards until the user edits/saves their own.
-  const incomingProof = next?.about?.proofBlocks;
-  const defaultProof = site?.about?.proofBlocks;
-  if (Array.isArray(incomingProof) && incomingProof.length === 0 && Array.isArray(defaultProof) && defaultProof.length) {
-    merged.about = merged.about ?? {};
-    merged.about.proofBlocks = defaultProof;
-  }
-
-  siteContent = merged;
+  siteContent = next;
   notify();
 }
 
 export function setProjectsContent(next) {
-  projectsContent = deepMerge(projects, next);
+  projectsContent = next;
   notify();
 }
 

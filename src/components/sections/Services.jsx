@@ -23,7 +23,7 @@ const Services = () => {
     <MotionSection
       id="services"
       variants={staggerContainer}
-      className="py-24 px-6 max-w-6xl mx-auto scroll-mt-24 section-spacing"
+      className="py-24 px-6 max-w-6xl mx-auto scroll-mt-24"
     >
       <div className="text-center">
         <motion.h2

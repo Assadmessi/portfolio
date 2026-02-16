@@ -10,7 +10,7 @@ const HowIWork = () => {
     <MotionSection
       id="skills"
       variants={staggerContainer}
-      className="py-24 px-6 max-w-6xl mx-auto scroll-mt-24 section-spacing"
+      className="py-24 px-6 max-w-6xl mx-auto scroll-mt-24"
     >
       <motion.div variants={fadeUp} className="max-w-3xl">
         <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-100">

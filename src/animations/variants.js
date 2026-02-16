@@ -1,8 +1,8 @@
 export const fadeUp = {
-  hidden: {
+  hidden: (custom) => ({
     opacity: 0,
-    y: 14,
-  },
+    y: custom?.dir === "up" ? -14 : 14,
+  }),
   visible: {
     opacity: 1,
     y: 0,

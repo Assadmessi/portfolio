@@ -2,71 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { siteContent, subscribeContent } from "../../content";
 import { saveSiteContent } from "../../firebase/contentSync";
 import { deepClone, deepEqual } from "../utils/deep";
-import { Button, Card, HelperText, Input, PageFade, Select, Textarea } from "../components/UI";
-import CloudinaryUpload from "../components/CloudinaryUpload";
+import { Button, Card, HelperText, Input, PageFade, Textarea } from "../components/UI";
 import { normalizeTags, safeStringArray, validateSite } from "../utils/validate";
-
-const PROOF_ICON_OPTIONS = [
-  { value: "ui", label: "UI / Motion" },
-  { value: "dashboard", label: "Dashboard" },
-  { value: "rocket", label: "Rocket" },
-  { value: "shield", label: "Shield" },
-  { value: "zap", label: "Zap" },
-  { value: "code", label: "Code" },
-  { value: "globe", label: "Globe" },
-  { value: "sparkles", label: "Sparkles" },
-
-];
-
-const PROOF_ICON_PREVIEWS = {
-  ui: (
-    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M4 7h16M4 12h16M4 17h10" />
-    </svg>
-  ),
-  dashboard: (
-    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M4 4h16v6H4zM4 14h7v6H4zM13 14h7v6h-7z" />
-    </svg>
-  ),
-  rocket: (
-    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M14 10l-3 3" />
-      <path d="M5 20l3-3" />
-      <path d="M9 15l-4 1 1-4 9-9a4 4 0 015 5z" />
-    </svg>
-  ),
-  shield: (
-    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M12 2l8 4v6c0 5-3.5 9.5-8 10-4.5-.5-8-5-8-10V6z" />
-    </svg>
-  ),
-  zap: (
-    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M13 2L3 14h8l-1 8 10-12h-8z" />
-    </svg>
-  ),
-  code: (
-    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M16 18l6-6-6-6" />
-      <path d="M8 6l-6 6 6 6" />
-    </svg>
-  ),
-  globe: (
-    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M12 22a10 10 0 100-20 10 10 0 000 20z" />
-      <path d="M2 12h20" />
-      <path d="M12 2a15 15 0 010 20" />
-    </svg>
-  ),
-  sparkles: (
-    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5L12 2z" />
-      <path d="M19 14l.8 2.4L22 17l-2.2.6L19 20l-.8-2.4L16 17l2.2-.6L19 14z" />
-    </svg>
-  ),
-};
-
 
 function SectionHeader({ title, desc, right }) {
   return (
@@ -281,27 +218,6 @@ export default function SiteSettings() {
               <Textarea rows={3} value={draft?.hero?.intro ?? ""} onChange={(e) => setByPath("hero.intro", e.target.value)} />
               {errors["hero.intro"] ? <HelperText tone="error">{errors["hero.intro"]}</HelperText> : null}
             </div>
-
-            <div className="md:col-span-2">
-              <div className="text-xs font-medium mb-1">Profile photo URL</div>
-              <Input
-                value={draft?.hero?.photoUrl ?? ""}
-                onChange={(e) => setByPath("hero.photoUrl", e.target.value)}
-                placeholder="https://... or /uploads/profile.jpg"
-              />
-              {errors["hero.photoUrl"] ? <HelperText tone="error">{errors["hero.photoUrl"]}</HelperText> : null}
-
-              <div className="flex flex-wrap items-center gap-3 mt-3">
-                <div className="w-14 h-14 rounded-full overflow-hidden border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5">
-                  {draft?.hero?.photoUrl ? (
-                    <img src={draft.hero.photoUrl} alt="Profile" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full grid place-items-center text-[10px] text-slate-500 dark:text-slate-300">No photo</div>
-                  )}
-                </div>
-                <CloudinaryUpload folder="portfolio/site" onUploaded={(url) => setByPath("hero.photoUrl", url)} />
-              </div>
-            </div>
             <div>
               <SectionHeader title="Primary button" desc="Label + href (e.g. #services)" />
               <div className="mt-2 grid grid-cols-1 gap-3">
@@ -372,72 +288,6 @@ export default function SiteSettings() {
               </div>
             </div>
           </div>
-        
-            <div className="md:col-span-2 mt-2">
-              <div className="text-xs font-medium mb-2">Proof Cards (About)</div>
-              <HelperText>These cards appear under About. Edit titles and descriptions (icons stay consistent).</HelperText>
-              <div className="grid md:grid-cols-3 gap-3 mt-3">
-                {(Array.isArray(draft?.about?.proofBlocks) ? draft.about.proofBlocks : []).map((card, idx) => (
-                  <div key={idx} className="rounded-xl border border-black/5 dark:border-white/10 p-3 bg-white/60 dark:bg-white/5">
-                    <div className="text-[11px] font-medium mb-1">Card {idx + 1} Title</div>
-                    <Input value={card?.title ?? ""} onChange={(e) => setByPath(`about.proofBlocks.${idx}.title`, e.target.value)} />
-
-                    <div className="text-[11px] font-medium mt-3 mb-2">Icon</div>
-                    <div className="grid grid-cols-4 gap-2">
-                      {PROOF_ICON_OPTIONS.map((opt) => {
-                        const selected = (card?.iconKey ?? "sparkles") === opt.value;
-                        return (
-                          <button
-                            key={opt.value}
-                            type="button"
-                            onClick={() => setByPath(`about.proofBlocks.${idx}.iconKey`, opt.value)}
-                            className={`rounded-lg border px-2 py-2 text-left transition ${
-                              selected
-                                ? "border-slate-900/60 bg-slate-900/5 dark:border-white/40 dark:bg-white/10"
-                                : "border-black/10 bg-white/40 hover:bg-white/70 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
-                            }`}
-                            aria-pressed={selected}
-                            title={opt.label}
-                          >
-                            <div className="flex items-center gap-2">
-                              <span className="text-slate-700 dark:text-slate-200">
-                                {PROOF_ICON_PREVIEWS[opt.value] ?? PROOF_ICON_PREVIEWS.sparkles}
-                              </span>
-                              <span className="text-[11px] text-slate-700 dark:text-slate-200">{opt.label}</span>
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    <div className="text-[11px] font-medium mt-3 mb-1">Description</div>
-                    <Textarea rows={3} value={card?.desc ?? ""} onChange={(e) => setByPath(`about.proofBlocks.${idx}.desc`, e.target.value)} />
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex flex-wrap gap-2 mt-3">
-                <Button
-                  variant="secondary"
-                  onClick={() => {
-                    const cur = Array.isArray(draft?.about?.proofBlocks) ? draft.about.proofBlocks : [];
-                    setByPath("about.proofBlocks", [...cur, { title: "New card", desc: "Describe the proof.", iconKey: "sparkles" }]);
-                  }}
-                >
-                  + Add card
-                </Button>
-                <Button
-                  variant="secondary"
-                  onClick={() => {
-                    const cur = Array.isArray(draft?.about?.proofBlocks) ? draft.about.proofBlocks : [];
-                    setByPath("about.proofBlocks", cur.slice(0, Math.max(0, cur.length - 1)));
-                  }}
-                >
-                  − Remove last
-                </Button>
-              </div>
-            </div>
-
         </Card>
 
         <Card title="Contact" subtitle="Email + copy.">
