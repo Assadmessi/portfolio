@@ -19,13 +19,8 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 
 const HomeLayout = () => {
   return (
-    <div className="min-h-screen bg-[#F6F7FB] text-slate-900 dark:bg-[#0B0F19] dark:text-slate-100">
-      <div className="pointer-events-none fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.08),transparent_55%)] dark:hidden" />
-        <div className="absolute inset-0 hidden dark:block bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.12),transparent_55%)]" />
-      </div>
-
-      <ScrollProgress />
+    <div className="sv-page text-slate-900 dark:text-slate-100">
+<ScrollProgress />
       <Navbar />
 
       <Hero />
