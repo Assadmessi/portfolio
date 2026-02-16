@@ -1,35 +1,32 @@
 {
-  "sectionTitle": "Products & Systems",
+  "sectionTitle": "Starter Builds (Coming Soon)",
   "projects": [
     {
-      "title": "Organization Management App",
-      "desc": "Reduced manual reporting and improved coordination with real-time dashboards.",
+      "title": "Landing Page Template",
+      "desc": "A clean, responsive startup landing with premium motion + sections.",
       "image": "/uploads/project1.png",
-      "problem": "Manual reporting + coordination friction in a real organization.",
-      "system": "Realtime dashboards + structured data workflow.",
-      "solution": "Built an admin-ready management app with live updates and clean UI modules.",
-      "impact": "Reduced repetitive work and made updates visible instantly across the team.",
-      "stack": "React, Tailwind, Firebase"
+      "problem": "You need a production-ready UI foundation without reinventing layouts every time.",
+      "system": "Reusable components + consistent motion + responsive grid + theme support.",
+      "solution": "A clean, responsive startup landing with premium motion + sections.",
+      "impact": "Faster shipping, consistent UX, and a strong base to plug real data/features into."
     },
     {
-      "title": "Portfolio System",
-      "desc": "High-conversion UI with smooth animations and responsive layout.",
+      "title": "Admin Dashboard UI",
+      "desc": "Modern dashboard layout patterns (cards, tables, states) ready to wire to data.",
       "image": "/uploads/project2.png",
-      "problem": "Editing portfolio content required code changes + redeploys.",
-      "system": "Role-based /admin panel + content sync layer.",
-      "solution": "Implemented a CMS-style admin experience with instant content refresh.",
-      "impact": "Content updates ship without touching source code.",
-      "stack": "React, Firebase, Netlify"
+      "problem": "You need a production-ready UI foundation without reinventing layouts every time.",
+      "system": "Reusable components + consistent motion + responsive grid + theme support.",
+      "solution": "Modern dashboard layout patterns (cards, tables, states) ready to wire to data.",
+      "impact": "Faster shipping, consistent UX, and a strong base to plug real data/features into."
     },
     {
-      "title": "Cloud Hosting Platform",
-      "desc": "Scalable backend architecture designed for growing user bases.",
+      "title": "Auth + Profile Flow",
+      "desc": "Login/signup screens with polished forms, states, and UX details.",
       "image": "/uploads/project3.png",
-      "problem": "Need a modern, credible personal brand that feels like a product site.",
-      "system": "Design system + motion system + responsive sections.",
-      "solution": "Built a startup-grade portfolio with scalable components and polished UX.",
-      "impact": "Stronger trust signal for founders/teams and clearer project storytelling.",
-      "stack": "React, Tailwind, Framer Motion"
+      "problem": "You need a production-ready UI foundation without reinventing layouts every time.",
+      "system": "Reusable components + consistent motion + responsive grid + theme support.",
+      "solution": "Login/signup screens with polished forms, states, and UX details.",
+      "impact": "Faster shipping, consistent UX, and a strong base to plug real data/features into."
     }
   ]
 }

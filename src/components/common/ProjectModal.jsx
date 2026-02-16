@@ -74,43 +74,6 @@ const ProjectModal = ({ project, onClose }) => {
 
             <p className="text-slate-700 dark:text-slate-400 mb-6">{project.desc}</p>
 
-            <div className="space-y-4 mb-6">
-              {project.problem && (
-                <div>
-                  <div className="text-sm font-semibold text-slate-900 dark:text-slate-200">Problem</div>
-                  <div className="mt-1 text-sm text-slate-700 dark:text-slate-400">{project.problem}</div>
-                </div>
-              )}
-
-              {project.system && (
-                <div>
-                  <div className="text-sm font-semibold text-slate-900 dark:text-slate-200">System</div>
-                  <div className="mt-1 text-sm text-slate-700 dark:text-slate-400">{project.system}</div>
-                </div>
-              )}
-
-              {project.solution && (
-                <div>
-                  <div className="text-sm font-semibold text-slate-900 dark:text-slate-200">Solution</div>
-                  <div className="mt-1 text-sm text-slate-700 dark:text-slate-400">{project.solution}</div>
-                </div>
-              )}
-
-              {project.impact && (
-                <div>
-                  <div className="text-sm font-semibold text-slate-900 dark:text-slate-200">Impact</div>
-                  <div className="mt-1 text-sm text-slate-700 dark:text-slate-400">{project.impact}</div>
-                </div>
-              )}
-
-              {project.stack && (
-                <div>
-                  <div className="text-sm font-semibold text-slate-900 dark:text-slate-200">Stack</div>
-                  <div className="mt-1 text-sm text-slate-700 dark:text-slate-400">{project.stack}</div>
-                </div>
-              )}
-            </div>
-
             <div className="flex justify-end">
               <button
                 onClick={onClose}

@@ -4,6 +4,35 @@ import { motion } from "framer-motion";
 import { siteContent } from "../../content";
 
 const About = () => {
+  const defaultProof = [
+    {
+      title: "UI + Motion",
+      desc: "Smooth interactions, scroll reveals, and clean component systems.",
+      icon: (
+        <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M4 7h16M4 12h16M4 17h10" />
+        </svg>
+      ),
+    },
+    {
+      title: "Admin-ready UX",
+      desc: "Dashboards, role-based flows, and content editing patterns.",
+      icon: (
+        <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M4 4h16v6H4zM4 14h7v6H4zM13 14h7v6h-7z" />
+        </svg>
+      ),
+    },
+    {
+      title: "Production mindset",
+      desc: "Performance, maintainability, and deploy-friendly structure.",
+      icon: (
+        <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M12 2l3 7h7l-5.5 4.3L18.5 21 12 16.8 5.5 21l2-7.7L2 9h7z" />
+        </svg>
+      ),
+    },
+  ];
   const { about } = siteContent;
 
   return (
@@ -37,7 +66,31 @@ const About = () => {
               {tag}
             </span>
           ))}
-        </div>
+        
+        {/* Proof blocks (photos can be added later, layout stays the same) */}
+        <motion.div variants={fadeUp} className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {(about.proofBlocks?.length ? about.proofBlocks : defaultProof).map((item) => (
+            <motion.div
+              key={item.title}
+              whileHover={{ y: -6 }}
+              className="rounded-2xl border border-black/5 dark:border-white/10
+                         bg-white/70 dark:bg-white/5 backdrop-blur p-5"
+            >
+              <div className="flex items-center gap-3">
+                <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl
+                                 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300
+                                 ring-1 ring-indigo-500/15">
+                  {item.icon}
+                </span>
+                <p className="font-semibold text-slate-900 dark:text-slate-100">{item.title}</p>
+              </div>
+              <p className="mt-3 text-sm text-slate-700 dark:text-slate-400 leading-relaxed">
+                {item.desc}
+              </p>
+            </motion.div>
+          ))}
+        </motion.div>
+</div>
       </motion.div>
     </MotionSection>
   );

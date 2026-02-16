@@ -3,7 +3,7 @@ import { MotionSection } from "../../animations/MotionWrappers";
 import { fadeUp, staggerContainer } from "../../animations/variants";
 import { motion } from "framer-motion";
 import { siteContent } from "../../content";
-import logo from "../../assets/images/logo.png";
+import logoMark from "../../assets/images/logo.png";
 
 const Hero = () => {
   const { hero, links } = siteContent;
@@ -16,39 +16,31 @@ const Hero = () => {
     <MotionSection
       id="home"
       variants={staggerContainer}
-      className="relative min-h-[calc(100vh-4rem)] pt-24 flex items-center justify-center text-center px-6 scroll-mt-24"
+      className="min-h-[calc(100vh-4rem)] pt-24 flex items-center justify-center text-center px-6 scroll-mt-24"
     >
-
-      {/* Decorative background (subtle, non-breaking) */}
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <motion.div
-          aria-hidden="true"
-          className="absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-indigo-500/10 blur-3xl"
-          animate={{ scale: [1, 1.08, 1], opacity: [0.6, 0.85, 0.6] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          aria-hidden="true"
-          className="absolute -bottom-24 right-1/2 h-72 w-72 translate-x-1/2 rounded-full bg-fuchsia-500/10 blur-3xl"
-          animate={{ scale: [1, 1.06, 1], opacity: [0.5, 0.8, 0.5] }}
-          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
-        />
-      </div>
-
       <div className="max-w-3xl">
-
+        {/* Hero photo (keeps original layout; adds premium visual proof) */}
         <motion.div
           variants={fadeUp}
-          className="mx-auto mb-6 w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden ring-2 ring-indigo-600/20 dark:ring-indigo-400/20 shadow-lg bg-white/60 dark:bg-white/5 backdrop-blur"
-          animate={{ y: [0, -6, 0] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          className="mx-auto mb-6 w-28 h-28 sm:w-32 sm:h-32 rounded-full p-[2px]
+                     bg-gradient-to-b from-indigo-500/60 via-indigo-500/20 to-transparent
+                     shadow-[0_0_0_1px_rgba(99,102,241,0.18)]"
         >
-          <img
-            src={hero.photoUrl || logo}
-            alt="Profile"
-            className="w-full h-full object-cover"
-            loading="eager"
-          />
+          <motion.div
+            className="relative w-full h-full rounded-full overflow-hidden bg-white/70 dark:bg-white/5 backdrop-blur"
+            animate={{ y: [0, -6, 0] }}
+            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+          >
+            {/* Soft glow */}
+            <div className="pointer-events-none absolute -inset-6 bg-indigo-500/10 blur-2xl" />
+            <img
+              src={hero.photoUrl || siteContent.photoUrl || logoMark}
+              alt={`${hero.name} profile`}
+              className="relative z-10 w-full h-full object-cover"
+              loading="eager"
+              decoding="async"
+            />
+          </motion.div>
         </motion.div>
 
         <motion.p
