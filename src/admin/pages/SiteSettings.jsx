@@ -67,7 +67,6 @@ const PROOF_ICON_PREVIEWS = {
   ),
 };
 
-];
 
 function SectionHeader({ title, desc, right }) {
   return (
