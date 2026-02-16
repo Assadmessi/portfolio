@@ -15,6 +15,57 @@ const PROOF_ICON_OPTIONS = [
   { value: "code", label: "Code" },
   { value: "globe", label: "Globe" },
   { value: "sparkles", label: "Sparkles" },
+
+
+const PROOF_ICON_PREVIEWS = {
+  ui: (
+    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M4 7h16M4 12h16M4 17h10" />
+    </svg>
+  ),
+  dashboard: (
+    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M4 4h16v6H4zM4 14h7v6H4zM13 14h7v6h-7z" />
+    </svg>
+  ),
+  rocket: (
+    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M14 10l-3 3" />
+      <path d="M5 20l3-3" />
+      <path d="M9 15l-4 1 1-4 9-9a4 4 0 015 5z" />
+    </svg>
+  ),
+  shield: (
+    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M12 2l8 4v6c0 5-3.5 9.5-8 10-4.5-.5-8-5-8-10V6z" />
+    </svg>
+  ),
+  zap: (
+    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M13 2L3 14h8l-1 8 10-12h-8z" />
+    </svg>
+  ),
+  code: (
+    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M16 18l6-6-6-6" />
+      <path d="M8 6l-6 6 6 6" />
+    </svg>
+  ),
+  globe: (
+    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M12 22a10 10 0 100-20 10 10 0 000 20z" />
+      <path d="M2 12h20" />
+      <path d="M12 2a15 15 0 010 20" />
+    </svg>
+  ),
+  sparkles: (
+    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5L12 2z" />
+      <path d="M19 14l.8 2.4L22 17l-2.2.6L19 20l-.8-2.4L16 17l2.2-.6L19 14z" />
+    </svg>
+  ),
+};
+
 ];
 
 function SectionHeader({ title, desc, right }) {
@@ -331,15 +382,33 @@ export default function SiteSettings() {
                     <div className="text-[11px] font-medium mb-1">Card {idx + 1} Title</div>
                     <Input value={card?.title ?? ""} onChange={(e) => setByPath(`about.proofBlocks.${idx}.title`, e.target.value)} />
 
-                    <div className="text-[11px] font-medium mt-3 mb-1">Icon</div>
-                    <Select
-                      value={card?.iconKey ?? "sparkles"}
-                      onChange={(e) => setByPath(`about.proofBlocks.${idx}.iconKey`, e.target.value)}
-                    >
-                      {PROOF_ICON_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>{opt.label}</option>
-                      ))}
-                    </Select>
+                    <div className="text-[11px] font-medium mt-3 mb-2">Icon</div>
+                    <div className="grid grid-cols-4 gap-2">
+                      {PROOF_ICON_OPTIONS.map((opt) => {
+                        const selected = (card?.iconKey ?? "sparkles") === opt.value;
+                        return (
+                          <button
+                            key={opt.value}
+                            type="button"
+                            onClick={() => setByPath(`about.proofBlocks.${idx}.iconKey`, opt.value)}
+                            className={`rounded-lg border px-2 py-2 text-left transition ${
+                              selected
+                                ? "border-slate-900/60 bg-slate-900/5 dark:border-white/40 dark:bg-white/10"
+                                : "border-black/10 bg-white/40 hover:bg-white/70 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
+                            }`}
+                            aria-pressed={selected}
+                            title={opt.label}
+                          >
+                            <div className="flex items-center gap-2">
+                              <span className="text-slate-700 dark:text-slate-200">
+                                {PROOF_ICON_PREVIEWS[opt.value] ?? PROOF_ICON_PREVIEWS.sparkles}
+                              </span>
+                              <span className="text-[11px] text-slate-700 dark:text-slate-200">{opt.label}</span>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
 
                     <div className="text-[11px] font-medium mt-3 mb-1">Description</div>
                     <Textarea rows={3} value={card?.desc ?? ""} onChange={(e) => setByPath(`about.proofBlocks.${idx}.desc`, e.target.value)} />
