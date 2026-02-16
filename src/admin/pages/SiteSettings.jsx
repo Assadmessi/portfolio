@@ -219,6 +219,27 @@ export default function SiteSettings() {
               <Textarea rows={3} value={draft?.hero?.intro ?? ""} onChange={(e) => setByPath("hero.intro", e.target.value)} />
               {errors["hero.intro"] ? <HelperText tone="error">{errors["hero.intro"]}</HelperText> : null}
             </div>
+
+            <div className="md:col-span-2">
+              <div className="text-xs font-medium mb-1">Profile photo URL</div>
+              <Input
+                value={draft?.hero?.photoUrl ?? ""}
+                onChange={(e) => setByPath("hero.photoUrl", e.target.value)}
+                placeholder="https://... or /uploads/profile.jpg"
+              />
+              {errors["hero.photoUrl"] ? <HelperText tone="error">{errors["hero.photoUrl"]}</HelperText> : null}
+
+              <div className="flex flex-wrap items-center gap-3 mt-3">
+                <div className="w-14 h-14 rounded-full overflow-hidden border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                  {draft?.hero?.photoUrl ? (
+                    <img src={draft.hero.photoUrl} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full grid place-items-center text-[10px] text-slate-500 dark:text-slate-300">No photo</div>
+                  )}
+                </div>
+                <CloudinaryUpload folder="portfolio/site" onUploaded={(url) => setByPath("hero.photoUrl", url)} />
+              </div>
+            </div>
             <div>
               <SectionHeader title="Primary button" desc="Label + href (e.g. #services)" />
               <div className="mt-2 grid grid-cols-1 gap-3">
