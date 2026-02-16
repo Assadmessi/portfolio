@@ -62,6 +62,7 @@ export function validateSite(site) {
   const hero = site?.hero ?? {};
   if (!isNonEmptyString(hero.name)) errors["hero.name"] = "Name is required.";
   if (!isNonEmptyString(hero.headlineAccent)) errors["hero.headlineAccent"] = "Headline accent is required.";
+  if (hero.photoUrl && !isUrlOrHashOrRelative(hero.photoUrl)) errors["hero.photoUrl"] = "Photo URL must be https:// or /relative-path.";
   if (!isNonEmptyString(hero.intro)) errors["hero.intro"] = "Intro is required.";
   if (hero.buttons?.primary?.href && !isUrlOrHashOrRelative(hero.buttons.primary.href)) errors["hero.buttons.primary.href"] = "Primary button href invalid.";
   if (hero.buttons?.secondary?.href && !isUrlOrHashOrRelative(hero.buttons.secondary.href)) errors["hero.buttons.secondary.href"] = "Secondary button href invalid.";
@@ -83,6 +84,15 @@ export function validateSite(site) {
   const howIWork = site?.howIWork ?? {};
   if (!isNonEmptyString(howIWork.title)) errors["howIWork.title"] = "How I Work title is required.";
 
+  // about.proofBlocks (optional)
+  const blocks = about?.proofBlocks;
+  if (Array.isArray(blocks)) {
+    blocks.forEach((b, i) => {
+      if (b?.title && !isNonEmptyString(b.title)) errors[`about.proofBlocks.${i}.title`] = "Title must be text.";
+      if (b?.desc && !isNonEmptyString(b.desc)) errors[`about.proofBlocks.${i}.desc`] = "Description must be text.";
+    });
+  }
+
   return errors;
 }
 
@@ -100,5 +110,14 @@ export function validateProjects(projectsDoc) {
       if (p?.links?.repo && !isUrlOrHashOrRelative(p.links.repo)) errors[`projects.${idx}.links.repo`] = "Repo link invalid.";
     });
   }
+  // about.proofBlocks (optional)
+  const blocks = about?.proofBlocks;
+  if (Array.isArray(blocks)) {
+    blocks.forEach((b, i) => {
+      if (b?.title && !isNonEmptyString(b.title)) errors[`about.proofBlocks.${i}.title`] = "Title must be text.";
+      if (b?.desc && !isNonEmptyString(b.desc)) errors[`about.proofBlocks.${i}.desc`] = "Description must be text.";
+    });
+  }
+
   return errors;
 }

@@ -3,6 +3,7 @@ import { siteContent, subscribeContent } from "../../content";
 import { saveSiteContent } from "../../firebase/contentSync";
 import { deepClone, deepEqual } from "../utils/deep";
 import { Button, Card, HelperText, Input, PageFade, Textarea } from "../components/UI";
+import CloudinaryUpload from "../components/CloudinaryUpload";
 import { normalizeTags, safeStringArray, validateSite } from "../utils/validate";
 
 function SectionHeader({ title, desc, right }) {
@@ -288,6 +289,43 @@ export default function SiteSettings() {
               </div>
             </div>
           </div>
+        
+            <div className="md:col-span-2 mt-2">
+              <div className="text-xs font-medium mb-2">Proof Cards (About)</div>
+              <HelperText>These cards appear under About. Edit titles and descriptions (icons stay consistent).</HelperText>
+              <div className="grid md:grid-cols-3 gap-3 mt-3">
+                {(Array.isArray(draft?.about?.proofBlocks) ? draft.about.proofBlocks : []).map((card, idx) => (
+                  <div key={idx} className="rounded-xl border border-black/5 dark:border-white/10 p-3 bg-white/60 dark:bg-white/5">
+                    <div className="text-[11px] font-medium mb-1">Card {idx + 1} Title</div>
+                    <Input value={card?.title ?? ""} onChange={(e) => setByPath(`about.proofBlocks.${idx}.title`, e.target.value)} />
+                    <div className="text-[11px] font-medium mt-3 mb-1">Description</div>
+                    <Textarea rows={3} value={card?.desc ?? ""} onChange={(e) => setByPath(`about.proofBlocks.${idx}.desc`, e.target.value)} />
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-wrap gap-2 mt-3">
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    const cur = Array.isArray(draft?.about?.proofBlocks) ? draft.about.proofBlocks : [];
+                    setByPath("about.proofBlocks", [...cur, { title: "New card", desc: "Describe the proof." }]);
+                  }}
+                >
+                  + Add card
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    const cur = Array.isArray(draft?.about?.proofBlocks) ? draft.about.proofBlocks : [];
+                    setByPath("about.proofBlocks", cur.slice(0, Math.max(0, cur.length - 1)));
+                  }}
+                >
+                  − Remove last
+                </Button>
+              </div>
+            </div>
+
         </Card>
 
         <Card title="Contact" subtitle="Email + copy.">

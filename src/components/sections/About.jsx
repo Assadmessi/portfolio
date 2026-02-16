@@ -33,6 +33,14 @@ const About = () => {
       ),
     },
   ];
+
+  // Allow CMS to override only text while keeping icons/structure stable.
+  const proofMerged = (siteContent.about?.proofBlocks?.length ? siteContent.about.proofBlocks : []).map((b, i) => ({
+    ...defaultProof[i % defaultProof.length],
+    ...b,
+  }));
+  const proofItems = proofMerged.length ? proofMerged : defaultProof;
+
   const { about } = siteContent;
 
   return (
@@ -69,7 +77,7 @@ const About = () => {
         
         {/* Proof blocks (photos can be added later, layout stays the same) */}
         <motion.div variants={fadeUp} className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {(about.proofBlocks?.length ? about.proofBlocks : defaultProof).map((item) => (
+          {proofItems.map((item) => (
             <motion.div
               key={item.title}
               whileHover={{ y: -6 }}
