@@ -1,6 +1,7 @@
 import { MotionSection } from "../../animations/MotionWrappers";
 import { fadeUp, staggerContainer } from "../../animations/variants";
 import { motion } from "framer-motion";
+import MaskText from "../../animations/MaskText";
 import { siteContent } from "../../content";
 
 const About = () => {
@@ -42,7 +43,9 @@ const About = () => {
       className="py-24 px-6 max-w-6xl mx-auto"
     >
       <motion.div variants={fadeUp} className="max-w-3xl">
-        <h2 className="text-3xl sm:text-4xl font-bold">{about.title}</h2>
+        <h2 className="text-3xl sm:text-4xl font-bold">
+          <MaskText as="span" text={about.title} />
+        </h2>
 
         {about.paragraphs.map((p, idx) => (
           <p
@@ -61,7 +64,7 @@ const About = () => {
           {about.tags.map((tag) => (
             <span
               key={tag}
-              className="sv-pill"
+              className="px-3 py-1 rounded-full text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-gray-200"
             >
               {tag}
             </span>
@@ -193,7 +196,8 @@ const About = () => {
                 <motion.div
                   key={item.title}
                   whileHover={{ y: -6 }}
-                  className="sv-card sv-card-inner"
+                  className="rounded-2xl border border-black/5 dark:border-white/10
+                         bg-white/70 dark:bg-white/5 backdrop-blur p-5"
                 >
                   <div className="flex items-center gap-3">
                     <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl

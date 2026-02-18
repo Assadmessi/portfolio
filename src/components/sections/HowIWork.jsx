@@ -1,6 +1,7 @@
 import { MotionSection } from "../../animations/MotionWrappers";
 import { fadeUp, staggerContainer } from "../../animations/variants";
 import { motion } from "framer-motion";
+import MaskText from "../../animations/MaskText";
 import { siteContent } from "../../content";
 
 const HowIWork = () => {
@@ -14,7 +15,7 @@ const HowIWork = () => {
     >
       <motion.div variants={fadeUp} className="max-w-3xl">
         <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-100">
-          {howIWork.title}
+          <MaskText as="span" text={howIWork.title} />
         </h2>
 
         <p className="mt-4 text-slate-700 dark:text-slate-400 leading-relaxed">

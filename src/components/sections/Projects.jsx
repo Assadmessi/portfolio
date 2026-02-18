@@ -1,6 +1,7 @@
 import { useState, memo } from "react";
 import ProjectModal from "../common/ProjectModal";
 import { motion } from "framer-motion";
+import MaskText from "../../animations/MaskText";
 import { MotionSection } from "../../animations/MotionWrappers";
 import { fadeUp, staggerContainer } from "../../animations/variants";
 import { projectsContent } from "../../content";
@@ -21,7 +22,7 @@ const Projects = () => {
             variants={fadeUp}
             className="text-3xl sm:text-4xl font-bold mb-12 text-slate-900 dark:text-slate-100"
           >
-            {sectionTitle}
+            <MaskText as="span" text={sectionTitle} />
           </motion.h2>
 
           <motion.div variants={fadeUp} className="grid gap-6 md:grid-cols-3">
@@ -40,7 +41,7 @@ const Projects = () => {
                 <img
                   src={p.image}
                   alt={p.title}
-                  className="w-full h-36 sm:h-40 md:h-44 object-cover rounded-xl mb-4 bg-black/5 dark:bg-white/5"
+                  className="w-full h-32 sm:h-36 md:h-40 object-contain sm:object-cover rounded-xl mb-4 bg-black/5 dark:bg-white/5"
                   loading="lazy"
                   decoding="async"
                 />

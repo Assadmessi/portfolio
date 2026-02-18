@@ -2,6 +2,7 @@ import { memo } from "react";
 import { MotionSection } from "../../animations/MotionWrappers";
 import { fadeUp, staggerContainer } from "../../animations/variants";
 import { motion } from "framer-motion";
+import MaskText from "../../animations/MaskText";
 import { siteContent } from "../../content";
 
 const Services = () => {
@@ -30,7 +31,7 @@ const Services = () => {
           variants={fadeUp}
           className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-100"
         >
-          {services.sectionTitle}
+          <MaskText as="span" text={services.sectionTitle} />
         </motion.h2>
 
         <motion.p
@@ -70,7 +71,8 @@ const Services = () => {
         {serviceCards.map((s) => (
           <div
             key={s.title}
-            className="sv-card sv-card-inner"
+            className="rounded-2xl border border-black/5 dark:border-white/10
+                       bg-white/70 dark:bg-white/5 p-6 backdrop-blur"
           >
             <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{s.title}</h3>
             <ul className="mt-4 space-y-2 text-sm text-slate-700 dark:text-slate-400">
@@ -94,7 +96,8 @@ const Services = () => {
           {process.map((step) => (
             <div
               key={step.title}
-              className="relative sv-card sv-card-inner"
+              className="relative rounded-2xl border border-black/5 dark:border-white/10
+                         bg-white/70 dark:bg-white/5 p-6 backdrop-blur"
             >
               <span className="absolute left-0 top-6 bottom-6 w-[3px] rounded-full bg-indigo-500/70 dark:bg-indigo-400/70" />
               <p className="pl-4 font-medium text-slate-900 dark:text-slate-100">{step.title}</p>

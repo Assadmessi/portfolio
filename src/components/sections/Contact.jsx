@@ -1,6 +1,7 @@
 import { MotionSection } from "../../animations/MotionWrappers";
 import { fadeUp, staggerContainer } from "../../animations/variants";
 import { motion } from "framer-motion";
+import MaskText from "../../animations/MaskText";
 import { siteContent } from "../../content";
 
 const Contact = () => {
@@ -21,7 +22,7 @@ const Contact = () => {
         variants={fadeUp}
         className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-100"
       >
-        {contact.title}
+        <MaskText as="span" text={contact.title} />
       </motion.h2>
 
       <motion.p
