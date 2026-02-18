@@ -2,7 +2,6 @@ import { MotionSection } from "../../animations/MotionWrappers";
 import { fadeUp, staggerContainer } from "../../animations/variants";
 import { motion } from "framer-motion";
 import { siteContent } from "../../content";
-import { ProofStrip } from "../common/Visuals";
 
 const About = () => {
   const defaultProof = [
@@ -77,6 +76,14 @@ const About = () => {
           {(about.proofBlocks?.length ? about.proofBlocks : defaultProof).map(
             (item) => {
               const iconEl =
+                (item.iconImage ? (
+                  <img
+                    src={item.iconImage}
+                    alt=""
+                    className="w-5 h-5 object-contain"
+                    loading="lazy"
+                  />
+                ) : null) ||
                 item.icon ||
                 {
                   ui: (
@@ -214,10 +221,6 @@ const About = () => {
               );
             }
           )}
-        <motion.div variants={fadeUp} className="mt-10">
-          <ProofStrip />
-        </motion.div>
-
         </motion.div>
 </motion.div>
    

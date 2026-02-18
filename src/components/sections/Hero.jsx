@@ -4,7 +4,6 @@ import { fadeUp, staggerContainer } from "../../animations/variants";
 import { motion } from "framer-motion";
 import { siteContent } from "../../content";
 import logoMark from "../../assets/images/logo.png";
-import { ProofStrip } from "../common/Visuals";
 
 const Hero = () => {
   const { hero, links } = siteContent;
@@ -99,11 +98,6 @@ const Hero = () => {
             {hero.buttons.resume.label}
           </a>
         </motion.div>
-
-        <motion.div variants={fadeUp} className="mt-8">
-          <ProofStrip className="max-w-3xl mx-auto" />
-        </motion.div>
-
 
         <motion.div
           variants={fadeUp}

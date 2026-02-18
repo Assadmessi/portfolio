@@ -3,7 +3,6 @@ import { MotionSection } from "../../animations/MotionWrappers";
 import { fadeUp, staggerContainer } from "../../animations/variants";
 import { motion } from "framer-motion";
 import { siteContent } from "../../content";
-import { ServiceGlyph } from "../common/Visuals";
 
 const Services = () => {
   const { services } = siteContent;
@@ -74,10 +73,7 @@ const Services = () => {
             className="rounded-2xl border border-black/5 dark:border-white/10
                        bg-white/70 dark:bg-white/5 p-6 backdrop-blur"
           >
-            <div className="flex items-center gap-3">
-              <ServiceGlyph index={serviceCards.findIndex((x) => x.title === s.title)} />
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{s.title}</h3>
-            </div>
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{s.title}</h3>
             <ul className="mt-4 space-y-2 text-sm text-slate-700 dark:text-slate-400">
               {s.points.map((p) => (
                 <li key={p} className="flex gap-2">
