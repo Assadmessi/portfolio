@@ -7,9 +7,6 @@ html {
   scroll-padding-top: 110px; /* adjust if your navbar height differs */
 }
 
-body { @apply bg-white text-slate-900 dark:bg-[#0b0f14] dark:text-white; }
-
-
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -19,3 +16,209 @@ body { @apply bg-white text-slate-900 dark:bg-[#0b0f14] dark:text-white; }
   }
 }
 
+/* --- Nubien-inspired "premium dark" theme (unique palette) --- */
+:root{
+  --nb-bg: 246 247 251;          /* light */
+  --nb-fg: 15 23 42;
+  --nb-card: 255 255 255;
+  --nb-border: 15 23 42 / 0.10;
+  --nb-a: 99 102 241;            /* indigo */
+  --nb-b: 34 211 238;            /* cyan */
+}
+
+.dark{
+  --nb-bg: 7 10 18;              /* deep navy */
+  --nb-fg: 226 232 240;
+  --nb-card: 10 14 26;           /* panel */
+  --nb-border: 255 255 255 / 0.10;
+  --nb-a: 129 140 248;           /* indigo */
+  --nb-b: 34 211 238;            /* cyan */
+}
+
+/* Back-compat vars (older classes may still reference these) */
+:root{
+  --sv-bg: var(--nb-bg);
+  --sv-fg: var(--nb-fg);
+  --sv-card: var(--nb-card);
+  --sv-border: var(--nb-border);
+  --sv-accent: var(--nb-a);
+}
+
+html { text-rendering: geometricPrecision; }
+
+body{
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  background: rgb(var(--nb-bg));
+  color: rgb(var(--nb-fg));
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: relative;
+}
+
+/* Global background: subtle glow + grid + noise */
+body::before{
+  content:"";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    radial-gradient(900px 560px at 14% 4%, rgba(var(--nb-b) / 0.18), transparent 55%),
+    radial-gradient(820px 520px at 86% 10%, rgba(var(--nb-a) / 0.20), transparent 60%),
+    radial-gradient(900px 700px at 50% 110%, rgba(var(--nb-a) / 0.10), transparent 60%),
+    linear-gradient(to bottom, rgba(255,255,255,0.00), rgba(255,255,255,0.00));
+}
+
+body::after{
+  content:"";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.50;
+  background:
+    /* grid */
+    linear-gradient(to right, rgba(15,23,42,0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15,23,42,0.04) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse at top, black 40%, transparent 72%);
+}
+
+.dark body::after{
+  opacity: 0.30;
+  background:
+    linear-gradient(to right, rgba(255,255,255,0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 72px 72px;
+}
+
+/* SV primitives */
+@layer components {
+  .sv-page { @apply min-h-screen font-sans antialiased; }
+
+  /* Nubien-inspired primitives (different names to avoid "copy" look) */
+  .nb-page { @apply min-h-screen font-sans antialiased; }
+  .nb-container { @apply mx-auto w-full max-w-7xl px-6; }
+
+  .nb-card {
+    @apply rounded-3xl border backdrop-blur;
+    background: linear-gradient(
+      180deg,
+      rgba(var(--nb-card) / 0.72),
+      rgba(var(--nb-card) / 0.52)
+    );
+    border-color: rgba(var(--nb-border));
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.06) inset,
+      0 18px 50px rgba(0,0,0,0.18);
+  }
+  .dark .nb-card{
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.05) inset,
+      0 28px 80px rgba(0,0,0,0.55);
+  }
+
+  .nb-pill{
+    @apply inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium border;
+    border-color: rgba(var(--nb-border));
+    background: rgba(var(--nb-card) / 0.50);
+  }
+
+  .nb-muted { color: rgba(var(--nb-fg) / 0.72); }
+  .dark .nb-muted { color: rgba(var(--nb-fg) / 0.68); }
+
+  .nb-btn{
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition;
+    border: 1px solid rgba(var(--nb-border));
+    background: rgba(var(--nb-card) / 0.62);
+  }
+  .nb-btn:hover{ transform: translateY(-1px); }
+
+  .nb-btn-primary{
+    @apply nb-btn;
+    border-color: rgba(var(--nb-a) / 0.35);
+    background: linear-gradient(
+      135deg,
+      rgba(var(--nb-a) / 0.22),
+      rgba(var(--nb-b) / 0.16)
+    );
+  }
+
+  .nb-title{
+    @apply text-3xl md:text-5xl font-semibold tracking-tight;
+  }
+  .nb-subtitle{
+    @apply mt-4 text-base md:text-lg leading-relaxed;
+    color: rgba(var(--nb-fg) / 0.78);
+  }
+
+  .nb-ring{
+    position: relative;
+  }
+  .nb-ring::before{
+    content:"";
+    position:absolute;
+    inset:-1px;
+    border-radius: 28px;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(var(--nb-b) / 0.55), rgba(var(--nb-a) / 0.55), rgba(255,255,255,0.0));
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events:none;
+    opacity: 0.65;
+  }
+
+  .sv-card {
+    @apply rounded-2xl border backdrop-blur;
+    background: rgba(var(--sv-card) / 0.72);
+    border-color: rgba(var(--sv-border));
+    box-shadow: theme(boxShadow.sv);
+  }
+  .dark .sv-card {
+    background: rgba(var(--sv-card) / 0.62);
+    box-shadow: theme(boxShadow.sv-dark);
+  }
+
+  .sv-muted { color: rgba(var(--sv-fg) / 0.72); }
+  .dark .sv-muted { color: rgba(var(--sv-fg) / 0.70); }
+
+  .sv-pill{
+    @apply inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium border;
+    border-color: rgba(var(--sv-border));
+    background: rgba(var(--sv-card) / 0.60);
+  }
+
+  .sv-btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition;
+    border: 1px solid rgba(var(--sv-border));
+    background: rgba(var(--sv-card) / 0.72);
+  }
+  .sv-btn:hover { transform: translateY(-1px); }
+
+  .sv-btn-primary{
+    @apply sv-btn;
+    border-color: rgba(var(--sv-accent) / 0.35);
+    background: linear-gradient(180deg, rgba(var(--sv-accent) / 0.18), rgba(var(--sv-accent) / 0.10));
+  }
+
+  .sv-kbd{
+    font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    @apply text-xs px-2 py-1 rounded-lg border;
+    border-color: rgba(var(--sv-border));
+    background: rgba(var(--sv-card) / 0.55);
+  }
+}
+
+/* Hide scrollbar but keep scroll functionality */
+html, body {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE & Edge */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}

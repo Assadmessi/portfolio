@@ -2,7 +2,6 @@ import { memo } from "react";
 import { MotionSection } from "../../animations/MotionWrappers";
 import { fadeUp, staggerContainer } from "../../animations/variants";
 import { motion } from "framer-motion";
-import MaskText from "../../animations/MaskText";
 import { siteContent } from "../../content";
 
 const Services = () => {
@@ -24,14 +23,15 @@ const Services = () => {
     <MotionSection
       id="services"
       variants={staggerContainer}
-      className="py-24 px-6 max-w-6xl mx-auto scroll-mt-24"
+      className="py-24 scroll-mt-24"
     >
+      <div className="nb-container">
       <div className="text-center">
         <motion.h2
           variants={fadeUp}
           className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-100"
         >
-          <MaskText as="span" text={services.sectionTitle} />
+          {services.sectionTitle}
         </motion.h2>
 
         <motion.p
@@ -44,10 +44,7 @@ const Services = () => {
         <motion.div variants={fadeUp} className="mt-8 flex flex-col items-center gap-3">
           <a
             href={mailtoHref}
-            className="inline-flex items-center justify-center px-6 py-3 rounded-xl font-medium transition
-                       bg-indigo-600/90 text-white hover:bg-indigo-600
-                       ring-1 ring-indigo-600/20
-                       dark:bg-indigo-500 dark:hover:bg-indigo-400 dark:ring-indigo-400/20"
+            className="nb-btn-primary"
           >
             {services.ctaLabel}
           </a>
@@ -71,8 +68,7 @@ const Services = () => {
         {serviceCards.map((s) => (
           <div
             key={s.title}
-            className="rounded-2xl border border-black/5 dark:border-white/10
-                       bg-white/70 dark:bg-white/5 p-6 backdrop-blur"
+            className="nb-card p-6"
           >
             <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{s.title}</h3>
             <ul className="mt-4 space-y-2 text-sm text-slate-700 dark:text-slate-400">
@@ -96,10 +92,9 @@ const Services = () => {
           {process.map((step) => (
             <div
               key={step.title}
-              className="relative rounded-2xl border border-black/5 dark:border-white/10
-                         bg-white/70 dark:bg-white/5 p-6 backdrop-blur"
+              className="relative nb-card p-6"
             >
-              <span className="absolute left-0 top-6 bottom-6 w-[3px] rounded-full bg-indigo-500/70 dark:bg-indigo-400/70" />
+              <span className="absolute left-0 top-6 bottom-6 w-[3px] rounded-full bg-gradient-to-b from-cyan-300/70 via-indigo-400/70 to-transparent" />
               <p className="pl-4 font-medium text-slate-900 dark:text-slate-100">{step.title}</p>
               <p className="pl-4 mt-2 text-sm text-slate-800 dark:text-slate-400">{step.desc}</p>
             </div>
@@ -111,6 +106,7 @@ const Services = () => {
           {services.tipLine.replace(/^Tip:\s*/i, "")}
         </div>
       </motion.div>
+      </div>
     </MotionSection>
   );
 };

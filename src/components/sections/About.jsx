@@ -1,7 +1,6 @@
 import { MotionSection } from "../../animations/MotionWrappers";
 import { fadeUp, staggerContainer } from "../../animations/variants";
 import { motion } from "framer-motion";
-import MaskText from "../../animations/MaskText";
 import { siteContent } from "../../content";
 
 const About = () => {
@@ -40,12 +39,11 @@ const About = () => {
     <MotionSection
       id="about"
       variants={staggerContainer}
-      className="py-24 px-6 max-w-6xl mx-auto"
+      className="py-24"
     >
+      <div className="nb-container">
       <motion.div variants={fadeUp} className="max-w-3xl">
-        <h2 className="text-3xl sm:text-4xl font-bold">
-          <MaskText as="span" text={about.title} />
-        </h2>
+        <h2 className="text-3xl sm:text-4xl font-bold">{about.title}</h2>
 
         {about.paragraphs.map((p, idx) => (
           <p
@@ -196,13 +194,11 @@ const About = () => {
                 <motion.div
                   key={item.title}
                   whileHover={{ y: -6 }}
-                  className="rounded-2xl border border-black/5 dark:border-white/10
-                         bg-white/70 dark:bg-white/5 backdrop-blur p-5"
+                  className="nb-card p-5"
                 >
                   <div className="flex items-center gap-3">
                     <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl
-                                 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300
-                                 ring-1 ring-indigo-500/15">
+                                 bg-white/10 text-indigo-200 ring-1 ring-white/10">
                       {iconEl}
                     </span>
                     <p className="font-semibold text-slate-900 dark:text-slate-100">
@@ -218,6 +214,7 @@ const About = () => {
           )}
         </motion.div>
 </motion.div>
+      </div>
    
     </MotionSection>
   );

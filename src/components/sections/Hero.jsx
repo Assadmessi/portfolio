@@ -2,7 +2,6 @@ import { memo } from "react";
 import { MotionSection } from "../../animations/MotionWrappers";
 import { fadeUp, staggerContainer } from "../../animations/variants";
 import { motion } from "framer-motion";
-import MaskText from "../../animations/MaskText";
 import { siteContent } from "../../content";
 import logoMark from "../../assets/images/logo.png";
 
@@ -17,105 +16,99 @@ const Hero = () => {
     <MotionSection
       id="home"
       variants={staggerContainer}
-      className="min-h-[calc(100vh-4rem)] pt-24 flex items-center justify-center text-center px-6 scroll-mt-24"
+      className="min-h-[calc(100vh-4rem)] pt-24 flex items-center scroll-mt-24"
     >
-      <div className="max-w-3xl">
-        {/* Hero photo (keeps original layout; adds premium visual proof) */}
-        <motion.div
-          variants={fadeUp}
-          className="mx-auto mb-6 w-28 h-28 sm:w-32 sm:h-32 rounded-full p-[2px]
-                     bg-gradient-to-b from-indigo-500/60 via-indigo-500/20 to-transparent
-                     shadow-[0_0_0_1px_rgba(99,102,241,0.18)]"
-        >
-          <motion.div
-            className="relative w-full h-full rounded-full overflow-hidden bg-white/70 dark:bg-white/5 backdrop-blur"
-            animate={{ y: [0, -6, 0] }}
-            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-          >
-            {/* Soft glow */}
-            <div className="pointer-events-none absolute -inset-6 bg-indigo-500/10 blur-2xl" />
-            <img
-              src={hero.photoUrl || siteContent.photoUrl || logoMark}
-              alt={`${hero.name} profile`}
-              className="relative z-10 w-full h-full object-cover"
-              loading="eager"
-              decoding="async"
-            />
-          </motion.div>
-        </motion.div>
+      <div className="nb-container">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          <div className="lg:col-span-7">
+            <motion.div variants={fadeUp} className="nb-pill w-fit">
+              {hero.badge}
+            </motion.div>
 
-        <motion.p
-          variants={fadeUp}
-          className="text-sm tracking-wider uppercase text-indigo-700/80 dark:text-indigo-300/80"
-        >
-          {hero.badge}
-        </motion.p>
+            <motion.h1 variants={fadeUp} className="nb-title mt-5">
+              {hero.name}
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-cyan-300 to-indigo-300">
+                {hero.headlineAccent}
+              </span>
+            </motion.h1>
 
-        <motion.h1
-          variants={fadeUp}
-          className="mt-3 text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight text-slate-900 dark:text-slate-100"
-        >
-          <MaskText as="span" text={hero.name} />
-          <br />
-          <span className="text-indigo-600/90 dark:text-indigo-400">
-            <MaskText as="span" text={hero.headlineAccent} delay={0.08} />
-          </span>
-        </motion.h1>
+            <motion.p variants={fadeUp} className="nb-subtitle max-w-2xl">
+              {hero.intro}
+            </motion.p>
+            <motion.p variants={fadeUp} className="mt-3 nb-muted">
+              {hero.availability}
+            </motion.p>
 
-        <motion.p
-          variants={fadeUp}
-          className="mt-6 text-slate-700 dark:text-slate-400 text-base sm:text-lg leading-relaxed"
-        >
-          {hero.intro}
-        </motion.p>
+            <motion.div variants={fadeUp} className="mt-10 flex flex-col sm:flex-row gap-4">
+              <a href={hero.buttons.primary.href} className="nb-btn-primary">
+                {hero.buttons.primary.label}
+              </a>
+              <a href={hero.buttons.secondary.href} className="nb-btn">
+                {hero.buttons.secondary.label}
+              </a>
+              <a href={RESUME_URL} download className="nb-btn">
+                {hero.buttons.resume.label}
+              </a>
+            </motion.div>
 
-        <motion.p variants={fadeUp} className="mt-3 text-slate-700 dark:text-slate-400">
-          {hero.availability}
-        </motion.p>
+            <motion.div variants={fadeUp} className="mt-8 flex items-center gap-4 text-sm nb-muted">
+              <a className="hover:text-white transition" href={GITHUB_URL} target="_blank" rel="noreferrer">
+                {hero.footerLinks.githubLabel}
+              </a>
+              <span className="text-black/30 dark:text-white/20">•</span>
+              <a className="hover:text-white transition" href={LINKEDIN_URL} target="_blank" rel="noreferrer">
+                {hero.footerLinks.linkedinLabel}
+              </a>
+              <span className="text-black/30 dark:text-white/20">•</span>
+              <a className="hover:text-white transition" href={hero.footerLinks.contactHref}>
+                {hero.footerLinks.contactLabel}
+              </a>
+            </motion.div>
+          </div>
 
-        <motion.div
-          variants={fadeUp}
-          className="mt-10 flex flex-col sm:flex-row justify-center gap-4"
-        >
-          <a
-            href={hero.buttons.primary.href}
-            className="px-6 py-3 rounded-xl font-medium transition bg-indigo-600/90 text-white hover:bg-indigo-600 ring-1 ring-indigo-600/20 dark:bg-indigo-500 dark:hover:bg-indigo-400 dark:ring-indigo-400/20"
-          >
-            {hero.buttons.primary.label}
-          </a>
+          <div className="lg:col-span-5">
+            <motion.div variants={fadeUp} className="nb-card nb-ring p-8 md:p-10">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-2xl p-[2px] bg-gradient-to-br from-cyan-300/60 via-indigo-400/30 to-transparent">
+                  <div className="w-full h-full rounded-2xl overflow-hidden bg-white/70 dark:bg-white/5 backdrop-blur">
+                    <img
+                      src={hero.photoUrl || siteContent.photoUrl || logoMark}
+                      alt={`${hero.name} profile`}
+                      className="w-full h-full object-cover"
+                      loading="eager"
+                      decoding="async"
+                    />
+                  </div>
+                </div>
 
-          <a
-            href={hero.buttons.secondary.href}
-            className="px-6 py-3 rounded-xl transition border border-black/10 text-slate-800 hover:bg-black/5 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10"
-          >
-            {hero.buttons.secondary.label}
-          </a>
+                <div>
+                  <div className="text-sm font-semibold">{hero.name}</div>
+                  <div className="text-xs nb-muted">{hero.headlineAccent}</div>
+                </div>
+              </div>
 
-          <a
-            href={RESUME_URL}
-            download
-            className="px-6 py-3 rounded-xl transition border border-black/10 text-slate-800 hover:bg-black/5 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10"
-          >
-            {hero.buttons.resume.label}
-          </a>
-        </motion.div>
+              <div className="mt-7 grid grid-cols-3 gap-3">
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <div className="text-lg font-semibold">UI</div>
+                  <div className="text-xs nb-muted mt-1">Systems</div>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <div className="text-lg font-semibold">Motion</div>
+                  <div className="text-xs nb-muted mt-1">Details</div>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <div className="text-lg font-semibold">Build</div>
+                  <div className="text-xs nb-muted mt-1">Ship</div>
+                </div>
+              </div>
 
-        <motion.div
-          variants={fadeUp}
-          className="mt-8 flex items-center justify-center gap-4 text-sm text-slate-600 dark:text-slate-400"
-        >
-          <a className="hover:text-slate-900 dark:hover:text-white transition" href={GITHUB_URL} target="_blank" rel="noreferrer">
-            {hero.footerLinks.githubLabel}
-          </a>
-          <span className="text-black/30 dark:text-white/20">•</span>
-          <a className="hover:text-slate-900 dark:hover:text-white transition" href={LINKEDIN_URL} target="_blank" rel="noreferrer">
-            {hero.footerLinks.linkedinLabel}
-          </a>
-          <span className="text-black/30 dark:text-white/20">•</span>
-          <a className="hover:text-slate-900 dark:hover:text-white transition" href={hero.footerLinks.contactHref}>
-            {hero.footerLinks.contactLabel}
-          </a>
-        </motion.div>
+              <div className="mt-7 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm nb-muted">
+                Fast iteration, clean components, and scalable content updates.
+              </div>
+            </motion.div>
+          </div>
+        </div>
       </div>
     </MotionSection>
   );

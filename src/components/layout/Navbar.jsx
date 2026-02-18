@@ -6,6 +6,7 @@ const navItems = [
   { label: "Home", id: "home" },
   { label: "About", id: "about" },
   { label: "Services", id: "services" },
+  { label: "Toolbox", id: "toolbox" },
   { label: "How I Work", id: "skills" },
   { label: "Projects", id: "projects" },
   { label: "Contact", id: "contact" },
@@ -93,9 +94,8 @@ const Navbar = () => {
       transition={{ duration: 0.6, ease: "easeOut" }}
       className={[
         "fixed top-0 w-full z-50 backdrop-blur transition-all",
-        // Softer light-mode glass + premium dark-mode glass
-        "bg-[#F6F7FB]/75 dark:bg-black/35",
-        // Subtle borders
+        // Nubien-ish glass (unique palette)
+        "bg-white/60 dark:bg-black/30",
         "border-b border-black/5 dark:border-white/10",
         // Slight separation on scroll
         scrolled ? "py-2 shadow-sm shadow-black/5 dark:shadow-none" : "py-4",

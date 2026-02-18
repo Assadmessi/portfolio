@@ -1,7 +1,6 @@
 import { useState, memo } from "react";
 import ProjectModal from "../common/ProjectModal";
 import { motion } from "framer-motion";
-import MaskText from "../../animations/MaskText";
 import { MotionSection } from "../../animations/MotionWrappers";
 import { fadeUp, staggerContainer } from "../../animations/variants";
 import { projectsContent } from "../../content";
@@ -15,14 +14,14 @@ const Projects = () => {
       <MotionSection
         id="projects"
         variants={staggerContainer}
-        className="py-24 bg-transparent dark:bg-[#0f1621] scroll-mt-24"
+        className="py-24 scroll-mt-24"
       >
-        <div className="max-w-6xl mx-auto px-6">
+        <div className="nb-container">
           <motion.h2
             variants={fadeUp}
             className="text-3xl sm:text-4xl font-bold mb-12 text-slate-900 dark:text-slate-100"
           >
-            <MaskText as="span" text={sectionTitle} />
+            {sectionTitle}
           </motion.h2>
 
           <motion.div variants={fadeUp} className="grid gap-6 md:grid-cols-3">
@@ -32,16 +31,13 @@ const Projects = () => {
                 variants={fadeUp}
                 whileHover={{ y: -8 }}
                 onClick={() => setActiveProject(p)}
-                className="cursor-pointer p-4 sm:p-6 rounded-2xl transition
-                           border border-black/5 dark:border-white/10
-                           bg-white/70 dark:bg-white/5 backdrop-blur
-                           hover:bg-black/5 dark:hover:bg-white/10"
+                className="cursor-pointer nb-card nb-ring p-4 sm:p-6 transition"
               >
                 {/* Mobile-friendly: show whole screenshot (contain). Desktop: cover for polish. */}
                 <img
                   src={p.image}
                   alt={p.title}
-                  className="w-full h-32 sm:h-36 md:h-40 object-contain sm:object-cover rounded-xl mb-4 bg-black/5 dark:bg-white/5"
+                  className="w-full h-32 sm:h-36 md:h-40 object-contain sm:object-cover rounded-2xl mb-4 bg-black/5 dark:bg-white/5"
                   loading="lazy"
                   decoding="async"
                 />

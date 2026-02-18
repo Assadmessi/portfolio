@@ -1,37 +1,43 @@
-// Framer-inspired motion: blur + spring + stagger.
-// Keep the same export names so the rest of your site doesn't need refactors.
+// Nubien-inspired motion language (blur + lift + spring)
+// Keeps your content intact while making motion feel "Framer premium".
 
-const spring = {
-  type: "spring",
-  stiffness: 140,
-  damping: 22,
-  mass: 0.9,
+export const sectionEnter = {
+  hidden: {
+    opacity: 0,
+    y: 28,
+    filter: "blur(10px)",
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: {
+      type: "spring",
+      stiffness: 120,
+      damping: 20,
+      mass: 0.8,
+    },
+  },
 };
 
-export const fadeUp = {
-  hidden: (custom) => ({
+export const cardEnter = {
+  hidden: {
     opacity: 0,
-    y: custom?.dir === "up" ? -18 : 22,
-    scale: 0.985,
+    y: 18,
+    scale: 0.98,
     filter: "blur(10px)",
-  }),
+  },
   visible: {
     opacity: 1,
     y: 0,
     scale: 1,
     filter: "blur(0px)",
     transition: {
-      ...spring,
+      type: "spring",
+      stiffness: 140,
+      damping: 22,
+      mass: 0.7,
     },
-  },
-};
-
-export const fadeIn = {
-  hidden: { opacity: 0, filter: "blur(8px)" },
-  visible: {
-    opacity: 1,
-    filter: "blur(0px)",
-    transition: { ...spring },
   },
 };
 
@@ -39,25 +45,22 @@ export const staggerContainer = {
   hidden: {},
   visible: {
     transition: {
-      staggerChildren: 0.10,
+      staggerChildren: 0.12,
       delayChildren: 0.06,
     },
   },
 };
 
-// Extra variants you can opt into (doesn't change existing usage)
-export const pop = {
-  hidden: { opacity: 0, scale: 0.92, filter: "blur(10px)" },
-  visible: { opacity: 1, scale: 1, filter: "blur(0px)", transition: { ...spring } },
-};
-
-export const slideMask = {
-  hidden: { opacity: 0, y: 20, clipPath: "inset(0 0 100% 0 round 16px)", filter: "blur(10px)" },
+export const maskReveal = {
+  hidden: { opacity: 0, y: 8, filter: "blur(8px)" },
   visible: {
     opacity: 1,
     y: 0,
-    clipPath: "inset(0 0 0% 0 round 16px)",
     filter: "blur(0px)",
-    transition: { ...spring },
+    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
   },
 };
+
+// Backwards-compatible aliases (so existing imports don't break)
+export const fadeUp = cardEnter;
+export const fadeIn = sectionEnter;
