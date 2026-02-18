@@ -2,6 +2,7 @@ import { MotionSection } from "../../animations/MotionWrappers";
 import { fadeUp, staggerContainer } from "../../animations/variants";
 import { motion } from "framer-motion";
 import { siteContent } from "../../content";
+import { ProofStrip } from "../common/Visuals";
 
 const About = () => {
   const defaultProof = [
@@ -213,6 +214,10 @@ const About = () => {
               );
             }
           )}
+        <motion.div variants={fadeUp} className="mt-10">
+          <ProofStrip />
+        </motion.div>
+
         </motion.div>
 </motion.div>
    

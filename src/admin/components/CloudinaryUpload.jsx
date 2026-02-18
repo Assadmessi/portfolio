@@ -9,7 +9,7 @@ import { Button, HelperText } from "./UI";
  *
  * If env vars are missing, this component will show guidance and disable the upload button.
  */
-export default function CloudinaryUpload({ onUploaded, folder = "portfolio/projects" }) {
+export default function CloudinaryUpload({ onUploaded, folder = "portfolio/projects", allowedFormats, resourceType = "image" }) {
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
@@ -52,13 +52,13 @@ export default function CloudinaryUpload({ onUploaded, folder = "portfolio/proje
       multiple: false,
       maxFiles: 1,
       folder,
-      clientAllowedFormats: ["png", "jpg", "jpeg", "webp", "gif"],
+      clientAllowedFormats: Array.isArray(allowedFormats) && allowedFormats.length ? allowedFormats : ["png", "jpg", "jpeg", "webp", "gif"],
       showAdvancedOptions: false,
       cropping: false,
       defaultSource: "local",
       secure: true,
     };
-  }, [enabled, cloudName, uploadPreset, folder]);
+  }, [enabled, cloudName, uploadPreset, folder, allowedFormats, resourceType]);
 
   function open() {
     setMsg("");

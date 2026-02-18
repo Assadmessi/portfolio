@@ -2,6 +2,7 @@ import { MotionSection } from "../../animations/MotionWrappers";
 import { fadeUp, staggerContainer } from "../../animations/variants";
 import { motion } from "framer-motion";
 import { siteContent } from "../../content";
+import { WorkflowGraphic } from "../common/Visuals";
 
 const HowIWork = () => {
   const { howIWork } = siteContent;
@@ -12,6 +13,7 @@ const HowIWork = () => {
       variants={staggerContainer}
       className="py-24 px-6 max-w-6xl mx-auto scroll-mt-24"
     >
+      <div className="grid md:grid-cols-2 gap-10 items-start">
       <motion.div variants={fadeUp} className="max-w-3xl">
         <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-100">
           {howIWork.title}
@@ -34,6 +36,11 @@ const HowIWork = () => {
           ))}
         </ul>
       </motion.div>
+
+      <motion.div variants={fadeUp} className="h-[260px] sm:h-[300px] md:h-[320px] text-indigo-700 dark:text-indigo-300">
+        <WorkflowGraphic className="h-full" />
+      </motion.div>
+    </div>
     </MotionSection>
   );
 };

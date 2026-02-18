@@ -3,6 +3,7 @@ import { siteContent, subscribeContent } from "../../content";
 import { saveSiteContent } from "../../firebase/contentSync";
 import { deepClone, deepEqual } from "../utils/deep";
 import { Button, Card, HelperText, Input, PageFade, Textarea } from "../components/UI";
+import CloudinaryUpload from "../components/CloudinaryUpload";
 import { normalizeTags, safeStringArray, validateSite } from "../utils/validate";
 
 function SectionHeader({ title, desc, right }) {
@@ -190,6 +191,21 @@ export default function SiteSettings() {
               />
               {errors["links.resumeUrl"] ? <HelperText tone="error">{errors["links.resumeUrl"]}</HelperText> : null}
             </div>
+            <div className="md:col-span-3">
+              <div className="mt-3 flex flex-col gap-2">
+                <div className="text-xs font-medium">Upload resume (PDF)</div>
+                <CloudinaryUpload
+                  folder="portfolio/resume"
+                  resourceType="auto"
+                  allowedFormats={["pdf"]}
+                  onUploaded={(url) => setByPath("links.resumeUrl", url)}
+                />
+                <HelperText>
+                  This uploads your PDF to Cloudinary and automatically fills <span className="font-mono">links.resumeUrl</span>.
+                </HelperText>
+              </div>
+            </div>
+
           </div>
         </Card>
 
@@ -315,6 +331,55 @@ export default function SiteSettings() {
             </div>
           </div>
         </Card>
+
+        <Card title="About Proof Cards" subtitle="These are the proof blocks shown in the About section.">
+          <div className="space-y-4">
+            {(draft?.about?.proofBlocks ?? []).map((pb, idx) => (
+              <div key={idx} className="rounded-2xl border border-black/10 dark:border-white/10 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 space-y-3">
+                    <div>
+                      <div className="text-xs font-medium mb-1">Title</div>
+                      <Input
+                        value={pb?.title ?? ""}
+                        onChange={(e) => setArrayItem("about.proofBlocks", idx, { ...(pb ?? {}), title: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <div className="text-xs font-medium mb-1">Description</div>
+                      <Textarea
+                        rows={2}
+                        value={pb?.desc ?? ""}
+                        onChange={(e) => setArrayItem("about.proofBlocks", idx, { ...(pb ?? {}), desc: e.target.value })}
+                      />
+                    </div>
+                    <HelperText>
+                      Note: icons are handled in code to keep the admin simple. Titles and descriptions are editable here.
+                    </HelperText>
+                  </div>
+
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => removeFromArray("about.proofBlocks", idx)}
+                    title="Remove"
+                  >
+                    ✕
+                  </Button>
+                </div>
+              </div>
+            ))}
+
+            <Button
+              variant="outline"
+              type="button"
+              onClick={() => addToArray("about.proofBlocks", { title: "New Proof", desc: "Short description…" })}
+            >
+              + Add proof card
+            </Button>
+          </div>
+        </Card>
+
 
         <Card title="Services & How I Work" subtitle="Basic editing. (Advanced cards editing is available below)">
           <div className="grid md:grid-cols-2 gap-4">
