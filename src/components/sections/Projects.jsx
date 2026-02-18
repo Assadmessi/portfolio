@@ -40,7 +40,7 @@ const Projects = () => {
                 <img
                   src={p.image}
                   alt={p.title}
-                  className="w-full h-32 sm:h-36 md:h-40 object-contain sm:object-cover rounded-xl mb-4 bg-black/5 dark:bg-white/5"
+                  className="w-full h-36 sm:h-40 md:h-44 object-cover rounded-xl mb-4 bg-black/5 dark:bg-white/5"
                   loading="lazy"
                   decoding="async"
                 />

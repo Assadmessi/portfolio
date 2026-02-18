@@ -61,7 +61,7 @@ const About = () => {
           {about.tags.map((tag) => (
             <span
               key={tag}
-              className="px-3 py-1 rounded-full text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-gray-200"
+              className="sv-pill"
             >
               {tag}
             </span>
@@ -76,14 +76,6 @@ const About = () => {
           {(about.proofBlocks?.length ? about.proofBlocks : defaultProof).map(
             (item) => {
               const iconEl =
-                (item.iconImage ? (
-                  <img
-                    src={item.iconImage}
-                    alt=""
-                    className="w-5 h-5 object-contain"
-                    loading="lazy"
-                  />
-                ) : null) ||
                 item.icon ||
                 {
                   ui: (
@@ -201,8 +193,7 @@ const About = () => {
                 <motion.div
                   key={item.title}
                   whileHover={{ y: -6 }}
-                  className="rounded-2xl border border-black/5 dark:border-white/10
-                         bg-white/70 dark:bg-white/5 backdrop-blur p-5"
+                  className="sv-card sv-card-inner"
                 >
                   <div className="flex items-center gap-3">
                     <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl

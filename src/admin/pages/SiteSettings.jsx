@@ -3,7 +3,6 @@ import { siteContent, subscribeContent } from "../../content";
 import { saveSiteContent } from "../../firebase/contentSync";
 import { deepClone, deepEqual } from "../utils/deep";
 import { Button, Card, HelperText, Input, PageFade, Textarea } from "../components/UI";
-import StorageUpload from "../components/StorageUpload";
 import { normalizeTags, safeStringArray, validateSite } from "../utils/validate";
 
 function SectionHeader({ title, desc, right }) {
@@ -17,65 +16,6 @@ function SectionHeader({ title, desc, right }) {
     </div>
   );
 }
-
-const PROOF_ICON_PRESETS = {
-  ui: (
-    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M4 7h16M4 12h16M4 17h10" />
-    </svg>
-  ),
-  dashboard: (
-    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M4 4h16v6H4zM4 14h7v6H4zM13 14h7v6h-7z" />
-    </svg>
-  ),
-  rocket: (
-    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M14 4c4 1 6 4 6 8-4 0-7 2-8 6-2 0-5-2-6-6 4 0 7-2 8-8z" />
-      <path d="M9 15l-2 2" />
-    </svg>
-  ),
-  shield: (
-    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M12 2l8 4v6c0 5-3.5 9.5-8 10-4.5-.5-8-5-8-10V6l8-4z" />
-    </svg>
-  ),
-  zap: (
-    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M13 2L3 14h8l-1 8 11-14h-8z" />
-    </svg>
-  ),
-  sparkles: (
-    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5L12 2z" />
-      <path d="M4 16l.75 2.25L7 19l-2.25.75L4 22l-.75-2.25L1 19l2.25-.75L4 16z" />
-    </svg>
-  ),
-  code: (
-    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M8 9l-3 3 3 3" />
-      <path d="M16 9l3 3-3 3" />
-      <path d="M14 4l-4 16" />
-    </svg>
-  ),
-  globe: (
-    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-      <circle cx="12" cy="12" r="10" />
-      <path d="M2 12h20" />
-      <path d="M12 2c3 3 3 17 0 20" />
-    </svg>
-  ),
-  wand: (
-    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M15 4l5 5" />
-      <path d="M4 15l5 5" />
-      <path d="M7 12l10-10" />
-      <path d="M3 21l6-6" />
-    </svg>
-  ),
-};
-
-
 
 export default function SiteSettings() {
   const [draft, setDraft] = useState(() => deepClone(siteContent));
@@ -171,17 +111,6 @@ export default function SiteSettings() {
     nextDraft.about = nextDraft.about ?? {};
     nextDraft.about.tags = normalizeTags(nextDraft.about.tags);
     nextDraft.about.paragraphs = safeStringArray(nextDraft.about.paragraphs);
-
-    // proof cards
-    nextDraft.about.proofBlocks = Array.isArray(nextDraft.about.proofBlocks) ? nextDraft.about.proofBlocks : [];
-    nextDraft.about.proofBlocks = nextDraft.about.proofBlocks
-      .map((x) => ({
-        title: String(x?.title ?? "").trim(),
-        desc: String(x?.desc ?? "").trim(),
-        iconKey: String(x?.iconKey ?? "").trim(),
-        iconImage: String(x?.iconImage ?? "").trim(),
-      }))
-      .filter((x) => x.title && x.desc);
 
     const nextErrors = validateSite(nextDraft);
     setErrors(nextErrors);
@@ -358,97 +287,6 @@ export default function SiteSettings() {
                 {errors["about.paragraphs"] ? <HelperText tone="error">{errors["about.paragraphs"]}</HelperText> : null}
               </div>
             </div>
-          </div>
-        </Card>
-
-        <Card title="About Proof Cards" subtitle="Edit the 3 proof cards shown under About. Keep text the same; just choose an icon preset or upload an icon image.">
-          <div className="space-y-4">
-            <HelperText>
-              Tip: Use <b>Icon preset</b> for clean SVGs, or set <b>Icon image URL</b> (you can upload using the button).
-              If Icon image URL is set, it will override the preset.
-            </HelperText>
-
-            {(draft?.about?.proofBlocks ?? []).map((item, idx) => {
-              const iconKey = item?.iconKey || "ui";
-              const iconPreview = PROOF_ICON_PRESETS[iconKey] ?? PROOF_ICON_PRESETS.ui;
-
-              return (
-                <div key={idx} className="rounded-2xl border border-black/5 dark:border-white/10 p-4 bg-white/60 dark:bg-white/5">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 ring-1 ring-indigo-500/15 flex items-center justify-center">
-                        {item?.iconImage ? (
-                          <img src={item.iconImage} alt="" className="w-5 h-5 object-contain" loading="lazy" />
-                        ) : (
-                          iconPreview
-                        )}
-                      </div>
-                      <div className="text-sm font-semibold">Proof Card #{idx + 1}</div>
-                    </div>
-                    <Button variant="ghost" type="button" onClick={() => removeFromArray("about.proofBlocks", idx)}>
-                      Remove
-                    </Button>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-4 mt-4">
-                    <div>
-                      <div className="text-xs font-medium mb-1">Title</div>
-                      <Input value={item?.title ?? ""} onChange={(e) => setArrayItem("about.proofBlocks", idx, { ...item, title: e.target.value })} />
-                    </div>
-
-                    <div>
-                      <div className="text-xs font-medium mb-1">Icon preset</div>
-                      <select
-                        value={iconKey}
-                        onChange={(e) => setArrayItem("about.proofBlocks", idx, { ...item, iconKey: e.target.value })}
-                        className="w-full rounded-xl border border-black/10 dark:border-white/10 bg-white/70 dark:bg-white/5 px-3 py-2 text-sm"
-                      >
-                        {Object.keys(PROOF_ICON_PRESETS).map((k) => (
-                          <option key={k} value={k}>
-                            {k}
-                          </option>
-                        ))}
-                      </select>
-                      <HelperText>Choose an icon preset (SVG). Looks clean on every device.</HelperText>
-                    </div>
-
-                    <div className="md:col-span-2">
-                      <div className="text-xs font-medium mb-1">Description</div>
-                      <Textarea rows={3} value={item?.desc ?? ""} onChange={(e) => setArrayItem("about.proofBlocks", idx, { ...item, desc: e.target.value })} />
-                    </div>
-
-                    <div className="md:col-span-2">
-                      <div className="text-xs font-medium mb-1">Icon image URL (optional)</div>
-                      <Input
-                        value={item?.iconImage ?? ""}
-                        onChange={(e) => setArrayItem("about.proofBlocks", idx, { ...item, iconImage: e.target.value })}
-                        placeholder="https://.../icon.png"
-                      />
-                      <div className="mt-3">
-                        <StorageUpload
-                          folder="portfolio/proof-icons"
-                          onUploaded={(url) => setArrayItem("about.proofBlocks", idx, { ...item, iconImage: url })}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-
-            <Button
-              variant="outline"
-              type="button"
-              onClick={() =>
-                addToArray("about.proofBlocks", { title: "New proof", desc: "Describe it.", iconKey: "ui", iconImage: "" })
-              }
-            >
-              + Add proof card
-            </Button>
-
-            <HelperText>
-              If you keep exactly 3 cards, the layout stays perfect. More than 3 will wrap automatically.
-            </HelperText>
           </div>
         </Card>
 

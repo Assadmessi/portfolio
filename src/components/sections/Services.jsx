@@ -70,8 +70,7 @@ const Services = () => {
         {serviceCards.map((s) => (
           <div
             key={s.title}
-            className="rounded-2xl border border-black/5 dark:border-white/10
-                       bg-white/70 dark:bg-white/5 p-6 backdrop-blur"
+            className="sv-card sv-card-inner"
           >
             <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{s.title}</h3>
             <ul className="mt-4 space-y-2 text-sm text-slate-700 dark:text-slate-400">
@@ -95,8 +94,7 @@ const Services = () => {
           {process.map((step) => (
             <div
               key={step.title}
-              className="relative rounded-2xl border border-black/5 dark:border-white/10
-                         bg-white/70 dark:bg-white/5 p-6 backdrop-blur"
+              className="relative sv-card sv-card-inner"
             >
               <span className="absolute left-0 top-6 bottom-6 w-[3px] rounded-full bg-indigo-500/70 dark:bg-indigo-400/70" />
               <p className="pl-4 font-medium text-slate-900 dark:text-slate-100">{step.title}</p>
