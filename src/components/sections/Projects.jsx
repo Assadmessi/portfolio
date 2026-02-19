@@ -6,24 +6,16 @@ import { fadeUp, staggerContainer } from "../../animations/variants";
 import { projectsContent } from "../../content";
 
 const getKey = (p, fallback) => p?.id ?? p?.slug ?? p?.title ?? p?._key ?? fallback;
-
 const getDesc = (p) => p?.desc ?? p?.description ?? "";
 
-const Projects = () => {
-  const { projects: rawProjects, sectionTitle } = projectsContent;
-
-/**
- * Support both array and object shapes.
- * (Firestore/admin panels often store arrays as objects keyed by index.)
- */
+// Support both array + object shapes (admin/Firestore sometimes serializes arrays as keyed objects)
 const normalizeProjects = (input) => {
   if (Array.isArray(input)) return input.filter(Boolean);
 
   if (input && typeof input === "object") {
-    // Common alternate shape
     if (Array.isArray(input.items)) return input.items.filter(Boolean);
 
-    const entries = Object.entries(input).filter(([, v]) => v);
+    const entries = Object.entries(input).filter(([, v]) => v && typeof v === "object");
     entries.sort(([a], [b]) => {
       const na = Number(a);
       const nb = Number(b);
@@ -37,11 +29,11 @@ const normalizeProjects = (input) => {
   return [];
 };
 
-const list = normalizeProjects(rawProjects);
+const Projects = () => {
+  const { projects: rawProjects, sectionTitle } = projectsContent;
+  const list = useMemo(() => normalizeProjects(rawProjects), [rawProjects]);
 
   const [activeProject, setActiveProject] = useState(null);
-
-  // Keep featured stable even if content sync updates the array order.
   const [featuredKey, setFeaturedKey] = useState(() => getKey(list[0], 0));
 
   // If projects load/update and the current featuredKey no longer exists, fall back to first project.
@@ -51,24 +43,21 @@ const list = normalizeProjects(rawProjects);
     if (!exists) setFeaturedKey(getKey(list[0], 0));
   }, [list, featuredKey]);
 
-  const { featured, rest } = useMemo(() => {
-    if (!list.length) return { featured: null, rest: [] };
+  const featured = useMemo(() => {
+    if (!list.length) return null;
+    const idx = list.findIndex((p, i) => getKey(p, i) === featuredKey);
+    return list[idx >= 0 ? idx : 0] || null;
+  }, [list, featuredKey]);
 
-    const featuredIdx = list.findIndex((p, i) => getKey(p, i) === featuredKey);
-    const safeIdx = featuredIdx >= 0 ? featuredIdx : 0;
-
-    const featuredItem = list[safeIdx] || null;
-
-    const restItems = list
+  const others = useMemo(() => {
+    if (!list.length) return [];
+    return list
       .map((p, idx) => ({ p, idx, key: getKey(p, idx) }))
-      .filter((item) => item.idx !== safeIdx);
-
-    return { featured: featuredItem, rest: restItems };
+      .filter((item) => item.key !== featuredKey);
   }, [list, featuredKey]);
 
   const swapFeatured = (item) => {
-    if (!item) return;
-    setActiveProject(null); // never keep the modal open during swap
+    if (!item?.key) return;
     setFeaturedKey(item.key);
   };
 
@@ -93,18 +82,17 @@ const list = normalizeProjects(rawProjects);
 
               <p className="mt-3 text-slate-600 dark:text-slate-400 leading-relaxed">
                 Product-focused frontend builds: clean UX, smooth motion, and production-ready structure.
-                Click a project to make it featured, then open the featured case study.
+                Click a project to make it featured.
               </p>
             </div>
 
-            <div className="text-sm text-slate-500 dark:text-slate-400">
-              {list.length} projects
-            </div>
+            <div className="text-sm text-slate-500 dark:text-slate-400">{list.length} projects</div>
           </motion.div>
 
-          {/* Featured */}
+          {/* Featured + More work */}
           {featured ? (
             <motion.div variants={fadeUp} className="grid gap-6 lg:grid-cols-12 mb-12">
+              {/* Featured card (opens modal) */}
               <button
                 type="button"
                 onClick={() => setActiveProject(featured)}
@@ -122,51 +110,16 @@ const list = normalizeProjects(rawProjects);
                   <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-4">
                     <div>
                       <div className="text-xs font-semibold text-white/80">Featured</div>
-                      <div className="text-xl sm:text-2xl font-semibold text-white mt-1">
-                        {featured.title}
-                      </div>
+                      <div className="text-xl sm:text-2xl font-semibold text-white mt-1">{featured.title}</div>
                     </div>
                     <div className="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 text-white text-sm border border-white/15 group-hover:bg-white/15 transition">
-                      View case study
-                      <span aria-hidden className="translate-y-[1px]">→</span>
+                      View details <span aria-hidden className="translate-y-[1px]">→</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="p-6 sm:p-7">
-                  <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
-                    {getDesc(featured)}
-                  </p>
-
-                  {/* Highlights */}
-                  <div className="mt-6 grid gap-4 sm:grid-cols-3">
-                    {featured.problem ? (
-                      <div className="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-slate-50/60 dark:bg-white/5 p-4">
-                        <div className="text-xs font-semibold text-slate-500 dark:text-slate-400">Problem</div>
-                        <div className="mt-2 text-sm text-slate-800 dark:text-slate-200 leading-relaxed line-clamp-3">
-                          {featured.problem}
-                        </div>
-                      </div>
-                    ) : null}
-
-                    {featured.solution ? (
-                      <div className="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-slate-50/60 dark:bg-white/5 p-4">
-                        <div className="text-xs font-semibold text-slate-500 dark:text-slate-400">Solution</div>
-                        <div className="mt-2 text-sm text-slate-800 dark:text-slate-200 leading-relaxed line-clamp-3">
-                          {featured.solution}
-                        </div>
-                      </div>
-                    ) : null}
-
-                    {featured.impact ? (
-                      <div className="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-slate-50/60 dark:bg-white/5 p-4">
-                        <div className="text-xs font-semibold text-slate-500 dark:text-slate-400">Impact</div>
-                        <div className="mt-2 text-sm text-slate-800 dark:text-slate-200 leading-relaxed line-clamp-3">
-                          {featured.impact}
-                        </div>
-                      </div>
-                    ) : null}
-                  </div>
+                  <p className="text-slate-700 dark:text-slate-300 leading-relaxed">{getDesc(featured)}</p>
 
                   {Array.isArray(featured.tech) && featured.tech.length > 0 ? (
                     <div className="flex flex-wrap gap-2 mt-6">
@@ -180,52 +133,52 @@ const list = normalizeProjects(rawProjects);
                 </div>
               </button>
 
-              {/* Side rail: “more work” list */}
+              {/* Side list (swap featured) */}
               <div className="lg:col-span-4 flex flex-col gap-4">
                 <div className="rounded-3xl border border-slate-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 p-6">
-                  <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                    More work
-                  </div>
+                  <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">More work</div>
                   <p className="mt-2 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                    Quick scan for recruiters — click to feature.
+                    Click to feature.
                   </p>
                 </div>
 
-                <motion.div
-                  variants={staggerContainer}
-                  className="rounded-3xl border border-slate-200/70 dark:border-white/10 overflow-hidden"
-                >
-                  {rest.slice(0, 3).map((item) => (
-                    <motion.button
-                      variants={fadeUp}
-                      key={item.key}
-                      type="button"
-                      onClick={() => swapFeatured(item)}
-                      className="w-full text-left px-5 py-4 bg-white/70 dark:bg-[#0B0F19]/40 hover:bg-slate-50 dark:hover:bg-white/5 transition flex items-center gap-4"
-                    >
-                      <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 w-6">
-                        {String(item.idx + 1).padStart(2, "0")}
-                      </div>
-                      <div className="min-w-0">
-                        <div className="font-semibold text-slate-900 dark:text-slate-100 truncate">
-                          {item.p.title}
+                {others.length ? (
+                  <motion.div
+                    variants={staggerContainer}
+                    className="rounded-3xl border border-slate-200/70 dark:border-white/10 overflow-hidden"
+                  >
+                    {others.slice(0, 3).map((item) => (
+                      <motion.button
+                        variants={fadeUp}
+                        key={item.key}
+                        type="button"
+                        onClick={() => swapFeatured(item)}
+                        className="w-full text-left px-5 py-4 bg-white/70 dark:bg-[#0B0F19]/40 hover:bg-slate-50 dark:hover:bg-white/5 transition flex items-center gap-4"
+                      >
+                        <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 w-6">
+                          {String(item.idx + 1).padStart(2, "0")}
                         </div>
-                        <div className="text-sm text-slate-600 dark:text-slate-400 truncate">
-                          {getDesc(item.p)}
+                        <div className="min-w-0">
+                          <div className="font-semibold text-slate-900 dark:text-slate-100 truncate">{item.p.title}</div>
+                          <div className="text-sm text-slate-600 dark:text-slate-400 truncate">{getDesc(item.p)}</div>
                         </div>
-                      </div>
-                      <div className="ml-auto text-slate-400">↔</div>
-                    </motion.button>
-                  ))}
-                </motion.div>
+                        <div className="ml-auto text-slate-400">↔</div>
+                      </motion.button>
+                    ))}
+                  </motion.div>
+                ) : (
+                  <div className="rounded-3xl border border-slate-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 p-6 text-sm text-slate-600 dark:text-slate-400">
+                    No other projects yet.
+                  </div>
+                )}
               </div>
             </motion.div>
           ) : null}
 
-          {/* List (elegant rows) */}
-          {rest.length ? (
+          {/* All other projects (rows) */}
+          {others.length ? (
             <motion.div variants={staggerContainer} className="grid gap-4">
-              {rest.map((item) => (
+              {others.map((item) => (
                 <motion.button
                   variants={fadeUp}
                   key={item.key}
@@ -257,9 +210,7 @@ const list = normalizeProjects(rawProjects);
                             {item.p.title}
                           </h3>
                           {Array.isArray(item.p.tech) && item.p.tech.length > 0 ? (
-                            <span className="hidden sm:inline-flex nb-pill">
-                              {item.p.tech[0]}
-                            </span>
+                            <span className="hidden sm:inline-flex nb-pill">{item.p.tech[0]}</span>
                           ) : null}
                         </div>
 
@@ -304,9 +255,7 @@ const list = normalizeProjects(rawProjects);
         </div>
       </MotionSection>
 
-      {activeProject ? (
-        <ProjectModal project={activeProject} onClose={() => setActiveProject(null)} />
-      ) : null}
+      {activeProject ? <ProjectModal project={activeProject} onClose={() => setActiveProject(null)} /> : null}
     </>
   );
 };
