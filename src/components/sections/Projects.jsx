@@ -32,6 +32,14 @@ const normalizeProjects = (raw) => {
 const getKey = (p, i) => String(p?.id ?? p?.slug ?? p?.title ?? i);
 const getDesc = (p) => p?.description ?? p?.desc ?? "";
 
+// Featured micro-highlights (Framer/Nubien-style).
+// If your content has `highlights: string[]` it will use that; otherwise it falls back to defaults.
+const getHighlights = (p) => {
+  const list = p?.highlights ?? p?.bullets ?? p?.points;
+  if (Array.isArray(list) && list.length) return list.filter(Boolean).slice(0, 3);
+  return ["Problem solving", "UI + Motion polish", "Production-ready build"];
+};
+
 const Projects = () => {
   const { projects: rawProjects, sectionTitle } = projectsContent;
 
@@ -113,6 +121,18 @@ const Projects = () => {
                         <p className="mt-2 text-slate-600 dark:text-slate-400 leading-relaxed">
                           {getDesc(featuredItem.p)}
                         </p>
+
+                        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                          {getHighlights(featuredItem.p).map((h, i) => (
+                            <div
+                              key={i}
+                              className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300"
+                            >
+                              <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                              <span className="leading-snug">{h}</span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                       <span className="shrink-0 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition">
                         View →
