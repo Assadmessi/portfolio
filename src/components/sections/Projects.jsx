@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 
 import { MotionSection } from "../../animations/MotionWrappers";
@@ -29,74 +29,61 @@ const normalizeProjects = (raw) => {
   return [];
 };
 
-const getKey = (p, i) => String(p?.id ?? p?.slug ?? p?.title ?? i);
-const getDesc = (p) => p?.description ?? p?.desc ?? "";
+// Highlights can also come from admin/Firestore as an object keyed by index.
+// Supported:
+// - highlights: [ { title, desc }, ... ]
+// - highlights: { "0": { title, desc }, "1": { ... } }
+const normalizeHighlights = (raw) => {
+  if (!raw) return [];
+  const arr = Array.isArray(raw)
+    ? raw
+    : Array.isArray(raw.items)
+      ? raw.items
+      : typeof raw === "object"
+        ? Object.entries(raw)
+            .filter(([k]) => k !== "items")
+            .sort(([a], [b]) => {
+              const na = Number(a);
+              const nb = Number(b);
+              if (!Number.isNaN(na) && !Number.isNaN(nb)) return na - nb;
+              return String(a).localeCompare(String(b));
+            })
+            .map(([, v]) => v)
+        : [];
+  return arr
+    .filter(Boolean)
+    .map((h) => {
+      if (typeof h === "string") return { title: h, desc: "" };
+      if (typeof h === "object") {
+        return {
+          title: h.title ?? h.label ?? h.name ?? "",
+          desc: h.desc ?? h.description ?? "",
+        };
+      }
+      return { title: String(h), desc: "" };
+    })
+    .filter((h) => h.title || h.desc);
+};
 
-// Featured micro-highlights (Framer/Nubien-style).
-// If your content has `highlights: string[]` it will use that; otherwise it falls back to defaults.
-const getHighlights = (p) => {
-  const raw = p?.highlights ?? p?.bullets ?? p?.points;
-
-  // Firestore/admin panels sometimes store arrays as objects keyed by index.
-  // Support:
-  // - highlights: [ {title, desc}, ... ]
-  // - highlights: { "0": {title, desc}, "1": {...} }
-  const normalizeHighlights = (v) => {
-    if (!v) return [];
-    if (Array.isArray(v)) return v;
-    if (typeof v === "object") {
-      return Object.entries(v)
-        .sort(([a], [b]) => {
-          const na = Number(a);
-          const nb = Number(b);
-          if (!Number.isNaN(na) && !Number.isNaN(nb)) return na - nb;
-          return String(a).localeCompare(String(b));
-        })
-        .map(([, val]) => val);
-    }
-    return [];
-  };
-
-  const arr = normalizeHighlights(raw);
-
-  if (arr.length) {
-    return arr
-      .map((item) => {
-        if (!item) return null;
-        if (typeof item === "string") return { title: item, desc: "" };
-        if (typeof item === "object") {
-          const title = item.title ?? item.label ?? item.name ?? "";
-          const desc = item.desc ?? item.description ?? "";
-          return title ? { title, desc } : null;
-        }
-        return null;
-      })
-      .filter(Boolean)
-      .slice(0, 3);
-  }
-
-  const title = (p?.title ?? "").toString();
-  const take = (s) => (s ? String(s).trim() : "");
-  const problem = take(p?.problem);
-  const system = take(p?.system ?? p?.approach ?? p?.process);
-  const impact = take(p?.impact ?? p?.result);
-  const solution = take(p?.solution);
-
-  const auto = [];
-  if (problem) auto.push({ title: "Problem", desc: problem });
-  if (system) auto.push({ title: "Approach", desc: system });
-  if (impact) auto.push({ title: "Impact", desc: impact });
-  if (solution && auto.length < 3) auto.splice(1, 0, { title: "Solution", desc: solution });
-
-  if (auto.length >= 3) return auto.slice(0, 3);
-
-  // Fallback defaults (used only if no per-project data exists)
+const fallbackHighlights = (project) => {
+  const name = project?.title ?? "this project";
   return [
-    { title: "Problem solving", desc: "Turn vague requirements into clear UI and working features." },
-    { title: "UI + Motion polish", desc: "Smooth interactions that make the product feel premium." },
-    { title: "Production-ready build", desc: "Structured components, responsiveness, and clean code." },
+    { title: "Goal", desc: `Designed to deliver a clear, reliable experience for ${name}.` },
+    { title: "Build quality", desc: "Reusable components, clean structure, and maintainable code." },
+    { title: "User impact", desc: "Polished UX with performance-focused decisions." },
   ];
 };
+
+const getHighlights = (project) => {
+  const normalized = normalizeHighlights(project?.highlights);
+  const three = normalized.slice(0, 3);
+  if (three.length === 3) return three;
+  return [...three, ...fallbackHighlights(project)].slice(0, 3);
+};
+
+
+const getKey = (p, i) => String(p?.id ?? p?.slug ?? p?.title ?? i);
+const getDesc = (p) => p?.description ?? p?.desc ?? "";
 
 const Projects = () => {
   const { projects: rawProjects, sectionTitle } = projectsContent;
@@ -121,13 +108,6 @@ const Projects = () => {
     () => items.find((x) => x.key === featuredKey) ?? items[0],
     [items, featuredKey]
   );
-
-  // Ensure per-featured highlight content refreshes on every swap.
-  // (Some environments can visually "stick" nested text nodes after motion-driven rerenders.)
-  const featuredHighlights = useMemo(() => {
-    if (!featuredItem?.p) return [];
-    return getHighlights(featuredItem.p);
-  }, [featuredItem?.key]);
 
   const swapFeatured = (item) => setFeaturedKey(item.key);
 
@@ -187,14 +167,12 @@ const Projects = () => {
                           {getDesc(featuredItem.p)}
                         </p>
 
-                        <div
-                          key={`hl-${featuredItem.key}`}
-                          className="mt-6 grid gap-4 sm:grid-cols-3"
-                        >
-                          {featuredHighlights.map((h, i) => (
+                        {/* Per-project highlights (3 cards) */}
+                        <div key={`hl-${featuredKey}`} className="mt-5 grid gap-3 sm:grid-cols-3">
+                          {getHighlights(featuredItem.p).map((h, idx) => (
                             <div
-                              key={`${featuredItem.key}-${h.title}-${i}`}
-                              className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-white/[0.03] p-4"
+                              key={`${featuredKey}-${idx}-${h.title}`}
+                              className="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 px-4 py-3"
                             >
                               <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                                 {h.title}
@@ -207,6 +185,7 @@ const Projects = () => {
                             </div>
                           ))}
                         </div>
+
                       </div>
                       <span className="shrink-0 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition">
                         View →
@@ -304,4 +283,4 @@ const Projects = () => {
   );
 };
 
-export default Projects;
+export default memo(Projects);

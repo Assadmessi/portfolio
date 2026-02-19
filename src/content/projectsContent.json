@@ -3,72 +3,30 @@
   "projects": [
     {
       "title": "Landing Page Template",
-      "desc": "Landing Page Template \u2014 fast, responsive marketing site with smooth motion.",
+      "desc": "A clean, responsive startup landing with premium motion + sections.",
       "image": "/uploads/project1.png",
       "problem": "You need a production-ready UI foundation without reinventing layouts every time.",
       "system": "Reusable components + consistent motion + responsive grid + theme support.",
       "solution": "A clean, responsive startup landing with premium motion + sections.",
-      "impact": "Faster shipping, consistent UX, and a strong base to plug real data/features into.",
-      "highlights": [
-        {
-          "title": "Conversion layout",
-          "desc": "Landing Page Template uses a proven hero \u2192 features \u2192 CTA flow for higher sign-ups."
-        },
-        {
-          "title": "Motion polish",
-          "desc": "Scroll reveals and hover micro-interactions tuned for the Landing Page Template."
-        },
-        {
-          "title": "Easy customization",
-          "desc": "Swap colors, sections, and content in the Landing Page Template without touching layout logic."
-        }
-      ]
+      "impact": "Faster shipping, consistent UX, and a strong base to plug real data/features into."
     },
     {
       "title": "Admin Dashboard UI",
-      "desc": "Admin Dashboard UI \u2014 SaaS-style dashboard with cards, tables, and states.",
+      "desc": "Modern dashboard layout patterns (cards, tables, states) ready to wire to data.",
       "image": "/uploads/project2.png",
       "problem": "You need a production-ready UI foundation without reinventing layouts every time.",
       "system": "Reusable components + consistent motion + responsive grid + theme support.",
       "solution": "Modern dashboard layout patterns (cards, tables, states) ready to wire to data.",
-      "impact": "Faster shipping, consistent UX, and a strong base to plug real data/features into.",
-      "highlights": [
-        {
-          "title": "Real SaaS patterns",
-          "desc": "Admin Dashboard UI includes cards, tables, filters, and empty/loading states."
-        },
-        {
-          "title": "Scales with data",
-          "desc": "Admin Dashboard UI is structured to plug into Firebase/REST APIs cleanly."
-        },
-        {
-          "title": "Operator-friendly UX",
-          "desc": "Admin Dashboard UI keeps actions obvious with clear hierarchy and spacing."
-        }
-      ]
+      "impact": "Faster shipping, consistent UX, and a strong base to plug real data/features into."
     },
     {
       "title": "Auth + Profile Flow",
-      "desc": "Auth + Profile Flow \u2014 login/signup/profile screens with clean form UX.",
+      "desc": "Login/signup screens with polished forms, states, and UX details.",
       "image": "/uploads/project3.png",
       "problem": "You need a production-ready UI foundation without reinventing layouts every time.",
       "system": "Reusable components + consistent motion + responsive grid + theme support.",
       "solution": "Login/signup screens with polished forms, states, and UX details.",
-      "impact": "Faster shipping, consistent UX, and a strong base to plug real data/features into.",
-      "highlights": [
-        {
-          "title": "Form UX details",
-          "desc": "Auth + Profile Flow handles validation, errors, and focus states smoothly."
-        },
-        {
-          "title": "Cohesive journey",
-          "desc": "Auth + Profile Flow connects signup \u2192 onboarding \u2192 profile without UI mismatch."
-        },
-        {
-          "title": "Trust & security cues",
-          "desc": "Auth + Profile Flow uses clear feedback, password rules, and safe defaults."
-        }
-      ]
+      "impact": "Faster shipping, consistent UX, and a strong base to plug real data/features into."
     }
   ]
 }
