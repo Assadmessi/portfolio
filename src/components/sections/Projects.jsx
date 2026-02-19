@@ -5,13 +5,39 @@ import { MotionSection } from "../../animations/MotionWrappers";
 import { fadeUp, staggerContainer } from "../../animations/variants";
 import { projectsContent } from "../../content";
 
-const getKey = (p, fallback) => p?.id ?? p?.slug ?? p?.title ?? fallback;
+const getKey = (p, fallback) => p?.id ?? p?.slug ?? p?.title ?? p?._key ?? fallback;
 
 const getDesc = (p) => p?.desc ?? p?.description ?? "";
 
 const Projects = () => {
-  const { projects = [], sectionTitle } = projectsContent;
-  const list = Array.isArray(projects) ? projects : [];
+  const { projects: rawProjects, sectionTitle } = projectsContent;
+
+/**
+ * Support both array and object shapes.
+ * (Firestore/admin panels often store arrays as objects keyed by index.)
+ */
+const normalizeProjects = (input) => {
+  if (Array.isArray(input)) return input.filter(Boolean);
+
+  if (input && typeof input === "object") {
+    // Common alternate shape
+    if (Array.isArray(input.items)) return input.items.filter(Boolean);
+
+    const entries = Object.entries(input).filter(([, v]) => v);
+    entries.sort(([a], [b]) => {
+      const na = Number(a);
+      const nb = Number(b);
+      if (!Number.isNaN(na) && !Number.isNaN(nb)) return na - nb;
+      return String(a).localeCompare(String(b));
+    });
+
+    return entries.map(([k, v]) => ({ ...v, _key: k }));
+  }
+
+  return [];
+};
+
+const list = normalizeProjects(rawProjects);
 
   const [activeProject, setActiveProject] = useState(null);
 
@@ -23,7 +49,7 @@ const Projects = () => {
     if (!list.length) return;
     const exists = list.some((p, i) => getKey(p, i) === featuredKey);
     if (!exists) setFeaturedKey(getKey(list[0], 0));
-  }, [list.length]); // intentionally only reacts to list length changes
+  }, [list, featuredKey]);
 
   const { featured, rest } = useMemo(() => {
     if (!list.length) return { featured: null, rest: [] };
