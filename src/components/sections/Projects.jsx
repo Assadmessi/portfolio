@@ -189,6 +189,7 @@ const Projects = () => {
                                   ) : null}
                                 </div>
                               </div>
+                            </div>
                           ))}
                         </div>
 
