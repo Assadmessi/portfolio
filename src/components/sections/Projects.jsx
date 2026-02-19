@@ -182,13 +182,13 @@ const Projects = () => {
                                   <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                                     {h.title}
                                   </div>
-                              </div>
-                              {h.desc ? (
-                                <div className="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
-                                  {h.desc}
+                                  {h.desc ? (
+                                    <div className="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+                                      {h.desc}
+                                    </div>
+                                  ) : null}
                                 </div>
-                              ) : null}
-                            </div>
+                              </div>
                           ))}
                         </div>
 
