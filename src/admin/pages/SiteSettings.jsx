@@ -18,9 +18,34 @@ function SectionHeader({ title, desc, right }) {
   );
 }
 
+const DEFAULT_TOOLBOX = {
+  pill: "Toolbox",
+  title: "Tools I use to ship fast",
+  intro: "A focused stack for clean UI, smooth motion, and easy content updates.",
+  chips: ["UI", "Motion", "Backend"],
+  items: [
+    { name: "React", hint: "UI" },
+    { name: "Tailwind", hint: "Design" },
+    { name: "Framer Motion", hint: "Motion" },
+    { name: "Firebase", hint: "Realtime" },
+    { name: "Vite", hint: "Build" },
+    { name: "Cloudinary", hint: "Assets" },
+  ],
+};
+
+function ensureDefaults(next) {
+  // Toolbox defaults (matches src/components/sections/Toolbox.jsx fallback)
+  if (!next.toolbox) next.toolbox = deepClone(DEFAULT_TOOLBOX);
+  if (!Array.isArray(next.toolbox.chips) || next.toolbox.chips.length === 0) next.toolbox.chips = deepClone(DEFAULT_TOOLBOX.chips);
+  if (!Array.isArray(next.toolbox.items) || next.toolbox.items.length === 0) next.toolbox.items = deepClone(DEFAULT_TOOLBOX.items);
+  return next;
+}
+
+
+
 export default function SiteSettings() {
-  const [draft, setDraft] = useState(() => deepClone(siteContent));
-  const [baseline, setBaseline] = useState(() => deepClone(siteContent));
+  const [draft, setDraft] = useState(() => ensureDefaults(deepClone(siteContent)));
+  const [baseline, setBaseline] = useState(() => ensureDefaults(ensureDefaults(deepClone(siteContent))));
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState("");
   const [errors, setErrors] = useState({});
@@ -28,7 +53,7 @@ export default function SiteSettings() {
   // Live updates from Firestore -> baseline. Only auto-merge when no unsaved edits.
   useEffect(() => {
     const sync = () => {
-      const next = deepClone(siteContent);
+      const next = ensureDefaults(deepClone(siteContent));
       setBaseline(next);
       setDraft((d) => (deepEqual(d, baseline) ? next : d));
     };
@@ -112,6 +137,14 @@ export default function SiteSettings() {
     nextDraft.about = nextDraft.about ?? {};
     nextDraft.about.tags = normalizeTags(nextDraft.about.tags);
     nextDraft.about.paragraphs = safeStringArray(nextDraft.about.paragraphs);
+
+    // Ensure Toolbox has defaults so the admin shows meaningful values even on a fresh Firestore doc
+    nextDraft.toolbox = nextDraft.toolbox ?? deepClone(DEFAULT_TOOLBOX);
+    nextDraft.toolbox.chips = safeStringArray(nextDraft.toolbox.chips).filter(Boolean);
+    nextDraft.toolbox.items = Array.isArray(nextDraft.toolbox.items)
+      ? nextDraft.toolbox.items.map((it) => ({ name: (it?.name ?? "").trim(), hint: (it?.hint ?? "").trim() })).filter((it) => it.name)
+      : deepClone(DEFAULT_TOOLBOX.items);
+
 
     const nextErrors = validateSite(nextDraft);
     setErrors(nextErrors);
@@ -527,20 +560,20 @@ export default function SiteSettings() {
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <div className="text-xs font-medium mb-1">Pill label</div>
-              <Input value={draft?.toolbox?.pill ?? ""} onChange={(e) => setByPath("toolbox.pill", e.target.value)} />
+              <Input value={draft?.toolbox?.pill ?? DEFAULT_TOOLBOX.pill} onChange={(e) => setByPath("toolbox.pill", e.target.value)} />
             </div>
             <div>
               <div className="text-xs font-medium mb-1">Title</div>
-              <Input value={draft?.toolbox?.title ?? ""} onChange={(e) => setByPath("toolbox.title", e.target.value)} />
+              <Input value={draft?.toolbox?.title ?? DEFAULT_TOOLBOX.title} onChange={(e) => setByPath("toolbox.title", e.target.value)} />
             </div>
             <div className="md:col-span-2">
               <div className="text-xs font-medium mb-1">Intro</div>
-              <Textarea rows={3} value={draft?.toolbox?.intro ?? ""} onChange={(e) => setByPath("toolbox.intro", e.target.value)} />
+              <Textarea rows={3} value={draft?.toolbox?.intro ?? DEFAULT_TOOLBOX.intro} onChange={(e) => setByPath("toolbox.intro", e.target.value)} />
             </div>
             <div className="md:col-span-2">
               <div className="text-xs font-medium mb-1">Chips (comma separated)</div>
               <Input
-                value={Array.isArray(draft?.toolbox?.chips) ? draft.toolbox.chips.join(", ") : ""}
+                value={Array.isArray(draft?.toolbox?.chips) ? draft.toolbox.chips.join(", ") : DEFAULT_TOOLBOX.chips.join(", ")}
                 onChange={(e) => {
                   const chips = e.target.value.split(",").map((s) => s.trim()).filter(Boolean);
                   setByPath("toolbox.chips", chips);
@@ -551,7 +584,7 @@ export default function SiteSettings() {
           </div>
 
           <div className="mt-4 space-y-4">
-            {(draft?.toolbox?.items ?? []).map((it, idx) => (
+            {(Array.isArray(draft?.toolbox?.items) ? draft.toolbox.items : DEFAULT_TOOLBOX.items).map((it, idx) => (
               <div key={idx} className="rounded-2xl border border-black/10 dark:border-white/10 p-4">
                 <div className="flex items-center justify-between gap-3">
                   <div className="text-sm font-semibold">Item {idx + 1}</div>

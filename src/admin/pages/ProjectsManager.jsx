@@ -403,97 +403,11 @@ export default function ProjectsManager() {
                           />
                         </div>
                       </div>
-
                       <div className="md:col-span-2">
-                        <div className="text-xs font-semibold mb-2">Proof cards (3 small boxes shown under Featured)</div>
-                        <HelperText>Each card supports a default icon or a custom uploaded icon. Keep it short and specific.</HelperText>
-
-                        <div className="mt-3 grid gap-3">
-                          {normalizeProofDraft(p.proof).map((card, cidx) => (
-                            <div
-                              key={`${editingIndex}-proof-${cidx}`}
-                              className="rounded-2xl border border-black/10 dark:border-white/10 bg-white/40 dark:bg-white/5 p-4"
-                            >
-                              <div className="grid md:grid-cols-12 gap-3 items-start">
-                                <div className="md:col-span-4">
-                                  <div className="text-xs font-medium mb-1">Title</div>
-                                  <Input
-                                    value={card?.title ?? ""}
-                                    onChange={(e) => {
-                                      const next = normalizeProofDraft(p.proof);
-                                      next[cidx] = { ...card, title: e.target.value };
-                                      setProject(editingIndex, { ...p, proof: next });
-                                    }}
-                                    placeholder="e.g., Realtime sync"
-                                  />
-                                </div>
-
-                                <div className="md:col-span-5">
-                                  <div className="text-xs font-medium mb-1">Short explanation</div>
-                                  <Input
-                                    value={card?.desc ?? ""}
-                                    onChange={(e) => {
-                                      const next = normalizeProofDraft(p.proof);
-                                      next[cidx] = { ...card, desc: e.target.value };
-                                      setProject(editingIndex, { ...p, proof: next });
-                                    }}
-                                    placeholder="1-line explanation that matches this project."
-                                  />
-                                </div>
-
-                                <div className="md:col-span-3">
-                                  <div className="text-xs font-medium mb-1">Icon</div>
-                                  <div className="flex gap-2">
-                                    <select
-                                      className="w-full rounded-xl border border-black/10 dark:border-white/10 bg-white/70 dark:bg-white/5 px-3 py-2 text-sm"
-                                      value={card?.iconKey ?? "spark"}
-                                      onChange={(e) => {
-                                        const next = normalizeProofDraft(p.proof);
-                                        next[cidx] = { ...card, iconKey: e.target.value, iconUrl: "" };
-                                        setProject(editingIndex, { ...p, proof: next });
-                                      }}
-                                    >
-                                      {DEFAULT_ICON_KEYS.map((k) => (
-                                        <option key={k} value={k}>
-                                          {k}
-                                        </option>
-                                      ))}
-                                    </select>
-
-                                    <CloudinaryUpload
-                                      folder="portfolio/icons"
-                                      allowedFormats={["png", "jpg", "jpeg", "webp", "svg"]}
-                                      onUploaded={(url) => {
-                                        const next = normalizeProofDraft(p.proof);
-                                        next[cidx] = { ...card, iconUrl: url };
-                                        setProject(editingIndex, { ...p, proof: next });
-                                      }}
-                                    />
-                                  </div>
-
-                                  {card?.iconUrl ? (
-                                    <HelperText tone="neutral">Custom icon uploaded. (Using iconUrl)</HelperText>
-                                  ) : (
-                                    <HelperText tone="neutral">Using default icon: {card?.iconKey ?? "spark"}</HelperText>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-
-                        <div className="mt-3">
-                          <Button
-                            tone="neutral"
-                            onClick={() => {
-                              const next = normalizeProofDraft(p.proof);
-                              next.push({ title: "", desc: "", iconKey: "spark", iconUrl: "" });
-                              setProject(editingIndex, { ...p, proof: next });
-                            }}
-                          >
-                            + Add proof card
-                          </Button>
-                        </div>
+                        <div className="text-xs font-semibold mb-2">Proof cards</div>
+                        <HelperText tone="neutral">
+                          Proof cards are managed under <span className="font-mono">Site Settings → About proof cards</span>.
+                        </HelperText>
                       </div>
 
                       <div className="md:col-span-2 grid md:grid-cols-3 gap-4">
