@@ -133,9 +133,9 @@ const Projects = () => {
                   </p>
                 </div>
 
-                <div className="rounded-3xl border border-slate-200/70 dark:border-white/10 overflow-hidden">
+                <motion.div variants={staggerContainer} className="rounded-3xl border border-slate-200/70 dark:border-white/10 overflow-hidden">
                   {rest.slice(0, 3).map((p, idx) => (
-                    <button
+                    <motion.button variants={fadeUp}
                       key={idx}
                       type="button"
                       onClick={() => setActiveProject(p)}
@@ -153,17 +153,17 @@ const Projects = () => {
                         </div>
                       </div>
                       <div className="ml-auto text-slate-400">→</div>
-                    </button>
+                    </motion.button>
                   ))}
-                </div>
+                </motion.div>
               </div>
             </motion.div>
           ) : null}
 
           {/* Grid/list (Nubien-like: elegant rows) */}
-          <motion.div variants={fadeUp} className="grid gap-4">
+          <motion.div variants={staggerContainer} className="grid gap-4">
             {rest.map((p, i) => (
-              <button
+              <motion.button variants={fadeUp}
                 key={i}
                 type="button"
                 onClick={() => setActiveProject(p)}
@@ -233,7 +233,7 @@ const Projects = () => {
                     </span>
                   </div>
                 </div>
-              </button>
+              </motion.button>
             ))}
           </motion.div>
         </div>
