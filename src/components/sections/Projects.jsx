@@ -146,8 +146,8 @@ const { featured, rest } = useMemo(() => {
     key={item.idx}
     type="button"
     onClick={() => {
+      // Swap the featured project (Framer-style behavior)
       setFeaturedIndex(item.idx);
-      setActiveProject(item.p);
     }}
     className="w-full text-left px-5 py-4 bg-white/70 dark:bg-[#0B0F19]/40 hover:bg-slate-50 dark:hover:bg-white/5 transition flex items-center gap-4"
   >
@@ -177,8 +177,8 @@ const { featured, rest } = useMemo(() => {
     key={item.idx}
     type="button"
     onClick={() => {
+      // Swap the featured project (Framer-style behavior)
       setFeaturedIndex(item.idx);
-      setActiveProject(item.p);
     }}
     className="group w-full text-left nb-card nb-ring rounded-3xl p-4 sm:p-5 transition cursor-pointer"
   >
