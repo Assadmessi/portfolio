@@ -49,12 +49,10 @@ const Projects = () => {
     return list[idx >= 0 ? idx : 0] || null;
   }, [list, featuredKey]);
 
-  const others = useMemo(() => {
+  const items = useMemo(() => {
     if (!list.length) return [];
-    return list
-      .map((p, idx) => ({ p, idx, key: getKey(p, idx) }))
-      .filter((item) => item.key !== featuredKey);
-  }, [list, featuredKey]);
+    return list.map((p, idx) => ({ p, idx, key: getKey(p, idx) }));
+  }, [list]);
 
   const swapFeatured = (item) => {
     if (!item?.key) return;
@@ -142,29 +140,39 @@ const Projects = () => {
                   </p>
                 </div>
 
-                {others.length ? (
+                {items.length ? (
                   <motion.div
                     variants={staggerContainer}
                     className="rounded-3xl border border-slate-200/70 dark:border-white/10 overflow-hidden"
                   >
-                    {others.slice(0, 3).map((item) => (
+                    {items.slice(0, 3).map((item) => {
+                      const isActive = item.key === featuredKey;
+                      return (
                       <motion.button
                         variants={fadeUp}
                         key={item.key}
                         type="button"
-                        onClick={() => swapFeatured(item)}
-                        className="w-full text-left px-5 py-4 bg-white/70 dark:bg-[#0B0F19]/40 hover:bg-slate-50 dark:hover:bg-white/5 transition flex items-center gap-4"
+                        onClick={() => !isActive && swapFeatured(item)}
+                        className={`w-full text-left px-5 py-4 bg-white/70 dark:bg-[#0B0F19]/40 transition flex items-center ${isActive ? "opacity-70 cursor-default" : "hover:bg-slate-50 dark:hover:bg-white/5 cursor-pointer"}`} gap-4"
                       >
                         <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 w-6">
                           {String(item.idx + 1).padStart(2, "0")}
                         </div>
                         <div className="min-w-0">
+                          <div className="flex items-center gap-2 min-w-0">
                           <div className="font-semibold text-slate-900 dark:text-slate-100 truncate">{item.p.title}</div>
+                          {isActive ? (
+                            <span className="shrink-0 text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900">
+                              Featured
+                            </span>
+                          ) : null}
+                        </div>
                           <div className="text-sm text-slate-600 dark:text-slate-400 truncate">{getDesc(item.p)}</div>
                         </div>
                         <div className="ml-auto text-slate-400">↔</div>
                       </motion.button>
-                    ))}
+                    );
+                    })}
                   </motion.div>
                 ) : (
                   <div className="rounded-3xl border border-slate-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 p-6 text-sm text-slate-600 dark:text-slate-400">
@@ -176,15 +184,17 @@ const Projects = () => {
           ) : null}
 
           {/* All other projects (rows) */}
-          {others.length ? (
+          {items.length ? (
             <motion.div variants={staggerContainer} className="grid gap-4">
-              {others.map((item) => (
+              {items.map((item) => {
+                const isActive = item.key === featuredKey;
+                return (
                 <motion.button
                   variants={fadeUp}
                   key={item.key}
                   type="button"
-                  onClick={() => swapFeatured(item)}
-                  className="group w-full text-left nb-card nb-ring rounded-3xl p-4 sm:p-5 transition cursor-pointer"
+                  onClick={() => !isActive && swapFeatured(item)}
+                  className={`group w-full text-left nb-card nb-ring rounded-3xl p-4 sm:p-5 transition ${isActive ? "opacity-70 cursor-default" : "cursor-pointer hover:-translate-y-0.5"}`
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                     <div className="flex items-center gap-3 sm:w-16">
@@ -249,7 +259,8 @@ const Projects = () => {
                     </div>
                   </div>
                 </motion.button>
-              ))}
+              );
+              })}
             </motion.div>
           ) : null}
         </div>
