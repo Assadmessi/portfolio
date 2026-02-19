@@ -75,6 +75,22 @@ const getHighlights = (p) => {
       .slice(0, 3);
   }
 
+  const title = (p?.title ?? "").toString();
+  const take = (s) => (s ? String(s).trim() : "");
+  const problem = take(p?.problem);
+  const system = take(p?.system ?? p?.approach ?? p?.process);
+  const impact = take(p?.impact ?? p?.result);
+  const solution = take(p?.solution);
+
+  const auto = [];
+  if (problem) auto.push({ title: "Problem", desc: problem });
+  if (system) auto.push({ title: "Approach", desc: system });
+  if (impact) auto.push({ title: "Impact", desc: impact });
+  if (solution && auto.length < 3) auto.splice(1, 0, { title: "Solution", desc: solution });
+
+  if (auto.length >= 3) return auto.slice(0, 3);
+
+  // Fallback defaults (used only if no per-project data exists)
   return [
     { title: "Problem solving", desc: "Turn vague requirements into clear UI and working features." },
     { title: "UI + Motion polish", desc: "Smooth interactions that make the product feel premium." },
@@ -164,7 +180,7 @@ const Projects = () => {
                           {getDesc(featuredItem.p)}
                         </p>
 
-                        <div className="mt-6 grid gap-4 sm:grid-cols-3">
+                        <div key={`hl-${featuredItem.key}`} className="mt-6 grid gap-4 sm:grid-cols-3">
   {getHighlights(featuredItem.p).map((h, i) => (
     <div
       key={i}
