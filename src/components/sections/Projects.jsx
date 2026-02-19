@@ -64,11 +64,6 @@ const normalizeProof = (raw) => {
       };
     });
 };
-      }
-      return { title: String(h), desc: "" };
-    })
-    .filter((h) => h.title || h.desc);
-};
 
 const fallbackHighlights = (project) => {
   const name = project?.title ?? "this project";
