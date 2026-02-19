@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 
 import { MotionSection } from "../../animations/MotionWrappers";
@@ -122,6 +122,13 @@ const Projects = () => {
     [items, featuredKey]
   );
 
+  // Ensure per-featured highlight content refreshes on every swap.
+  // (Some environments can visually "stick" nested text nodes after motion-driven rerenders.)
+  const featuredHighlights = useMemo(() => {
+    if (!featuredItem?.p) return [];
+    return getHighlights(featuredItem.p);
+  }, [featuredItem?.key]);
+
   const swapFeatured = (item) => setFeaturedKey(item.key);
 
   return (
@@ -180,23 +187,26 @@ const Projects = () => {
                           {getDesc(featuredItem.p)}
                         </p>
 
-                        <div key={`hl-${featuredItem.key}`} className="mt-6 grid gap-4 sm:grid-cols-3">
-  {getHighlights(featuredItem.p).map((h, i) => (
-    <div
-      key={i}
-      className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-white/[0.03] p-4"
-    >
-      <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-        {h.title}
-      </div>
-      {h.desc ? (
-        <div className="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
-          {h.desc}
-        </div>
-      ) : null}
-    </div>
-  ))}
-</div>
+                        <div
+                          key={`hl-${featuredItem.key}`}
+                          className="mt-6 grid gap-4 sm:grid-cols-3"
+                        >
+                          {featuredHighlights.map((h, i) => (
+                            <div
+                              key={`${featuredItem.key}-${h.title}-${i}`}
+                              className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-white/[0.03] p-4"
+                            >
+                              <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                                {h.title}
+                              </div>
+                              {h.desc ? (
+                                <div className="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+                                  {h.desc}
+                                </div>
+                              ) : null}
+                            </div>
+                          ))}
+                        </div>
                       </div>
                       <span className="shrink-0 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition">
                         View →
@@ -294,4 +304,4 @@ const Projects = () => {
   );
 };
 
-export default memo(Projects);
+export default Projects;
