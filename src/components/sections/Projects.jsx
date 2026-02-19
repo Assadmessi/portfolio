@@ -9,13 +9,19 @@ const Projects = () => {
   const [activeProject, setActiveProject] = useState(null);
   const { projects = [], sectionTitle } = projectsContent;
 
-  const { featured, rest } = useMemo(() => {
-    const list = Array.isArray(projects) ? projects : [];
-    return {
-      featured: list[0] || null,
-      rest: list.slice(1),
-    };
-  }, [projects]);
+  const [featuredIndex, setFeaturedIndex] = useState(0);
+
+const { featured, rest } = useMemo(() => {
+  const list = Array.isArray(projects) ? projects : [];
+  const safeIndex = Math.min(Math.max(featuredIndex, 0), Math.max(list.length - 1, 0));
+  const featuredItem = list[safeIndex] || null;
+
+  const restItems = list
+    .map((p, idx) => ({ p, idx }))
+    .filter((item) => item.idx !== safeIndex);
+
+  return { featured: featuredItem, rest: restItems };
+}, [projects, featuredIndex]);
 
   return (
     <>
@@ -134,108 +140,114 @@ const Projects = () => {
                 </div>
 
                 <motion.div variants={staggerContainer} className="rounded-3xl border border-slate-200/70 dark:border-white/10 overflow-hidden">
-                  {rest.slice(0, 3).map((p, idx) => (
-                    <motion.button variants={fadeUp}
-                      key={idx}
-                      type="button"
-                      onClick={() => setActiveProject(p)}
-                      className="w-full text-left px-5 py-4 bg-white/70 dark:bg-[#0B0F19]/40 hover:bg-slate-50 dark:hover:bg-white/5 transition flex items-center gap-4"
-                    >
-                      <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 w-6">
-                        {String(idx + 2).padStart(2, "0")}
-                      </div>
-                      <div className="min-w-0">
-                        <div className="font-semibold text-slate-900 dark:text-slate-100 truncate">
-                          {p.title}
-                        </div>
-                        <div className="text-sm text-slate-600 dark:text-slate-400 truncate">
-                          {p.desc}
-                        </div>
-                      </div>
-                      <div className="ml-auto text-slate-400">→</div>
-                    </motion.button>
-                  ))}
-                </motion.div>
+                  {rest.slice(0, 3).map((item) => (
+  <motion.button
+    variants={fadeUp}
+    key={item.idx}
+    type="button"
+    onClick={() => {
+      setFeaturedIndex(item.idx);
+      setActiveProject(item.p);
+    }}
+    className="w-full text-left px-5 py-4 bg-white/70 dark:bg-[#0B0F19]/40 hover:bg-slate-50 dark:hover:bg-white/5 transition flex items-center gap-4"
+  >
+    <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 w-6">
+      {String(item.idx + 1).padStart(2, "0")}
+    </div>
+    <div className="min-w-0">
+      <div className="font-semibold text-slate-900 dark:text-slate-100 truncate">
+        {item.p.title}
+      </div>
+      <div className="text-sm text-slate-600 dark:text-slate-400 truncate">
+        {item.p.desc}
+      </div>
+    </div>
+    <div className="ml-auto text-slate-400">→</div>
+  </motion.button>
+))}</motion.div>
               </div>
             </motion.div>
           ) : null}
 
           {/* Grid/list (Nubien-like: elegant rows) */}
           <motion.div variants={staggerContainer} className="grid gap-4">
-            {rest.map((p, i) => (
-              <motion.button variants={fadeUp}
-                key={i}
-                type="button"
-                onClick={() => setActiveProject(p)}
-                className="group w-full text-left nb-card nb-ring rounded-3xl p-4 sm:p-5 transition cursor-pointer"
-              >
-                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                  <div className="flex items-center gap-3 sm:w-16">
-                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                      {String(i + 2).padStart(2, "0")}
-                    </span>
-                  </div>
+            {rest.map((item) => (
+  <motion.button
+    variants={fadeUp}
+    key={item.idx}
+    type="button"
+    onClick={() => {
+      setFeaturedIndex(item.idx);
+      setActiveProject(item.p);
+    }}
+    className="group w-full text-left nb-card nb-ring rounded-3xl p-4 sm:p-5 transition cursor-pointer"
+  >
+    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+      <div className="flex items-center gap-3 sm:w-16">
+        <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+          {String(item.idx + 1).padStart(2, "0")}
+        </span>
+      </div>
 
-                  <div className="flex items-center gap-4 min-w-0 flex-1">
-                    <div className="relative h-16 w-24 sm:h-16 sm:w-28 rounded-2xl overflow-hidden bg-black/5 dark:bg-white/5 border border-slate-200/70 dark:border-white/10">
-                      <img
-                        src={p.image}
-                        alt={p.title}
-                        className="h-full w-full object-cover group-hover:scale-[1.03] transition duration-300"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    </div>
+      <div className="flex items-center gap-4 min-w-0 flex-1">
+        <div className="relative h-16 w-24 sm:h-16 sm:w-28 rounded-2xl overflow-hidden bg-black/5 dark:bg-white/5 border border-slate-200/70 dark:border-white/10">
+          <img
+            src={item.p.image}
+            alt={item.p.title}
+            className="h-full w-full object-cover group-hover:scale-[1.03] transition duration-300"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
 
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-3">
-                        <h3 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-slate-100 truncate">
-                          {p.title}
-                        </h3>
-                        {Array.isArray(p.tech) && p.tech.length > 0 ? (
-                          <span className="hidden sm:inline-flex nb-pill">
-                            {p.tech[0]}
-                          </span>
-                        ) : null}
-                      </div>
+        <div className="min-w-0">
+          <div className="flex items-center gap-3">
+            <h3 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-slate-100 truncate">
+              {item.p.title}
+            </h3>
+            {Array.isArray(item.p.tech) && item.p.tech.length > 0 ? (
+              <span className="hidden sm:inline-flex nb-pill">
+                {item.p.tech[0]}
+              </span>
+            ) : null}
+          </div>
 
-                      <p className="text-sm text-slate-700 dark:text-slate-400 mt-1 leading-relaxed line-clamp-2">
-                        {p.desc}
-                      </p>
-                    </div>
-                  </div>
+          <p className="text-sm text-slate-700 dark:text-slate-400 mt-1 leading-relaxed line-clamp-2">
+            {item.p.desc}
+          </p>
+        </div>
+      </div>
 
-                  <div className="sm:ml-auto flex items-center gap-3">
-                    {p.live ? (
-                      <a
-                        href={p.live}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
-                      >
-                        Live
-                      </a>
-                    ) : null}
-                    {p.github ? (
-                      <a
-                        href={p.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="text-sm font-semibold text-slate-600 dark:text-slate-300 hover:underline"
-                      >
-                        Code
-                      </a>
-                    ) : null}
-                    <span className="text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition">
-                      View →
-                    </span>
-                  </div>
-                </div>
-              </motion.button>
-            ))}
-          </motion.div>
+      <div className="sm:ml-auto flex items-center gap-3">
+        {item.p.live ? (
+          <a
+            href={item.p.live}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+          >
+            Live
+          </a>
+        ) : null}
+        {item.p.github ? (
+          <a
+            href={item.p.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="text-sm font-semibold text-slate-600 dark:text-slate-300 hover:underline"
+          >
+            Code
+          </a>
+        ) : null}
+        <span className="text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition">
+          View →
+        </span>
+      </div>
+    </div>
+  </motion.button>
+))}</motion.div>
         </div>
       </MotionSection>
 
