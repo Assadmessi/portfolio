@@ -6,6 +6,14 @@ import { Button, Card, HelperText, Input, PageFade, Textarea } from "../componen
 import { normalizeTags, safeStringArray, validateSite } from "../utils/validate";
 import CloudinaryUpload from "../components/CloudinaryUpload";
 
+const PROOF_ICON_KEYS = ["ui","dashboard","rocket","shield","zap","sparkles","code","globe","wand"];
+
+const DEFAULT_PROOF_BLOCKS = [
+  { title: "UI + Motion", desc: "Smooth interactions, scroll reveals, and clean component systems.", iconKey: "ui" },
+  { title: "Admin-ready UX", desc: "Dashboards, role-based flows, and content editing patterns.", iconKey: "dashboard" },
+  { title: "Production mindset", desc: "Performance, maintainability, and deploy-friendly structure.", iconKey: "sparkles" },
+];
+
 function SectionHeader({ title, desc, right }) {
   return (
     <div className="flex items-start justify-between gap-4">
@@ -18,34 +26,9 @@ function SectionHeader({ title, desc, right }) {
   );
 }
 
-const DEFAULT_TOOLBOX = {
-  pill: "Toolbox",
-  title: "Tools I use to ship fast",
-  intro: "A focused stack for clean UI, smooth motion, and easy content updates.",
-  chips: ["UI", "Motion", "Backend"],
-  items: [
-    { name: "React", hint: "UI" },
-    { name: "Tailwind", hint: "Design" },
-    { name: "Framer Motion", hint: "Motion" },
-    { name: "Firebase", hint: "Realtime" },
-    { name: "Vite", hint: "Build" },
-    { name: "Cloudinary", hint: "Assets" },
-  ],
-};
-
-function ensureDefaults(next) {
-  // Toolbox defaults (matches src/components/sections/Toolbox.jsx fallback)
-  if (!next.toolbox) next.toolbox = deepClone(DEFAULT_TOOLBOX);
-  if (!Array.isArray(next.toolbox.chips) || next.toolbox.chips.length === 0) next.toolbox.chips = deepClone(DEFAULT_TOOLBOX.chips);
-  if (!Array.isArray(next.toolbox.items) || next.toolbox.items.length === 0) next.toolbox.items = deepClone(DEFAULT_TOOLBOX.items);
-  return next;
-}
-
-
-
 export default function SiteSettings() {
-  const [draft, setDraft] = useState(() => ensureDefaults(deepClone(siteContent)));
-  const [baseline, setBaseline] = useState(() => ensureDefaults(ensureDefaults(deepClone(siteContent))));
+  const [draft, setDraft] = useState(() => deepClone(siteContent));
+  const [baseline, setBaseline] = useState(() => deepClone(siteContent));
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState("");
   const [errors, setErrors] = useState({});
@@ -53,7 +36,7 @@ export default function SiteSettings() {
   // Live updates from Firestore -> baseline. Only auto-merge when no unsaved edits.
   useEffect(() => {
     const sync = () => {
-      const next = ensureDefaults(deepClone(siteContent));
+      const next = deepClone(siteContent);
       setBaseline(next);
       setDraft((d) => (deepEqual(d, baseline) ? next : d));
     };
@@ -64,6 +47,19 @@ export default function SiteSettings() {
   }, []);
 
   const dirty = useMemo(() => !deepEqual(draft, baseline), [draft, baseline]);
+
+  // Ensure default blocks exist so the admin UI is never empty on fresh Firestore.
+  useEffect(() => {
+    setDraft((prev) => {
+      const next = deepClone(prev);
+      if (!Array.isArray(next?.about?.proofBlocks) || next.about.proofBlocks.length === 0) {
+        next.about = next.about ?? {};
+        next.about.proofBlocks = deepClone(DEFAULT_PROOF_BLOCKS);
+      }
+      return next;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function setByPath(path, value) {
     setDraft((prev) => {
@@ -137,14 +133,6 @@ export default function SiteSettings() {
     nextDraft.about = nextDraft.about ?? {};
     nextDraft.about.tags = normalizeTags(nextDraft.about.tags);
     nextDraft.about.paragraphs = safeStringArray(nextDraft.about.paragraphs);
-
-    // Ensure Toolbox has defaults so the admin shows meaningful values even on a fresh Firestore doc
-    nextDraft.toolbox = nextDraft.toolbox ?? deepClone(DEFAULT_TOOLBOX);
-    nextDraft.toolbox.chips = safeStringArray(nextDraft.toolbox.chips).filter(Boolean);
-    nextDraft.toolbox.items = Array.isArray(nextDraft.toolbox.items)
-      ? nextDraft.toolbox.items.map((it) => ({ name: (it?.name ?? "").trim(), hint: (it?.hint ?? "").trim() })).filter((it) => it.name)
-      : deepClone(DEFAULT_TOOLBOX.items);
-
 
     const nextErrors = validateSite(nextDraft);
     setErrors(nextErrors);
@@ -527,13 +515,114 @@ export default function SiteSettings() {
                     <Input value={b?.desc ?? ""} onChange={(e) => setArrayItem("about.proofBlocks", idx, { ...b, desc: e.target.value })} />
                   </div>
                   <div>
-                    <div className="text-xs font-medium mb-1">Icon key</div>
-                    <Input
-                      value={b?.iconKey ?? ""}
-                      onChange={(e) => setArrayItem("about.proofBlocks", idx, { ...b, iconKey: e.target.value })}
-                      placeholder="ui | dashboard | rocket | shield | zap | sparkles | code | globe | wand"
-                    />
-                    <HelperText>Use one of: ui, dashboard, rocket, shield, zap, sparkles, code, globe, wand</HelperText>
+                    <div className="text-xs font-medium mb-1">Icon</div>
+
+                    {/* Custom icon (Cloudinary) overrides iconKey */}
+                    {b?.iconUrl ? (
+                      <div className="flex items-center justify-between gap-3 rounded-xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 px-3 py-2">
+                        <div className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-200">
+                          <img src={b.iconUrl} alt="" className="w-6 h-6 object-contain" loading="lazy" />
+                          <span className="truncate">Custom icon</span>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          onClick={() => setArrayItem("about.proofBlocks", idx, { ...b, iconUrl: "" })}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="grid gap-2">
+                        <select
+                          className="w-full rounded-xl border border-black/10 dark:border-white/10 bg-white/80 dark:bg-white/5 px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500/40"
+                          value={b?.iconKey ?? "ui"}
+                          onChange={(e) => setArrayItem("about.proofBlocks", idx, { ...b, iconKey: e.target.value })}
+                        >
+                          {PROOF_ICON_KEYS.map((k) => (
+                            <option key={k} value={k}>
+                              {k}
+                            </option>
+                          ))}
+                        </select>
+
+                        <div className="flex items-center gap-2 rounded-xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 px-3 py-2">
+                          {/* Preview matches the About section icon set */}
+                          <span className="shrink-0 text-slate-700 dark:text-slate-200">
+                            {{
+                              ui: (
+                                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M4 7h16M4 12h16M4 17h10" />
+                                </svg>
+                              ),
+                              dashboard: (
+                                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M4 4h16v6H4zM4 14h7v6H4zM13 14h7v6h-7z" />
+                                </svg>
+                              ),
+                              rocket: (
+                                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M14 4c4 1 6 4 6 8-4 0-7 2-8 6-2 0-5-2-6-6 4 0 7-2 8-8z" />
+                                  <path d="M9 15l-2 2" />
+                                </svg>
+                              ),
+                              shield: (
+                                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M12 2l7 4v6c0 5-3 9-7 10-4-1-7-5-7-10V6l7-4z" />
+                                </svg>
+                              ),
+                              zap: (
+                                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M13 2L3 14h8l-1 8 11-14h-8l1-6z" />
+                                </svg>
+                              ),
+                              sparkles: (
+                                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M12 2l3 7h7l-5.5 4.3L18.5 21 12 16.8 5.5 21l2-7.7L2 9h7z" />
+                                </svg>
+                              ),
+                              code: (
+                                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M8 9l-3 3 3 3" />
+                                  <path d="M16 9l3 3-3 3" />
+                                  <path d="M14 6l-4 12" />
+                                </svg>
+                              ),
+                              globe: (
+                                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <circle cx="12" cy="12" r="10" />
+                                  <path d="M2 12h20" />
+                                  <path d="M12 2a15 15 0 0 1 0 20" />
+                                  <path d="M12 2a15 15 0 0 0 0 20" />
+                                </svg>
+                              ),
+                              wand: (
+                                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M4 20l9-9" />
+                                  <path d="M14 11l6-6" />
+                                  <path d="M15 5l4 4" />
+                                  <path d="M9 3l1 2" />
+                                  <path d="M3 9l2 1" />
+                                  <path d="M21 15l-2-1" />
+                                  <path d="M15 21l-1-2" />
+                                </svg>
+                              ),
+                            }[b?.iconKey ?? "ui"]}
+                          </span>
+                          <span className="text-xs text-slate-600 dark:text-slate-300">Preview</span>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="mt-2">
+                      <CloudinaryUpload
+                        folder="portfolio/proof-icons"
+                        allowedFormats={["png", "jpg", "jpeg", "webp", "svg"]}
+                        resourceType="image"
+                        onUploaded={(url) => setArrayItem("about.proofBlocks", idx, { ...b, iconUrl: url })}
+                      />
+                      <HelperText>Optional: upload a custom icon (overrides the dropdown).</HelperText>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -560,20 +649,20 @@ export default function SiteSettings() {
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <div className="text-xs font-medium mb-1">Pill label</div>
-              <Input value={draft?.toolbox?.pill ?? DEFAULT_TOOLBOX.pill} onChange={(e) => setByPath("toolbox.pill", e.target.value)} />
+              <Input value={draft?.toolbox?.pill ?? ""} onChange={(e) => setByPath("toolbox.pill", e.target.value)} />
             </div>
             <div>
               <div className="text-xs font-medium mb-1">Title</div>
-              <Input value={draft?.toolbox?.title ?? DEFAULT_TOOLBOX.title} onChange={(e) => setByPath("toolbox.title", e.target.value)} />
+              <Input value={draft?.toolbox?.title ?? ""} onChange={(e) => setByPath("toolbox.title", e.target.value)} />
             </div>
             <div className="md:col-span-2">
               <div className="text-xs font-medium mb-1">Intro</div>
-              <Textarea rows={3} value={draft?.toolbox?.intro ?? DEFAULT_TOOLBOX.intro} onChange={(e) => setByPath("toolbox.intro", e.target.value)} />
+              <Textarea rows={3} value={draft?.toolbox?.intro ?? ""} onChange={(e) => setByPath("toolbox.intro", e.target.value)} />
             </div>
             <div className="md:col-span-2">
               <div className="text-xs font-medium mb-1">Chips (comma separated)</div>
               <Input
-                value={Array.isArray(draft?.toolbox?.chips) ? draft.toolbox.chips.join(", ") : DEFAULT_TOOLBOX.chips.join(", ")}
+                value={Array.isArray(draft?.toolbox?.chips) ? draft.toolbox.chips.join(", ") : ""}
                 onChange={(e) => {
                   const chips = e.target.value.split(",").map((s) => s.trim()).filter(Boolean);
                   setByPath("toolbox.chips", chips);
@@ -584,7 +673,7 @@ export default function SiteSettings() {
           </div>
 
           <div className="mt-4 space-y-4">
-            {(Array.isArray(draft?.toolbox?.items) ? draft.toolbox.items : DEFAULT_TOOLBOX.items).map((it, idx) => (
+            {(draft?.toolbox?.items ?? []).map((it, idx) => (
               <div key={idx} className="rounded-2xl border border-black/10 dark:border-white/10 p-4">
                 <div className="flex items-center justify-between gap-3">
                   <div className="text-sm font-semibold">Item {idx + 1}</div>

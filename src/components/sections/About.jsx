@@ -77,7 +77,9 @@ const About = () => {
           {(about.proofBlocks?.length ? about.proofBlocks : defaultProof).map(
             (item) => {
               const iconEl =
-                item.icon ||
+                (item.iconUrl ? (
+                  <img src={item.iconUrl} alt="" className="w-5 h-5 object-contain" loading="lazy" />
+                ) : item.icon) ||
                 {
                   ui: (
                     <svg
