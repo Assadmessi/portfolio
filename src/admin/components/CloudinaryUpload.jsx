@@ -5,18 +5,28 @@ import { Button, HelperText } from "./UI";
  * Cloudinary Upload Widget (admin-only).
  * Requires:
  *  - VITE_CLOUDINARY_CLOUD_NAME
- *  - VITE_CLOUDINARY_UPLOAD_PRESET (unsigned preset)
+ *  - VITE_CLOUDINARY_UPLOAD_PRESET (unsigned preset) OR a preset from `presetEnvKey`
  *
- * If env vars are missing, this component will show guidance and disable the upload button.
+ * Props:
+ *  - folder: Cloudinary folder path
+ *  - allowedFormats: ["png","jpg",...]
+ *  - resourceType: "image" | "raw" (use "raw" for pdf)
+ *  - presetEnvKey: e.g. "VITE_CLOUDINARY_RESUME_UPLOAD_PRESET"
  */
-export default function CloudinaryUpload({ onUploaded, folder = "portfolio/projects" }) {
+export default function CloudinaryUpload({
+  onUploaded,
+  folder = "portfolio/projects",
+  allowedFormats = ["png", "jpg", "jpeg", "webp", "gif"],
+  resourceType = "image",
+  presetEnvKey,
+}) {
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
   const widgetRef = useRef(null);
 
   const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+  const uploadPreset = presetEnvKey ? import.meta.env[presetEnvKey] : import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
   const enabled = Boolean(cloudName && uploadPreset);
 
@@ -41,7 +51,7 @@ export default function CloudinaryUpload({ onUploaded, folder = "portfolio/proje
     return () => {
       // Do not remove script (shared singleton) — safe to keep.
     };
-  }, [enabled]);
+  }, [enabled, scriptUrl]);
 
   const widgetOptions = useMemo(() => {
     if (!enabled) return null;
@@ -52,18 +62,19 @@ export default function CloudinaryUpload({ onUploaded, folder = "portfolio/proje
       multiple: false,
       maxFiles: 1,
       folder,
-      clientAllowedFormats: ["png", "jpg", "jpeg", "webp", "gif"],
+      clientAllowedFormats: allowedFormats,
       showAdvancedOptions: false,
       cropping: false,
       defaultSource: "local",
       secure: true,
+      resourceType,
     };
-  }, [enabled, cloudName, uploadPreset, folder]);
+  }, [enabled, cloudName, uploadPreset, folder, allowedFormats, resourceType]);
 
   function open() {
     setMsg("");
     if (!enabled) {
-      setMsg("Set VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET in your environment to enable uploads.");
+      setMsg("Set VITE_CLOUDINARY_CLOUD_NAME and an upload preset env var to enable uploads.");
       return;
     }
     if (!ready || !window.cloudinary) {
@@ -84,7 +95,7 @@ export default function CloudinaryUpload({ onUploaded, folder = "portfolio/proje
           const url = result?.info?.secure_url || result?.info?.url;
           if (url) {
             onUploaded?.(url);
-            setMsg("Uploaded. Thumbnail URL updated.");
+            setMsg("Uploaded. URL updated.");
           } else {
             setMsg("Upload succeeded but no URL returned.");
           }
@@ -100,19 +111,23 @@ export default function CloudinaryUpload({ onUploaded, folder = "portfolio/proje
   }
 
   return (
-    <div className="space-y-2">
-      <div className="flex flex-wrap items-center gap-2">
-        <Button type="button" onClick={open} disabled={!enabled || !ready || busy}>
-          {busy ? "Uploading..." : "Upload to Cloudinary"}
-        </Button>
-        {!enabled ? (
-          <div className="text-xs text-slate-600 dark:text-slate-300">
-            Set <span className="font-mono">VITE_CLOUDINARY_CLOUD_NAME</span> and <span className="font-mono">VITE_CLOUDINARY_UPLOAD_PRESET</span>.
-          </div>
-        ) : null}
-      </div>
+    <div>
+      <Button tone="neutral" onClick={open} disabled={!enabled || busy}>
+        {busy ? "Uploading..." : "Upload"}
+      </Button>
 
-      {msg ? <HelperText tone={msg.includes("Uploaded") ? "success" : msg.includes("Failed") ? "error" : "neutral"}>{msg}</HelperText> : null}
+      {!enabled ? (
+        <div className="mt-2 text-xs text-slate-600 dark:text-slate-300">
+          Set <span className="font-mono">VITE_CLOUDINARY_CLOUD_NAME</span> and{" "}
+          <span className="font-mono">{presetEnvKey ?? "VITE_CLOUDINARY_UPLOAD_PRESET"}</span>.
+        </div>
+      ) : null}
+
+      {msg ? (
+        <HelperText tone={msg.includes("Uploaded") ? "success" : msg.includes("failed") ? "error" : "neutral"}>
+          {msg}
+        </HelperText>
+      ) : null}
     </div>
   );
 }

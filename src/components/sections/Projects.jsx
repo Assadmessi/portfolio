@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { MotionSection } from "../../animations/MotionWrappers";
 import { fadeUp, staggerContainer } from "../../animations/variants";
 import ProjectModal from "../common/ProjectModal";
+import { ProofIcon } from "../common/IconLibrary";
 import { projectsContent } from "../../content";
 
 // Supports data coming from JSON (array) OR admin/Firestore (object keyed by index)
@@ -33,7 +34,7 @@ const normalizeProjects = (raw) => {
 // Supported:
 // - highlights: [ { title, desc }, ... ]
 // - highlights: { "0": { title, desc }, "1": { ... } }
-const normalizeHighlights = (raw) => {
+const normalizeProof = (raw) => {
   if (!raw) return [];
   const arr = Array.isArray(raw)
     ? raw
@@ -50,15 +51,19 @@ const normalizeHighlights = (raw) => {
             })
             .map(([, v]) => v)
         : [];
+
   return arr
     .filter(Boolean)
-    .map((h) => {
-      if (typeof h === "string") return { title: h, desc: "" };
-      if (typeof h === "object") {
-        return {
-          title: h.title ?? h.label ?? h.name ?? "",
-          desc: h.desc ?? h.description ?? "",
-        };
+    .map((it) => {
+      if (typeof it === "string") return { title: it, desc: "", iconKey: "spark", iconUrl: "" };
+      return {
+        title: it?.title ?? "",
+        desc: it?.desc ?? "",
+        iconKey: it?.iconKey ?? "spark",
+        iconUrl: it?.iconUrl ?? "",
+      };
+    });
+};
       }
       return { title: String(h), desc: "" };
     })
@@ -75,7 +80,7 @@ const fallbackHighlights = (project) => {
 };
 
 const getHighlights = (project) => {
-  const normalized = normalizeHighlights(project?.highlights);
+  const normalized = normalizeProof(project?.proof ?? project?.highlights);
   const three = normalized.slice(0, 3);
   if (three.length === 3) return three;
   return [...three, ...fallbackHighlights(project)].slice(0, 3);
@@ -174,8 +179,14 @@ const Projects = () => {
                               key={`${featuredKey}-${idx}-${h.title}`}
                               className="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 px-4 py-3"
                             >
-                              <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                                {h.title}
+                              <div className="flex items-start gap-2">
+                                <span className="mt-0.5 inline-flex items-center justify-center w-8 h-8 rounded-xl bg-slate-900/5 dark:bg-white/10 text-slate-900 dark:text-slate-100">
+                                  <ProofIcon iconKey={h.iconKey} iconUrl={h.iconUrl} />
+                                </span>
+                                <div className="min-w-0">
+                                  <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                                    {h.title}
+                                  </div>
                               </div>
                               {h.desc ? (
                                 <div className="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-400">

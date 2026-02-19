@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ProofIcon } from "./IconLibrary";
 
 const backdrop = {
   hidden: { opacity: 0 },
@@ -16,6 +17,23 @@ const modal = {
   },
 };
 
+
+const normalizeProof = (raw) => {
+  if (!raw) return [];
+  const arr = Array.isArray(raw)
+    ? raw
+    : typeof raw === "object"
+      ? Object.entries(raw)
+          .sort(([a], [b]) => Number(a) - Number(b))
+          .map(([, v]) => v)
+      : [];
+  return arr.filter(Boolean).map((it) => ({
+    title: typeof it === "string" ? it : it?.title ?? "",
+    desc: typeof it === "string" ? "" : it?.desc ?? "",
+    iconKey: typeof it === "string" ? "spark" : it?.iconKey ?? "spark",
+    iconUrl: typeof it === "string" ? "" : it?.iconUrl ?? "",
+  }));
+};
 const ProjectModal = ({ project, onClose }) => {
   useEffect(() => {
     if (!project) return;
@@ -73,6 +91,59 @@ const ProjectModal = ({ project, onClose }) => {
             <h3 className="text-2xl font-bold mb-3">{project.title}</h3>
 
             <p className="text-slate-700 dark:text-slate-400 mb-6">{project.desc}</p>
+
+            {(project.problem || project.system || project.solution || project.impact) ? (
+              <div className="space-y-4 mb-6">
+                {project.problem ? (
+                  <div>
+                    <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Problem</div>
+                    <div className="mt-1 text-sm text-slate-700 dark:text-slate-300">{project.problem}</div>
+                  </div>
+                ) : null}
+                {project.system ? (
+                  <div>
+                    <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">System</div>
+                    <div className="mt-1 text-sm text-slate-700 dark:text-slate-300">{project.system}</div>
+                  </div>
+                ) : null}
+                {project.solution ? (
+                  <div>
+                    <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Solution</div>
+                    <div className="mt-1 text-sm text-slate-700 dark:text-slate-300">{project.solution}</div>
+                  </div>
+                ) : null}
+                {project.impact ? (
+                  <div>
+                    <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Impact</div>
+                    <div className="mt-1 text-sm text-slate-700 dark:text-slate-300">{project.impact}</div>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+
+            {normalizeProof(project.proof ?? project.highlights).length ? (
+              <div className="mb-6">
+                <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-2">
+                  Proof
+                </div>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  {normalizeProof(project.proof ?? project.highlights).slice(0, 3).map((h, i) => (
+                    <div key={`${project.title}-proof-${i}`} className="rounded-xl border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 p-3">
+                      <div className="flex items-start gap-2">
+                        <span className="mt-0.5 inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white/60 dark:bg-white/10 text-slate-900 dark:text-slate-100">
+                          <ProofIcon iconKey={h.iconKey} iconUrl={h.iconUrl} />
+                        </span>
+                        <div className="min-w-0">
+                          <div className="text-sm font-semibold">{h.title}</div>
+                          {h.desc ? <div className="mt-1 text-xs text-slate-600 dark:text-slate-400">{h.desc}</div> : null}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
 
             <div className="flex justify-end">
               <button

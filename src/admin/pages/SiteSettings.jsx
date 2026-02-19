@@ -4,6 +4,7 @@ import { saveSiteContent } from "../../firebase/contentSync";
 import { deepClone, deepEqual } from "../utils/deep";
 import { Button, Card, HelperText, Input, PageFade, Textarea } from "../components/UI";
 import { normalizeTags, safeStringArray, validateSite } from "../utils/validate";
+import CloudinaryUpload from "../components/CloudinaryUpload";
 
 function SectionHeader({ title, desc, right }) {
   return (
@@ -189,6 +190,17 @@ export default function SiteSettings() {
                 placeholder="/resume.pdf"
               />
               {errors["links.resumeUrl"] ? <HelperText tone="error">{errors["links.resumeUrl"]}</HelperText> : null}
+              <div className="mt-2">
+                <CloudinaryUpload
+                  folder="portfolio/files"
+                  resourceType="raw"
+                  allowedFormats={["pdf"]}
+                  presetEnvKey="VITE_CLOUDINARY_RESUME_UPLOAD_PRESET"
+                  onUploaded={(url) => setByPath("links.resumeUrl", url)}
+                />
+                <HelperText>Upload your resume PDF to Cloudinary and auto-fill the URL.</HelperText>
+              </div>
+
             </div>
           </div>
         </Card>

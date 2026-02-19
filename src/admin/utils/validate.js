@@ -98,6 +98,14 @@ export function validateProjects(projectsDoc) {
       if (p?.image && !isUrlOrHashOrRelative(p.image)) errors[`projects.${idx}.image`] = "Thumbnail URL invalid.";
       if (p?.links?.live && !isUrlOrHashOrRelative(p.links.live)) errors[`projects.${idx}.links.live`] = "Live link invalid.";
       if (p?.links?.repo && !isUrlOrHashOrRelative(p.links.repo)) errors[`projects.${idx}.links.repo`] = "Repo link invalid.";
+      if (p?.links?.pdf && !isUrlOrHashOrRelative(p.links.pdf)) errors[`projects.${idx}.links.pdf`] = "PDF link invalid.";
+
+      const proof = p?.proof;
+      const proofArr = Array.isArray(proof) ? proof : (proof && typeof proof === "object") ? Object.values(proof) : [];
+      proofArr.forEach((it, j) => {
+        if (!it) return;
+        if (it.iconUrl && !isUrlOrHashOrRelative(it.iconUrl)) errors[`projects.${idx}.proof.${j}.iconUrl`] = "Icon URL invalid.";
+      });
     });
   }
   return errors;

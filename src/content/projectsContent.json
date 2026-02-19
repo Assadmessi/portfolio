@@ -8,7 +8,33 @@
       "problem": "You need a production-ready UI foundation without reinventing layouts every time.",
       "system": "Reusable components + consistent motion + responsive grid + theme support.",
       "solution": "A clean, responsive startup landing with premium motion + sections.",
-      "impact": "Faster shipping, consistent UX, and a strong base to plug real data/features into."
+      "impact": "Faster shipping, consistent UX, and a strong base to plug real data/features into.",
+      "tags": [],
+      "links": {
+        "live": "",
+        "repo": "",
+        "pdf": ""
+      },
+      "proof": [
+        {
+          "title": "",
+          "desc": "",
+          "iconKey": "spark",
+          "iconUrl": ""
+        },
+        {
+          "title": "",
+          "desc": "",
+          "iconKey": "spark",
+          "iconUrl": ""
+        },
+        {
+          "title": "",
+          "desc": "",
+          "iconKey": "spark",
+          "iconUrl": ""
+        }
+      ]
     },
     {
       "title": "Admin Dashboard UI",
@@ -17,7 +43,33 @@
       "problem": "You need a production-ready UI foundation without reinventing layouts every time.",
       "system": "Reusable components + consistent motion + responsive grid + theme support.",
       "solution": "Modern dashboard layout patterns (cards, tables, states) ready to wire to data.",
-      "impact": "Faster shipping, consistent UX, and a strong base to plug real data/features into."
+      "impact": "Faster shipping, consistent UX, and a strong base to plug real data/features into.",
+      "tags": [],
+      "links": {
+        "live": "",
+        "repo": "",
+        "pdf": ""
+      },
+      "proof": [
+        {
+          "title": "",
+          "desc": "",
+          "iconKey": "spark",
+          "iconUrl": ""
+        },
+        {
+          "title": "",
+          "desc": "",
+          "iconKey": "spark",
+          "iconUrl": ""
+        },
+        {
+          "title": "",
+          "desc": "",
+          "iconKey": "spark",
+          "iconUrl": ""
+        }
+      ]
     },
     {
       "title": "Auth + Profile Flow",
@@ -26,7 +78,33 @@
       "problem": "You need a production-ready UI foundation without reinventing layouts every time.",
       "system": "Reusable components + consistent motion + responsive grid + theme support.",
       "solution": "Login/signup screens with polished forms, states, and UX details.",
-      "impact": "Faster shipping, consistent UX, and a strong base to plug real data/features into."
+      "impact": "Faster shipping, consistent UX, and a strong base to plug real data/features into.",
+      "tags": [],
+      "links": {
+        "live": "",
+        "repo": "",
+        "pdf": ""
+      },
+      "proof": [
+        {
+          "title": "",
+          "desc": "",
+          "iconKey": "spark",
+          "iconUrl": ""
+        },
+        {
+          "title": "",
+          "desc": "",
+          "iconKey": "spark",
+          "iconUrl": ""
+        },
+        {
+          "title": "",
+          "desc": "",
+          "iconKey": "spark",
+          "iconUrl": ""
+        }
+      ]
     }
   ]
 }
