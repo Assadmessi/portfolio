@@ -37,8 +37,30 @@ const getDesc = (p) => p?.description ?? p?.desc ?? "";
 const getHighlights = (p) => {
   const raw = p?.highlights ?? p?.bullets ?? p?.points;
 
-  if (Array.isArray(raw) && raw.length) {
-    return raw
+  // Firestore/admin panels sometimes store arrays as objects keyed by index.
+  // Support:
+  // - highlights: [ {title, desc}, ... ]
+  // - highlights: { "0": {title, desc}, "1": {...} }
+  const normalizeHighlights = (v) => {
+    if (!v) return [];
+    if (Array.isArray(v)) return v;
+    if (typeof v === "object") {
+      return Object.entries(v)
+        .sort(([a], [b]) => {
+          const na = Number(a);
+          const nb = Number(b);
+          if (!Number.isNaN(na) && !Number.isNaN(nb)) return na - nb;
+          return String(a).localeCompare(String(b));
+        })
+        .map(([, val]) => val);
+    }
+    return [];
+  };
+
+  const arr = normalizeHighlights(raw);
+
+  if (arr.length) {
+    return arr
       .map((item) => {
         if (!item) return null;
         if (typeof item === "string") return { title: item, desc: "" };
