@@ -8,7 +8,21 @@
       "problem": "You need a production-ready UI foundation without reinventing layouts every time.",
       "system": "Reusable components + consistent motion + responsive grid + theme support.",
       "solution": "A clean, responsive startup landing with premium motion + sections.",
-      "impact": "Faster shipping, consistent UX, and a strong base to plug real data/features into."
+      "impact": "Faster shipping, consistent UX, and a strong base to plug real data/features into.",
+      "highlights": [
+        {
+          "title": "Responsive sections",
+          "desc": "Hero, features, pricing, and CTA blocks tuned for all screen sizes."
+        },
+        {
+          "title": "Motion system",
+          "desc": "Scroll reveals and micro-interactions powered by Framer Motion variants."
+        },
+        {
+          "title": "Theme-ready",
+          "desc": "Clean light/dark styling and reusable components for fast iterations."
+        }
+      ]
     },
     {
       "title": "Admin Dashboard UI",
@@ -17,7 +31,21 @@
       "problem": "You need a production-ready UI foundation without reinventing layouts every time.",
       "system": "Reusable components + consistent motion + responsive grid + theme support.",
       "solution": "Modern dashboard layout patterns (cards, tables, states) ready to wire to data.",
-      "impact": "Faster shipping, consistent UX, and a strong base to plug real data/features into."
+      "impact": "Faster shipping, consistent UX, and a strong base to plug real data/features into.",
+      "highlights": [
+        {
+          "title": "SaaS dashboard patterns",
+          "desc": "Cards, tables, and loading/empty states designed like real products."
+        },
+        {
+          "title": "Scalable component system",
+          "desc": "Consistent spacing and UI tokens so new screens ship faster."
+        },
+        {
+          "title": "Data-ready layout",
+          "desc": "Structured to plug into Firebase/REST APIs without redesigning the UI."
+        }
+      ]
     },
     {
       "title": "Auth + Profile Flow",
@@ -26,7 +54,21 @@
       "problem": "You need a production-ready UI foundation without reinventing layouts every time.",
       "system": "Reusable components + consistent motion + responsive grid + theme support.",
       "solution": "Login/signup screens with polished forms, states, and UX details.",
-      "impact": "Faster shipping, consistent UX, and a strong base to plug real data/features into."
+      "impact": "Faster shipping, consistent UX, and a strong base to plug real data/features into.",
+      "highlights": [
+        {
+          "title": "Polished form UX",
+          "desc": "Validation, error states, and focus handling for smooth sign-in."
+        },
+        {
+          "title": "Complete user flow",
+          "desc": "Login, signup, and profile screens designed as one cohesive journey."
+        },
+        {
+          "title": "Security-minded UI",
+          "desc": "Password rules, feedback, and safe defaults built into the interface."
+        }
+      ]
     }
   ]
 }

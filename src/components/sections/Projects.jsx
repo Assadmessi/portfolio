@@ -35,9 +35,29 @@ const getDesc = (p) => p?.description ?? p?.desc ?? "";
 // Featured micro-highlights (Framer/Nubien-style).
 // If your content has `highlights: string[]` it will use that; otherwise it falls back to defaults.
 const getHighlights = (p) => {
-  const list = p?.highlights ?? p?.bullets ?? p?.points;
-  if (Array.isArray(list) && list.length) return list.filter(Boolean).slice(0, 3);
-  return ["Problem solving", "UI + Motion polish", "Production-ready build"];
+  const raw = p?.highlights ?? p?.bullets ?? p?.points;
+
+  if (Array.isArray(raw) && raw.length) {
+    return raw
+      .map((item) => {
+        if (!item) return null;
+        if (typeof item === "string") return { title: item, desc: "" };
+        if (typeof item === "object") {
+          const title = item.title ?? item.label ?? item.name ?? "";
+          const desc = item.desc ?? item.description ?? "";
+          return title ? { title, desc } : null;
+        }
+        return null;
+      })
+      .filter(Boolean)
+      .slice(0, 3);
+  }
+
+  return [
+    { title: "Problem solving", desc: "Turn vague requirements into clear UI and working features." },
+    { title: "UI + Motion polish", desc: "Smooth interactions that make the product feel premium." },
+    { title: "Production-ready build", desc: "Structured components, responsiveness, and clean code." },
+  ];
 };
 
 const Projects = () => {
@@ -122,17 +142,23 @@ const Projects = () => {
                           {getDesc(featuredItem.p)}
                         </p>
 
-                        <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                          {getHighlights(featuredItem.p).map((h, i) => (
-                            <div
-                              key={i}
-                              className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300"
-                            >
-                              <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                              <span className="leading-snug">{h}</span>
-                            </div>
-                          ))}
-                        </div>
+                        <div className="mt-6 grid gap-4 sm:grid-cols-3">
+  {getHighlights(featuredItem.p).map((h, i) => (
+    <div
+      key={i}
+      className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-white/[0.03] p-4"
+    >
+      <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+        {h.title}
+      </div>
+      {h.desc ? (
+        <div className="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+          {h.desc}
+        </div>
+      ) : null}
+    </div>
+  ))}
+</div>
                       </div>
                       <span className="shrink-0 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition">
                         View →
