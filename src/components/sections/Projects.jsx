@@ -153,7 +153,7 @@ const Projects = () => {
                         key={item.key}
                         type="button"
                         onClick={() => !isActive && swapFeatured(item)}
-                        className={`w-full text-left px-5 py-4 bg-white/70 dark:bg-[#0B0F19]/40 transition flex items-center ${isActive ? "opacity-70 cursor-default" : "hover:bg-slate-50 dark:hover:bg-white/5 cursor-pointer"}`} gap-4"
+                        className={`w-full text-left px-5 py-4 bg-white/70 dark:bg-[#0B0F19]/40 transition flex items-center gap-4 ${isActive ? "opacity-70 cursor-default" : "hover:bg-slate-50 dark:hover:bg-white/5 cursor-pointer"}`}
                       >
                         <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 w-6">
                           {String(item.idx + 1).padStart(2, "0")}
