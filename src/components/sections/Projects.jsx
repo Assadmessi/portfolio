@@ -155,6 +155,8 @@ const Projects = () => {
               {items.length ? (
                 <motion.div
                   variants={staggerContainer}
+                  initial={false}
+                  animate="visible"
                   className="rounded-3xl border border-slate-200/70 dark:border-white/10 overflow-hidden"
                 >
                   {items.map((item) => {
@@ -163,6 +165,7 @@ const Projects = () => {
                       <motion.button
                         key={item.key}
                         variants={fadeUp}
+                        initial={false}
                         type="button"
                         onClick={() => !isActive && swapFeatured(item)}
                         className={`w-full text-left px-5 py-4 bg-white/70 dark:bg-[#0B0F19]/40 transition flex items-center gap-4 ${
