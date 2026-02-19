@@ -405,8 +405,203 @@ export default function SiteSettings() {
           </div>
         </Card>
 
+        <Card title="How the process works" subtitle="Edit the step cards shown under Services.">
+          <div className="space-y-4">
+            {(draft?.services?.processSteps ?? []).map((step, idx) => (
+              <div key={idx} className="rounded-2xl border border-black/10 dark:border-white/10 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="text-sm font-semibold">Step {idx + 1}</div>
+                  <Button variant="ghost" type="button" onClick={() => removeFromArray("services.processSteps", idx)}>
+                    Remove
+                  </Button>
+                </div>
+                <div className="mt-3 grid md:grid-cols-2 gap-3">
+                  <div>
+                    <div className="text-xs font-medium mb-1">Title</div>
+                    <Input
+                      value={step?.title ?? ""}
+                      onChange={(e) => {
+                        setDraft((prev) => {
+                          const next = deepClone(prev);
+                          next.services.processSteps[idx].title = e.target.value;
+                          return next;
+                        });
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <div className="text-xs font-medium mb-1">Description</div>
+                    <Input
+                      value={step?.desc ?? ""}
+                      onChange={(e) => {
+                        setDraft((prev) => {
+                          const next = deepClone(prev);
+                          next.services.processSteps[idx].desc = e.target.value;
+                          return next;
+                        });
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            <Button
+              variant="outline"
+              type="button"
+              onClick={() => addToArray("services.processSteps", { title: "New step", desc: "Describe the step" })}
+            >
+              + Add process step
+            </Button>
+          </div>
+        </Card>
+
+        <Card title="How I Work bullet points" subtitle="Shown in the How I Work section.">
+          <div>
+            <div className="text-xs font-medium mb-1">Points (one per line)</div>
+            <Textarea
+              rows={6}
+              value={(draft?.howIWork?.points ?? []).join("\n")}
+              onChange={(e) => {
+                const points = e.target.value
+                  .split("\n")
+                  .map((s) => s.trim())
+                  .filter(Boolean);
+                setByPath("howIWork.points", points);
+              }}
+              placeholder="Build mobile-first, responsive layouts\nWrite reusable React components\n..."
+            />
+          </div>
+        </Card>
+
+        <Card title="About proof cards" subtitle="These are the 3 proof cards under the About section (not Projects).">
+          <div className="space-y-4">
+            {(draft?.about?.proofBlocks ?? []).map((b, idx) => (
+              <div key={idx} className="rounded-2xl border border-black/10 dark:border-white/10 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="text-sm font-semibold">Proof card {idx + 1}</div>
+                  <Button variant="ghost" type="button" onClick={() => removeFromArray("about.proofBlocks", idx)}>
+                    Remove
+                  </Button>
+                </div>
+                <div className="mt-3 grid md:grid-cols-3 gap-3">
+                  <div>
+                    <div className="text-xs font-medium mb-1">Title</div>
+                    <Input value={b?.title ?? ""} onChange={(e) => setArrayItem("about.proofBlocks", idx, { ...b, title: e.target.value })} />
+                  </div>
+                  <div className="md:col-span-2">
+                    <div className="text-xs font-medium mb-1">Description</div>
+                    <Input value={b?.desc ?? ""} onChange={(e) => setArrayItem("about.proofBlocks", idx, { ...b, desc: e.target.value })} />
+                  </div>
+                  <div>
+                    <div className="text-xs font-medium mb-1">Icon key</div>
+                    <Input
+                      value={b?.iconKey ?? ""}
+                      onChange={(e) => setArrayItem("about.proofBlocks", idx, { ...b, iconKey: e.target.value })}
+                      placeholder="ui | dashboard | rocket | shield | zap | sparkles | code | globe | wand"
+                    />
+                    <HelperText>Use one of: ui, dashboard, rocket, shield, zap, sparkles, code, globe, wand</HelperText>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            <Button
+              variant="outline"
+              type="button"
+              onClick={() => addToArray("about.proofBlocks", { title: "New proof", desc: "Short supporting line", iconKey: "ui" })}
+            >
+              + Add proof card
+            </Button>
+
+            {!(draft?.about?.proofBlocks ?? []).length ? (
+              <HelperText>
+                If this list is empty, the About section will fall back to the built-in default proof cards.
+                Add 3 items here to fully control them from the admin.
+              </HelperText>
+            ) : null}
+          </div>
+        </Card>
+
+        <Card title="Toolbox section" subtitle="Edit the Toolbox section content.">
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <div className="text-xs font-medium mb-1">Pill label</div>
+              <Input value={draft?.toolbox?.pill ?? ""} onChange={(e) => setByPath("toolbox.pill", e.target.value)} />
+            </div>
+            <div>
+              <div className="text-xs font-medium mb-1">Title</div>
+              <Input value={draft?.toolbox?.title ?? ""} onChange={(e) => setByPath("toolbox.title", e.target.value)} />
+            </div>
+            <div className="md:col-span-2">
+              <div className="text-xs font-medium mb-1">Intro</div>
+              <Textarea rows={3} value={draft?.toolbox?.intro ?? ""} onChange={(e) => setByPath("toolbox.intro", e.target.value)} />
+            </div>
+            <div className="md:col-span-2">
+              <div className="text-xs font-medium mb-1">Chips (comma separated)</div>
+              <Input
+                value={Array.isArray(draft?.toolbox?.chips) ? draft.toolbox.chips.join(", ") : ""}
+                onChange={(e) => {
+                  const chips = e.target.value.split(",").map((s) => s.trim()).filter(Boolean);
+                  setByPath("toolbox.chips", chips);
+                }}
+                placeholder="UI, Motion, Backend"
+              />
+            </div>
+          </div>
+
+          <div className="mt-4 space-y-4">
+            {(draft?.toolbox?.items ?? []).map((it, idx) => (
+              <div key={idx} className="rounded-2xl border border-black/10 dark:border-white/10 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="text-sm font-semibold">Item {idx + 1}</div>
+                  <Button variant="ghost" type="button" onClick={() => removeFromArray("toolbox.items", idx)}>
+                    Remove
+                  </Button>
+                </div>
+                <div className="mt-3 grid md:grid-cols-2 gap-3">
+                  <div>
+                    <div className="text-xs font-medium mb-1">Name</div>
+                    <Input
+                      value={it?.name ?? ""}
+                      onChange={(e) => {
+                        setDraft((prev) => {
+                          const next = deepClone(prev);
+                          next.toolbox.items[idx].name = e.target.value;
+                          return next;
+                        });
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <div className="text-xs font-medium mb-1">Hint</div>
+                    <Input
+                      value={it?.hint ?? ""}
+                      onChange={(e) => {
+                        setDraft((prev) => {
+                          const next = deepClone(prev);
+                          next.toolbox.items[idx].hint = e.target.value;
+                          return next;
+                        });
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            <Button
+              variant="outline"
+              type="button"
+              onClick={() => addToArray("toolbox.items", { name: "New tool", hint: "Category" })}
+            >
+              + Add toolbox item
+            </Button>
+          </div>
+        </Card>
+
         <HelperText>
-          Note: advanced sections like <span className="font-mono">services.processSteps</span> and <span className="font-mono">contact.quoteBoxItems</span> are kept but not shown here to keep the UI simple.
+          Note: advanced sections like <span className="font-mono">contact.quoteBoxItems</span> are kept but not shown here to keep the UI simple.
           They will remain unchanged unless you edit them in code.
         </HelperText>
       </div>

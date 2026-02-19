@@ -34,10 +34,10 @@
   "about": {
     "title": "About",
     "paragraphs": [
-      "I\u2019m a junior front-end developer with hands-on experience building modern web interfaces using React, Tailwind CSS, and Framer Motion.",
+      "I’m a junior front-end developer with hands-on experience building modern web interfaces using React, Tailwind CSS, and Framer Motion.",
       "I focus on creating clean, responsive layouts with smooth animations and reusable components. I enjoy turning designs into functional, accessible user interfaces while keeping code readable and maintainable.",
-      "I\u2019m continuously improving my skills by building real projects, studying frontend best practices, and learning how production-ready applications are structured.",
-      "Currently, I\u2019m looking for a junior front-end position or internship where I can contribute, learn from experienced developers, and grow into a professional frontend engineer."
+      "I’m continuously improving my skills by building real projects, studying frontend best practices, and learning how production-ready applications are structured.",
+      "Currently, I’m looking for a junior front-end position or internship where I can contribute, learn from experienced developers, and grow into a professional frontend engineer."
     ],
     "tags": [
       "React",
@@ -98,11 +98,11 @@
     ],
     "ctaLabel": "Request a Quote",
     "pricing": {
-      "range": "$100\u2013$300",
+      "range": "$100–$300",
       "suffix": "depending on scope."
     },
     "processTitle": "How the process works",
-    "tipLine": "Tip: If you have a Figma link, include it in your email \u2014 it speeds everything up.",
+    "tipLine": "Tip: If you have a Figma link, include it in your email — it speeds everything up.",
     "emailSubject": "Freelance Project Inquiry",
     "sectionTitle": "Freelance Services",
     "sectionDescription": "Need a clean, modern website or a React UI built fast and properly? I help individuals and small businesses ship polished interfaces with responsive layouts, smooth animations, and readable code.",
@@ -132,7 +132,7 @@
   },
   "howIWork": {
     "title": "How I Work",
-    "intro": "I focus on clean UI, solid fundamentals, and production-ready habits \u2014 not just making things \u201clook good\u201d.",
+    "intro": "I focus on clean UI, solid fundamentals, and production-ready habits — not just making things “look good”.",
     "points": [
       "Build mobile-first, responsive layouts",
       "Write reusable and readable React components",
@@ -143,10 +143,10 @@
     ]
   },
   "contact": {
-    "title": "Let\u2019s Work Together",
-    "description": "I\u2019m available for freelance work (websites, landing pages, React UI builds) and also open to junior frontend roles, internships, and collaborations. If you\u2019re looking for a motivated junior developer who cares about clean UI and code quality, feel free to reach out.",
+    "title": "Let’s Work Together",
+    "description": "I’m available for freelance work (websites, landing pages, React UI builds) and also open to junior frontend roles, internships, and collaborations. If you’re looking for a motivated junior developer who cares about clean UI and code quality, feel free to reach out.",
     "email": "ayehtetheinmessi@gmail.com",
-    "mailtoSubject": "Freelance inquiry \u2014 Website / UI build",
+    "mailtoSubject": "Freelance inquiry — Website / UI build",
     "emailButtonLabel": "Email Me",
     "resumeButtonLabel": "Download Resume",
     "quoteBoxTitle": "To get a fast quote, include:",
@@ -154,6 +154,42 @@
       "Project type (landing page / business site / React UI / fixes)",
       "Deadline + any reference links (Figma is perfect)",
       "Pages/features + budget range (optional)"
+    ]
+  },
+  "toolbox": {
+    "pill": "Toolbox",
+    "title": "Tools I use to ship fast",
+    "intro": "A focused stack for clean UI, smooth motion, and easy content updates.",
+    "chips": [
+      "UI",
+      "Motion",
+      "Backend"
+    ],
+    "items": [
+      {
+        "name": "React",
+        "hint": "UI"
+      },
+      {
+        "name": "Tailwind",
+        "hint": "Design"
+      },
+      {
+        "name": "Framer Motion",
+        "hint": "Motion"
+      },
+      {
+        "name": "Firebase",
+        "hint": "Realtime"
+      },
+      {
+        "name": "Vite",
+        "hint": "Build"
+      },
+      {
+        "name": "Cloudinary",
+        "hint": "Assets"
+      }
     ]
   }
 }
