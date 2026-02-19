@@ -5,22 +5,7 @@ const Footer = () => {
 
   return (
     <footer className="mt-24 border-t border-slate-200/70 dark:border-white/10">
-      <div className="nb-container py-12 text-center relative">
-        {/* Subtle visual strip (keeps text unchanged, adds premium feel) */}
-        <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 -top-10 w-full max-w-5xl">
-          <div className="mx-auto grid grid-cols-3 gap-3 opacity-70">
-            {["/uploads/project1.png", "/uploads/project2.png", "/uploads/project3.png"].map((src, i) => (
-              <div
-                key={i}
-                className="h-16 sm:h-20 rounded-2xl overflow-hidden border border-slate-200/60 dark:border-white/10 bg-white/60 dark:bg-white/5"
-              >
-                <img src={src} alt="" className="h-full w-full object-cover" loading="lazy" decoding="async" />
-              </div>
-            ))}
-          </div>
-          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-indigo-500/10 via-fuchsia-500/5 to-sky-500/10 blur-2xl" />
-        </div>
-
+      <div className="nb-container py-12 text-center">
         <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
           Let’s build something impactful.
         </h3>
