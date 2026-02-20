@@ -189,13 +189,8 @@ export default function ProjectsManager() {
       system: String(p.system ?? ""),
       solution: String(p.solution ?? ""),
       impact: String(p.impact ?? ""),
-desc: String(it?.desc ?? ""),
-        iconKey: String(it?.iconKey ?? "spark"),
-        iconUrl: normalizeCloudinaryUrl(String(it?.iconUrl ?? "")),
-      })),
     }));
-
-    const nextErrors = validateProjects(nextDraft);
+const nextErrors = validateProjects(nextDraft);
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length) {
       setToast("Fix validation errors before saving.");
