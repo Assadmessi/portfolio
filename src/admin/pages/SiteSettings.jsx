@@ -5,7 +5,6 @@ import { deepClone, deepEqual } from "../utils/deep";
 import { Button, Card, HelperText, Input, PageFade, Textarea } from "../components/UI";
 import { normalizeTags, safeStringArray, validateSite } from "../utils/validate";
 import CloudinaryUpload from "../components/CloudinaryUpload";
-import StorageUpload from "../components/StorageUpload";
 
 const PROOF_ICON_KEYS = ["ui","dashboard","rocket","shield","zap","sparkles","code","globe","wand"];
 
@@ -257,7 +256,7 @@ export default function SiteSettings() {
               />
               {errors["hero.photoUrl"] ? <HelperText tone="error">{errors["hero.photoUrl"]}</HelperText> : null}
               <div className="mt-2">
-                <StorageUpload folder="portfolio/profile" onUploaded={(url) => setByPath("hero.photoUrl", url)} />
+                <CloudinaryUpload folder="portfolio/profile" allowedFormats={["png","jpg","jpeg","webp"]} resourceType="image" onUploaded={(url) => setByPath("hero.photoUrl", url)} />
                 <HelperText>Upload a profile image and auto-fill the URL.</HelperText>
               </div>
             </div>
