@@ -1,16 +1,14 @@
-// Nubien-inspired motion language (blur + lift + spring)
-// Keeps your content intact while making motion feel "Framer premium".
+// Nubien-inspired motion language (lift + spring)
+// NOTE: Avoid animating CSS filters (e.g. blur) — it can feel janky on mobile GPUs.
 
 export const sectionEnter = {
   hidden: {
     opacity: 0,
     y: 28,
-    filter: "blur(10px)",
   },
   visible: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
     transition: {
       type: "spring",
       stiffness: 120,
@@ -25,13 +23,11 @@ export const cardEnter = {
     opacity: 0,
     y: 18,
     scale: 0.98,
-    filter: "blur(10px)",
   },
   visible: {
     opacity: 1,
     y: 0,
     scale: 1,
-    filter: "blur(0px)",
     transition: {
       type: "spring",
       stiffness: 140,
@@ -45,18 +41,18 @@ export const staggerContainer = {
   hidden: {},
   visible: {
     transition: {
-      staggerChildren: 0.12,
-      delayChildren: 0.06,
+      // Slightly tighter stagger = smoother on low-power devices
+      staggerChildren: 0.09,
+      delayChildren: 0.04,
     },
   },
 };
 
 export const maskReveal = {
-  hidden: { opacity: 0, y: 8, filter: "blur(8px)" },
+  hidden: { opacity: 0, y: 8 },
   visible: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
     transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
   },
 };

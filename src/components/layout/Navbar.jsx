@@ -73,11 +73,16 @@ const Navbar = () => {
   }, []);
 
   // Close mobile menu when user scrolls
+  // (Removed) closing on scroll can feel "broken" on mobile.
+
+  // Lock body scroll when mobile menu is open
   useEffect(() => {
     if (!open) return;
-    const closeOnScroll = () => setOpen(false);
-    window.addEventListener("scroll", closeOnScroll, { passive: true });
-    return () => window.removeEventListener("scroll", closeOnScroll);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
   }, [open]);
 
   const goTo = (id) => {
@@ -93,7 +98,9 @@ const Navbar = () => {
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
       className={[
-        "fixed top-0 w-full z-50 backdrop-blur transition-all",
+        "fixed top-0 w-full z-50 transition-all",
+        // Backdrop blur is expensive on mobile GPUs → enable from md+
+        "md:backdrop-blur",
         // Nubien-ish glass (unique palette)
         "bg-white/60 dark:bg-black/30",
         "border-b border-black/5 dark:border-white/10",
@@ -101,7 +108,7 @@ const Navbar = () => {
         scrolled ? "py-2 shadow-sm shadow-black/5 dark:shadow-none" : "py-4",
       ].join(" ")}
     >
-      <div className="max-w-7xl mx-auto flex items-center px-6 sm:px-8">
+      <div className="max-w-7xl mx-auto flex items-center px-4 sm:px-8">
         {/* Logo / Name */}
         <button
           onClick={() => goTo("home")}
@@ -212,12 +219,12 @@ const Navbar = () => {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
             className={[
-              "md:hidden backdrop-blur",
+              "md:hidden",
               "border-t border-black/5 dark:border-white/10",
               "bg-[#F6F7FB]/92 dark:bg-black/70",
             ].join(" ")}
           >
-            <div className="flex flex-col items-end px-8 py-6 space-y-5 text-slate-700 dark:text-slate-300">
+            <div className="max-h-[calc(100vh-72px)] overflow-y-auto flex flex-col items-end px-6 py-6 space-y-5 text-slate-700 dark:text-slate-300">
               {navItems.map((item) => {
                 const isActive = active === item.id;
 
