@@ -100,11 +100,11 @@ export function validateProjects(projectsDoc) {
       if (p?.links?.repo && !isUrlOrHashOrRelative(p.links.repo)) errors[`projects.${idx}.links.repo`] = "Repo link invalid.";
       if (p?.links?.pdf && !isUrlOrHashOrRelative(p.links.pdf)) errors[`projects.${idx}.links.pdf`] = "PDF link invalid.";
 
-      const highlights = p?.highlights;
-      const highlightsArr = Array.isArray(highlights) ? highlights : (highlights && typeof highlights === "object") ? Object.values(highlights) : [];
-      highlightsArr.forEach((it, j) => {
+      const proof = p?.proof;
+      const proofArr = Array.isArray(proof) ? proof : (proof && typeof proof === "object") ? Object.values(proof) : [];
+      proofArr.forEach((it, j) => {
         if (!it) return;
-        if (it.iconUrl && !isUrlOrHashOrRelative(it.iconUrl)) errors[`projects.${idx}.highlights.${j}.iconUrl`] = "Icon URL invalid.";
+        if (it.iconUrl && !isUrlOrHashOrRelative(it.iconUrl)) errors[`projects.${idx}.proof.${j}.iconUrl`] = "Icon URL invalid.";
       });
     });
   }

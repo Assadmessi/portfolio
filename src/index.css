@@ -101,7 +101,7 @@ body::after{
   .nb-container { @apply mx-auto w-full max-w-7xl px-6; }
 
   .nb-card {
-    @apply rounded-3xl border;
+    @apply rounded-3xl border backdrop-blur;
     background: linear-gradient(
       180deg,
       rgba(var(--nb-card) / 0.72),
@@ -228,13 +228,5 @@ body::-webkit-scrollbar {
 @media (max-width: 640px) {
   .backdrop-blur, .backdrop-blur-sm, .backdrop-blur-md, .backdrop-blur-lg {
     backdrop-filter: none !important;
-  }
-}
-
-
-@media (min-width: 768px) {
-  .nb-card {
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
   }
 }

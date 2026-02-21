@@ -96,14 +96,15 @@ const Navbar = () => {
       transition={{ duration: 0.6, ease: "easeOut" }}
       className={[
         "fixed top-0 w-full z-50 md:backdrop-blur transition-all",
+        "relative",
         // Nubien-ish glass (unique palette)
         "bg-white/60 dark:bg-black/30",
         "border-b border-black/5 dark:border-white/10",
         // Slight separation on scroll
-        scrolled ? "py-2 shadow-sm shadow-black/5 dark:shadow-none" : "py-3 md:py-4",
+        scrolled ? "py-2 shadow-sm shadow-black/5 dark:shadow-none" : "py-4",
       ].join(" ")}
     >
-      <div className="max-w-7xl mx-auto flex items-center px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto flex items-center px-4 sm:px-8">
         {/* Logo / Name */}
         <button
           onClick={() => goTo("home")}
@@ -111,7 +112,7 @@ const Navbar = () => {
           aria-label="Go to home"
           type="button"
         >
-          <span className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-indigo-500/15 border border-indigo-500/25 flex items-center justify-center font-bold text-indigo-700 dark:text-indigo-200">
+          <span className="h-9 w-9 rounded-full bg-indigo-500/15 border border-indigo-500/25 flex items-center justify-center font-bold text-indigo-700 dark:text-indigo-200">
             A
           </span>
           <span className="hidden sm:block text-sm text-slate-900 dark:text-slate-200">
@@ -215,13 +216,13 @@ const Navbar = () => {
             transition={{ duration: 0.25, ease: "easeOut" }}
             className={[
               "md:hidden",
-              "fixed left-0 right-0 top-full",
+              "absolute left-0 right-0 top-full",
               "max-h-[calc(100vh-72px)] overflow-y-auto",
               "border-t border-black/5 dark:border-white/10",
               "bg-[#F6F7FB] dark:bg-[#0B0F19]",
             ].join(" ")}
           >
-            <div className="flex flex-col items-stretch px-4 sm:px-8 py-6 space-y-5 text-slate-700 dark:text-slate-300">
+            <div className="flex flex-col items-end px-4 sm:px-8 py-6 space-y-5 text-slate-700 dark:text-slate-300">
               {navItems.map((item) => {
                 const isActive = active === item.id;
 

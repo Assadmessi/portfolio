@@ -41,18 +41,18 @@ export const staggerContainer = {
   hidden: {},
   visible: {
     transition: {
-      staggerChildren: 0.12,
-      delayChildren: 0.06,
+      staggerChildren: 0.06,
+      delayChildren: 0.02,
     },
   },
 };
 
 export const maskReveal = {
-  hidden: { opacity: 0, y: 8, filter: "blur(8px)" },
+  hidden: { opacity: 0, y: 8 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] },
   },
 };
 

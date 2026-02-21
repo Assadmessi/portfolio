@@ -11,8 +11,8 @@ export const MotionSection = ({ children, className = "", variants, ...rest }) =
       whileInView={reduceMotion ? undefined : "visible"}
       viewport={{
         once: true,
-        amount: 0.22,
-        margin: "0px 0px -10% 0px",
+        amount: 0.12,
+        margin: "0px 0px 0px 0px",
       }}
       {...rest}
     >

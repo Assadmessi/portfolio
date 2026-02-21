@@ -14,7 +14,7 @@ import { projectsContent } from "../../content";
 // - projects: { items: [ ... ] }
 const normalizeProjects = (raw) => {
   if (!raw) return [];
-  if (Array.isArray(raw)) return raw.map((p) => (p && !p.highlights && p.proof ? { ...p, highlights: p.proof } : p));
+  if (Array.isArray(raw)) return raw;
   if (Array.isArray(raw.items)) return raw.items;
   if (typeof raw === "object") {
     return Object.entries(raw)
@@ -25,7 +25,7 @@ const normalizeProjects = (raw) => {
         if (!Number.isNaN(na) && !Number.isNaN(nb)) return na - nb;
         return String(a).localeCompare(String(b));
       })
-      .map(([, v]) => v).map((p) => (p && !p.highlights && p.proof ? { ...p, highlights: p.proof } : p));
+      .map(([, v]) => v);
   }
   return [];
 };
@@ -34,7 +34,7 @@ const normalizeProjects = (raw) => {
 // Supported:
 // - highlights: [ { title, desc }, ... ]
 // - highlights: { "0": { title, desc }, "1": { ... } }
-const normalizeHighlights = (raw) => {
+const normalizeProof = (raw) => {
   if (!raw) return [];
   const arr = Array.isArray(raw)
     ? raw
@@ -75,7 +75,7 @@ const fallbackHighlights = (project) => {
 };
 
 const getHighlights = (project) => {
-  const normalized = normalizeHighlights(project?.highlights);
+  const normalized = normalizeProof(project?.proof ?? project?.highlights);
   const three = normalized.slice(0, 3);
   if (three.length === 3) return three;
   return [...three, ...fallbackHighlights(project)].slice(0, 3);
@@ -140,18 +140,17 @@ const Projects = () => {
                   onClick={() => setActiveProject(featuredItem.p)}
                   className="group w-full text-left rounded-3xl overflow-hidden border border-slate-200/70 dark:border-white/10 bg-white/70 dark:bg-white/5 hover:bg-white transition shadow-sm hover:shadow-xl"
                 >
-                  <div className="relative overflow-hidden rounded-3xl">
+                  <div className="relative">
                     {featuredItem.p?.image ? (
-                      <div className="relative w-full aspect-[16/11] sm:aspect-[16/9]">
-                        <img
-                          src={featuredItem.p.image}
-                          alt={featuredItem.p.title}
-                          className="absolute inset-0 h-full w-full object-cover object-center group-hover:scale-[1.02] transition duration-500"
-                          loading="lazy"
-                        />
-                      </div>
+                      <img
+                        src={featuredItem.p.image}
+                        alt={featuredItem.p.title}
+                        className="h-56 sm:h-80 w-full object-cover group-hover:scale-[1.02] transition duration-500"
+                        loading="eager"
+                        decoding="async"
+                      />
                     ) : (
-                      <div className="w-full aspect-[16/11] sm:aspect-[16/9] bg-slate-100 dark:bg-white/10" />
+                      <div className="h-64 sm:h-80 w-full bg-slate-100 dark:bg-white/10" />
                     )}
                     <div className="absolute top-4 left-4">
                       <span className="text-[10px] uppercase tracking-wider px-3 py-1 rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900">
@@ -175,8 +174,24 @@ const Projects = () => {
                           {getHighlights(featuredItem.p).map((h, idx) => (
                             <div
                               key={`${featuredKey}-${idx}-${h.title}`}
-                              className="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 px-4 py-3"
+                              className="relative rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 px-4 py-3 overflow-hidden"
                             >
+                              {/* subtle inner highlight ring */}
+                              <span
+                                aria-hidden
+                                className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-black/5 dark:ring-white/10"
+                              />
+
+                              {/* corner accent (bottom-right) */}
+                              <span
+                                aria-hidden
+                                className="pointer-events-none absolute -bottom-px -right-px h-7 w-7 rounded-br-2xl border-b border-r border-slate-200/70 dark:border-white/10"
+                              />
+                              <span
+                                aria-hidden
+                                className="pointer-events-none absolute bottom-2 right-2 h-px w-10 rotate-45 origin-right bg-slate-200/70 dark:bg-white/10"
+                              />
+
                               <div className="flex items-start gap-2">
                                 <span className="mt-0.5 inline-flex items-center justify-center w-8 h-8 rounded-xl bg-slate-900/5 dark:bg-white/10 text-slate-900 dark:text-slate-100">
                                   <ProofIcon iconKey={h.iconKey} iconUrl={h.iconUrl} />
