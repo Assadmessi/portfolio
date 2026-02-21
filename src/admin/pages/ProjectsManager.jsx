@@ -12,7 +12,6 @@ import {
   Badge,
 } from "../components/UI";
 import { normalizeTags, validateProjects } from "../utils/validate";
-import StorageUpload from "../components/StorageUpload";
 import CloudinaryUpload from "../components/CloudinaryUpload";
 
 function emptyProject() {
@@ -65,29 +64,16 @@ function normalizeCloudinaryUrl(url) {
   if (!s.includes("res.cloudinary.com") || !s.includes("/image/upload/"))
     return s;
 
-  // Upgrade old PAD URLs automatically
+  // Upgrade old PAD URLs automatically (remove hard-coded width)
   if (s.includes("/image/upload/c_pad")) {
     return s.replace(
       /\/image\/upload\/c_pad[^/]*\//,
-      "/image/upload/c_fill,g_auto,w_1200,q_auto,f_auto/"
+      "/image/upload/c_fill,g_auto,q_auto,f_auto/"
     );
   }
 
-  // If the URL already has transformations, keep it as-is.
-  const afterUpload = s.split("/image/upload/")[1] ?? "";
-  const firstSegment = afterUpload.split("/")[0] ?? "";
-  const alreadyTransformed =
-    firstSegment.includes(",") ||
-    firstSegment.startsWith("c_") ||
-    firstSegment.startsWith("ar_") ||
-    firstSegment.startsWith("w_") ||
-    firstSegment.startsWith("h_");
-
-  if (alreadyTransformed) return s;
-
-  // Responsive-friendly default
-  const tx = "c_fill,g_auto,w_1200,q_auto,f_auto";
-  return s.replace("/image/upload/", `/image/upload/${tx}/`);
+  // Keep Cloudinary URLs as-is (no forced width transformations)
+  return s;
 }
 
 export default function ProjectsManager() {
@@ -630,7 +616,7 @@ export default function ProjectsManager() {
                     {/* Upload block */}
                     <div className="rounded-2xl border border-black/10 dark:border-white/10 p-4">
                       <div className="text-sm font-semibold">
-                        Upload image (recommended: Cloudinary)
+                        Upload image (Cloudinary)
                       </div>
                       <div className="text-xs text-slate-600 dark:text-slate-300 mt-1">
                         Upload here and auto-fill the Thumbnail URL. This is
@@ -646,19 +632,6 @@ export default function ProjectsManager() {
                             })
                           }
                         />
-
-                        <div className="mt-3 text-xs text-slate-600 dark:text-slate-300">
-                          Advanced: you can also use Firebase Storage if you have
-                          it enabled.
-                        </div>
-
-                        <div className="mt-2">
-                          <StorageUpload
-                            onUploaded={(url) =>
-                              setProject(editingIndex, { ...p, image: url })
-                            }
-                          />
-                        </div>
                       </div>
                     </div>
 
