@@ -1,5 +1,5 @@
-// Motion language: lift + spring (mobile-friendly)
-// Avoid CSS filter/blur in motion variants — it's a major source of jank on mobile Safari.
+// Premium motion language (lift + spring) — mobile friendly (no blur filters)
+// Keeps your content intact while making motion feel "Framer premium".
 
 export const sectionEnter = {
   hidden: {
@@ -41,19 +41,18 @@ export const staggerContainer = {
   hidden: {},
   visible: {
     transition: {
-      // Keep it snappy (less work on mobile)
-      staggerChildren: 0.08,
-      delayChildren: 0.04,
+      staggerChildren: 0.12,
+      delayChildren: 0.06,
     },
   },
 };
 
 export const maskReveal = {
-  hidden: { opacity: 0, y: 8 },
+  hidden: { opacity: 0, y: 8, filter: "blur(8px)" },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
   },
 };
 

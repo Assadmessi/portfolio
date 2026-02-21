@@ -65,24 +65,6 @@ export function validateSite(site) {
   if (!isNonEmptyString(hero.intro)) errors["hero.intro"] = "Intro is required.";
   if (hero.buttons?.primary?.href && !isUrlOrHashOrRelative(hero.buttons.primary.href)) errors["hero.buttons.primary.href"] = "Primary button href invalid.";
   if (hero.buttons?.secondary?.href && !isUrlOrHashOrRelative(hero.buttons.secondary.href)) errors["hero.buttons.secondary.href"] = "Secondary button href invalid.";
-  if (hero.photoUrl && !isUrlOrHashOrRelative(hero.photoUrl)) errors["hero.photoUrl"] = "Profile photo URL must be https:// or /relative-path.";
-
-  // hero highlights (3 mini cards)
-  if (hero.highlights != null) {
-    if (!Array.isArray(hero.highlights)) {
-      errors["hero.highlights"] = "Highlights must be an array.";
-    } else {
-      const list = hero.highlights.slice(0, 6);
-      list.forEach((h, i) => {
-        if (!h || typeof h !== "object") {
-          errors[`hero.highlights.${i}`] = "Highlight must be an object.";
-          return;
-        }
-        if (!isNonEmptyString(h.title)) errors[`hero.highlights.${i}.title`] = "Title is required.";
-        if (!isNonEmptyString(h.subtitle)) errors[`hero.highlights.${i}.subtitle`] = "Subtitle is required.";
-      });
-    }
-  }
 
   // about
   const about = site?.about ?? {};
@@ -118,11 +100,11 @@ export function validateProjects(projectsDoc) {
       if (p?.links?.repo && !isUrlOrHashOrRelative(p.links.repo)) errors[`projects.${idx}.links.repo`] = "Repo link invalid.";
       if (p?.links?.pdf && !isUrlOrHashOrRelative(p.links.pdf)) errors[`projects.${idx}.links.pdf`] = "PDF link invalid.";
 
-      const proof = p?.proof;
-      const proofArr = Array.isArray(proof) ? proof : (proof && typeof proof === "object") ? Object.values(proof) : [];
-      proofArr.forEach((it, j) => {
+      const highlights = p?.highlights;
+      const highlightsArr = Array.isArray(highlights) ? highlights : (highlights && typeof highlights === "object") ? Object.values(highlights) : [];
+      highlightsArr.forEach((it, j) => {
         if (!it) return;
-        if (it.iconUrl && !isUrlOrHashOrRelative(it.iconUrl)) errors[`projects.${idx}.proof.${j}.iconUrl`] = "Icon URL invalid.";
+        if (it.iconUrl && !isUrlOrHashOrRelative(it.iconUrl)) errors[`projects.${idx}.highlights.${j}.iconUrl`] = "Icon URL invalid.";
       });
     });
   }

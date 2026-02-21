@@ -18,6 +18,16 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState("home");
 
+  // Lock body scroll when mobile menu is open (prevents background scroll/jank on iOS)
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
+
   // Shrink navbar on scroll
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -72,16 +82,6 @@ const Navbar = () => {
     };
   }, []);
 
-  // Lock body scroll when mobile menu is open (prevents iOS/Safari jank)
-  useEffect(() => {
-    if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [open]);
-
   const goTo = (id) => {
     setActive(id);
     setOpen(false);
@@ -91,18 +91,16 @@ const Navbar = () => {
 
   return (
     <motion.nav
-      initial={{ y: -12, opacity: 0 }}
+      initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.45, ease: "easeOut" }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
       className={[
-        "fixed top-0 w-full z-50 transition-all",
-        // Heavy blur on mobile causes stutter; keep blur for md+
-        "md:backdrop-blur",
-        // Glass
-        "bg-white/75 dark:bg-black/35",
+        "fixed top-0 w-full z-50 md:backdrop-blur transition-all",
+        // Nubien-ish glass (unique palette)
+        "bg-white/60 dark:bg-black/30",
         "border-b border-black/5 dark:border-white/10",
-        // Responsive height
-        scrolled ? "py-2" : "py-3 md:py-4",
+        // Slight separation on scroll
+        scrolled ? "py-2 shadow-sm shadow-black/5 dark:shadow-none" : "py-3 md:py-4",
       ].join(" ")}
     >
       <div className="max-w-7xl mx-auto flex items-center px-4 sm:px-6 lg:px-8">
@@ -113,10 +111,12 @@ const Navbar = () => {
           aria-label="Go to home"
           type="button"
         >
-          <span className="h-9 w-9 rounded-full bg-indigo-500/15 border border-indigo-500/25 flex items-center justify-center font-bold text-indigo-700 dark:text-indigo-200">
+          <span className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-indigo-500/15 border border-indigo-500/25 flex items-center justify-center font-bold text-indigo-700 dark:text-indigo-200">
             A
           </span>
-          <span className="hidden sm:block text-sm text-slate-900 dark:text-slate-200">Asaad</span>
+          <span className="hidden sm:block text-sm text-slate-900 dark:text-slate-200">
+            Asaad
+          </span>
         </button>
 
         {/* Desktop Menu */}
@@ -176,8 +176,8 @@ const Navbar = () => {
           aria-label="Toggle theme"
           className={[
             "md:hidden ml-auto mr-3 inline-flex items-center justify-center rounded-xl px-3 py-2 text-xs font-medium transition",
-            "bg-black/5 active:bg-black/10 border border-black/10 text-slate-800",
-            "dark:bg-white/5 dark:active:bg-white/10 dark:border-white/10 dark:text-slate-200",
+            "bg-black/5 hover:bg-black/10 border border-black/10 text-slate-800",
+            "dark:bg-white/5 dark:hover:bg-white/10 dark:border-white/10 dark:text-slate-200",
           ].join(" ")}
         >
           {theme === "dark" ? "🌙" : "☀️"}
@@ -185,22 +185,22 @@ const Navbar = () => {
 
         {/* Hamburger */}
         <button
-          onClick={() => setOpen((v) => !v)}
-          className="md:hidden relative w-10 h-10 inline-flex items-center justify-center rounded-xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5"
+          onClick={() => setOpen(!open)}
+          className="md:hidden relative w-6 h-6"
           aria-label="Toggle menu"
           type="button"
         >
           <motion.span
             animate={open ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
-            className="absolute top-3 w-5 h-[2px] bg-slate-900 dark:bg-white"
+            className="absolute top-1 w-6 h-[2px] bg-slate-900 dark:bg-white"
           />
           <motion.span
             animate={open ? { opacity: 0 } : { opacity: 1 }}
-            className="absolute top-5 w-5 h-[2px] bg-slate-900 dark:bg-white"
+            className="absolute top-3 w-6 h-[2px] bg-slate-900 dark:bg-white"
           />
           <motion.span
             animate={open ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }}
-            className="absolute top-7 w-5 h-[2px] bg-slate-900 dark:bg-white"
+            className="absolute top-5 w-6 h-[2px] bg-slate-900 dark:bg-white"
           />
         </button>
       </div>
@@ -209,36 +209,39 @@ const Navbar = () => {
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: -8 }}
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
             className={[
               "md:hidden",
-              "border-t border-black/5 dark:border-white/10",
-              "bg-[#F6F7FB]/98 dark:bg-black/80",
-              // Keep it usable on small screens
+              "fixed left-0 right-0 top-full",
               "max-h-[calc(100vh-72px)] overflow-y-auto",
+              "border-t border-black/5 dark:border-white/10",
+              "bg-[#F6F7FB] dark:bg-[#0B0F19]",
             ].join(" ")}
           >
-            <div className="flex flex-col items-stretch px-4 sm:px-6 py-5 space-y-2 text-slate-700 dark:text-slate-300">
+            <div className="flex flex-col items-stretch px-4 sm:px-8 py-6 space-y-5 text-slate-700 dark:text-slate-300">
               {navItems.map((item) => {
                 const isActive = active === item.id;
 
                 return (
-                  <button
+                  <a
                     key={item.id}
-                    type="button"
-                    onClick={() => goTo(item.id)}
+                    href={`#${item.id}`}
+                    aria-current={isActive ? "page" : undefined}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      goTo(item.id);
+                    }}
                     className={[
-                      "w-full text-left rounded-2xl px-4 py-3 transition",
-                      isActive
-                        ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
-                        : "bg-white/70 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10",
+                      "transition",
+                      "hover:text-slate-900 dark:hover:text-white",
+                      isActive ? "text-slate-900 dark:text-white" : "",
                     ].join(" ")}
                   >
                     {item.label}
-                  </button>
+                  </a>
                 );
               })}
             </div>

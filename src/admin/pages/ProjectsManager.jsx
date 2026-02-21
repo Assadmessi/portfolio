@@ -19,7 +19,7 @@ function emptyProject() {
     system: "",
     solution: "",
     impact: "",
-    proof: [
+    highlights: [
       { title: "", desc: "", iconKey: "spark", iconUrl: "" },
       { title: "", desc: "", iconKey: "spark", iconUrl: "" },
       { title: "", desc: "", iconKey: "spark", iconUrl: "" },
@@ -29,7 +29,7 @@ function emptyProject() {
 
 
 
-function normalizeProofDraft(raw) {
+function normalizeHighlightsDraft(raw) {
   if (!raw) return [];
   if (Array.isArray(raw)) return raw;
   if (typeof raw === "object") {
@@ -114,6 +114,15 @@ export default function ProjectsManager() {
   useEffect(() => {
     const sync = () => {
       const next = deepClone(projectsContent);
+      // Backward compatibility: migrate old per-project `proof` to `highlights`
+      if (Array.isArray(next.projects)) {
+        next.projects = next.projects.map((p) => {
+          if (p && !p.highlights && p.proof) {
+            return { ...p, highlights: p.proof };
+          }
+          return p;
+        });
+      }
       setBaseline(next);
       setDraft((d) => (deepEqual(d, baseline) ? next : d));
     };
@@ -204,7 +213,7 @@ export default function ProjectsManager() {
       system: String(p.system ?? ""),
       solution: String(p.solution ?? ""),
       impact: String(p.impact ?? ""),
-      proof: normalizeProofDraft(p.proof).slice(0, 6).map((it) => ({
+      highlights: normalizeHighlightsDraft(p.highlights).slice(0, 6).map((it) => ({
         title: String(it?.title ?? ""),
         desc: String(it?.desc ?? ""),
         iconKey: String(it?.iconKey ?? "spark"),
@@ -405,13 +414,13 @@ export default function ProjectsManager() {
                       </div>
 
                       <div className="md:col-span-2">
-                        <div className="text-xs font-semibold mb-2">Proof cards (3 small boxes shown under Featured)</div>
-                        <HelperText>Each card supports a default icon or a custom uploaded icon. Keep it short and specific.</HelperText>
+                        <div className="text-xs font-semibold mb-2">Highlights (3 small boxes shown under Featured)</div>
+                        <HelperText>Each highlight supports a default icon or a custom uploaded icon. Keep it short and specific.</HelperText>
 
                         <div className="mt-3 grid gap-3">
-                          {normalizeProofDraft(p.proof).map((card, cidx) => (
+                          {normalizeHighlightsDraft(p.highlights).map((card, cidx) => (
                             <div
-                              key={`${editingIndex}-proof-${cidx}`}
+                              key={`${editingIndex}-hl-${cidx}`}
                               className="rounded-2xl border border-black/10 dark:border-white/10 bg-white/40 dark:bg-white/5 p-4"
                             >
                               <div className="grid md:grid-cols-12 gap-3 items-start">
@@ -420,9 +429,9 @@ export default function ProjectsManager() {
                                   <Input
                                     value={card?.title ?? ""}
                                     onChange={(e) => {
-                                      const next = normalizeProofDraft(p.proof);
+                                      const next = normalizeHighlightsDraft(p.highlights);
                                       next[cidx] = { ...card, title: e.target.value };
-                                      setProject(editingIndex, { ...p, proof: next });
+                                      setProject(editingIndex, { ...p, highlights: next });
                                     }}
                                     placeholder="e.g., Realtime sync"
                                   />
@@ -433,9 +442,9 @@ export default function ProjectsManager() {
                                   <Input
                                     value={card?.desc ?? ""}
                                     onChange={(e) => {
-                                      const next = normalizeProofDraft(p.proof);
+                                      const next = normalizeHighlightsDraft(p.highlights);
                                       next[cidx] = { ...card, desc: e.target.value };
-                                      setProject(editingIndex, { ...p, proof: next });
+                                      setProject(editingIndex, { ...p, highlights: next });
                                     }}
                                     placeholder="1-line explanation that matches this project."
                                   />
@@ -448,9 +457,9 @@ export default function ProjectsManager() {
                                       className="w-full rounded-xl border border-black/10 dark:border-white/10 bg-white/70 dark:bg-white/5 px-3 py-2 text-sm"
                                       value={card?.iconKey ?? "spark"}
                                       onChange={(e) => {
-                                        const next = normalizeProofDraft(p.proof);
+                                        const next = normalizeHighlightsDraft(p.highlights);
                                         next[cidx] = { ...card, iconKey: e.target.value, iconUrl: "" };
-                                        setProject(editingIndex, { ...p, proof: next });
+                                        setProject(editingIndex, { ...p, highlights: next });
                                       }}
                                     >
                                       {DEFAULT_ICON_KEYS.map((k) => (
@@ -464,9 +473,9 @@ export default function ProjectsManager() {
                                       folder="portfolio/icons"
                                       allowedFormats={["png", "jpg", "jpeg", "webp", "svg"]}
                                       onUploaded={(url) => {
-                                        const next = normalizeProofDraft(p.proof);
+                                        const next = normalizeHighlightsDraft(p.highlights);
                                         next[cidx] = { ...card, iconUrl: url };
-                                        setProject(editingIndex, { ...p, proof: next });
+                                        setProject(editingIndex, { ...p, highlights: next });
                                       }}
                                     />
                                   </div>
@@ -486,12 +495,12 @@ export default function ProjectsManager() {
                           <Button
                             tone="neutral"
                             onClick={() => {
-                              const next = normalizeProofDraft(p.proof);
+                              const next = normalizeHighlightsDraft(p.highlights);
                               next.push({ title: "", desc: "", iconKey: "spark", iconUrl: "" });
-                              setProject(editingIndex, { ...p, proof: next });
+                              setProject(editingIndex, { ...p, highlights: next });
                             }}
                           >
-                            + Add proof card
+                            + Add highlight
                           </Button>
                         </div>
                       </div>
