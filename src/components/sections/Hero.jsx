@@ -99,7 +99,7 @@ const Hero = () => {
                     <div className="text-xs nb-muted mt-1">{s.subtitle}</div>
                   </div>
                 ))}
-              </div></div>
+              </div>
 
               <div className="mt-7 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm nb-muted">
                 Fast iteration, clean components, and scalable content updates.
