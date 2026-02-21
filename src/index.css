@@ -92,16 +92,21 @@ body::after{
   background-size: 72px 72px;
 }
 
+/* Mobile perf: fixed grid + heavy backdrops can stutter on phones */
+@media (max-width: 640px){
+  body::after{ display:none; }
+}
+
 /* SV primitives */
 @layer components {
   .sv-page { @apply min-h-screen font-sans antialiased; }
 
   /* Nubien-inspired primitives (different names to avoid "copy" look) */
   .nb-page { @apply min-h-screen font-sans antialiased; }
-  .nb-container { @apply mx-auto w-full max-w-7xl px-6; }
+  .nb-container { @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8; }
 
   .nb-card {
-    @apply rounded-3xl border backdrop-blur;
+    @apply rounded-3xl border md:backdrop-blur;
     background: linear-gradient(
       180deg,
       rgba(var(--nb-card) / 0.72),
@@ -221,12 +226,4 @@ html, body {
 html::-webkit-scrollbar,
 body::-webkit-scrollbar {
   display: none; /* Chrome, Safari */
-}
-
-
-/* Mobile perf: avoid fixed overlays that can stutter on iOS Safari */
-@media (max-width: 640px) {
-  .backdrop-blur, .backdrop-blur-sm, .backdrop-blur-md, .backdrop-blur-lg {
-    backdrop-filter: none !important;
-  }
 }

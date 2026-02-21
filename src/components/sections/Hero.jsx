@@ -8,6 +8,14 @@ import logoMark from "../../assets/images/logo.png";
 const Hero = () => {
   const { hero, links } = siteContent;
 
+  const highlights = Array.isArray(hero?.highlights) && hero.highlights.length
+    ? hero.highlights
+    : [
+        { title: "UI", subtitle: "Systems" },
+        { title: "Motion", subtitle: "Details" },
+        { title: "Build", subtitle: "Ship" },
+      ];
+
   const RESUME_URL = links.resumeUrl;
   const GITHUB_URL = links.githubUrl;
   const LINKEDIN_URL = links.linkedinUrl;
@@ -86,6 +94,15 @@ const Hero = () => {
                   <div className="text-sm font-semibold">{hero.name}</div>
                   <div className="text-xs nb-muted">{hero.headlineAccent}</div>
                 </div>
+              </div>
+
+              <div className="mt-7 grid grid-cols-3 gap-3">
+                {highlights.slice(0, 3).map((h, idx) => (
+                  <div key={idx} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                    <div className="text-lg font-semibold">{h?.title || ""}</div>
+                    <div className="text-xs nb-muted mt-1">{h?.subtitle || ""}</div>
+                  </div>
+                ))}
               </div>
 
               <div className="mt-7 grid grid-cols-3 gap-3">
