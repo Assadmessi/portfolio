@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "../../context/ThemeContext";
 
@@ -17,6 +17,8 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState("home");
+  const navRef = useRef(null);
+  const [navH, setNavH] = useState(72);
 
   // Lock body scroll when mobile menu is open (prevents background scroll/jank on iOS)
   useEffect(() => {
@@ -27,6 +29,49 @@ const Navbar = () => {
       document.body.style.overflow = prev;
     };
   }, [open]);
+
+  // Keep mobile menu aligned to the real navbar height (works with scroll shrink)
+  useEffect(() => {
+    if (!navRef.current) return;
+    const el = navRef.current;
+
+    const update = () => {
+      const h = Math.round(el.getBoundingClientRect().height || 72);
+      setNavH(h);
+    };
+
+    update();
+
+    let ro;
+    if (typeof ResizeObserver !== "undefined") {
+      ro = new ResizeObserver(update);
+      ro.observe(el);
+    }
+
+    window.addEventListener("resize", update, { passive: true });
+    return () => {
+      window.removeEventListener("resize", update);
+      if (ro) ro.disconnect();
+    };
+  }, [scrolled]);
+
+  // Close mobile menu when entering desktop breakpoint
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const onChange = () => {
+      if (mq.matches) setOpen(false);
+    };
+
+    // Safari fallback
+    if (mq.addEventListener) mq.addEventListener("change", onChange);
+    else mq.addListener(onChange);
+
+    onChange();
+    return () => {
+      if (mq.removeEventListener) mq.removeEventListener("change", onChange);
+      else mq.removeListener(onChange);
+    };
+  }, []);
 
   // Shrink navbar on scroll
   useEffect(() => {
@@ -91,19 +136,17 @@ const Navbar = () => {
 
   return (
     <motion.nav
+      ref={navRef}
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
       className={[
         "fixed top-0 w-full z-50 md:backdrop-blur transition-all",
-        // Nubien-ish glass (unique palette)
         "bg-white/60 dark:bg-black/30",
         "border-b border-black/5 dark:border-white/10",
-        // Slight separation on scroll
         scrolled ? "py-2 shadow-sm shadow-black/5 dark:shadow-none" : "py-4",
       ].join(" ")}
     >
-      {/* wrapper is relative so the mobile menu can be absolutely positioned under the fixed navbar */}
       <div className="relative">
         <div className="max-w-7xl mx-auto flex items-center px-4 sm:px-8">
           {/* Logo / Name */}
@@ -207,47 +250,82 @@ const Navbar = () => {
           </button>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu (responsive overlay) */}
         <AnimatePresence>
           {open && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
-              className={[
-                "md:hidden",
-                "absolute left-0 right-0 top-full",
-                "max-h-[calc(100vh-72px)] overflow-y-auto",
-                "border-t border-black/5 dark:border-white/10",
-                "bg-[#F6F7FB] dark:bg-[#0B0F19]",
-              ].join(" ")}
-            >
-              <div className="flex flex-col items-end px-4 sm:px-8 py-6 space-y-5 text-slate-700 dark:text-slate-300">
-                {navItems.map((item) => {
-                  const isActive = active === item.id;
+            <>
+              {/* Backdrop */}
+              <motion.button
+                type="button"
+                aria-label="Close menu"
+                onClick={() => setOpen(false)}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="md:hidden fixed inset-0 z-40 bg-black/30"
+                style={{ top: navH }}
+              />
 
-                  return (
-                    <a
-                      key={item.id}
-                      href={`#${item.id}`}
-                      aria-current={isActive ? "page" : undefined}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        goTo(item.id);
-                      }}
+              {/* Panel */}
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
+                className={[
+                  "md:hidden",
+                  "fixed left-0 right-0 z-50",
+                  "border-t border-black/5 dark:border-white/10",
+                  "bg-[#F6F7FB] dark:bg-[#0B0F19]",
+                  "max-h-[calc(100vh-96px)] overflow-y-auto",
+                ].join(" ")}
+                style={{ top: navH }}
+              >
+                <div className="px-4 sm:px-8 py-6 text-slate-700 dark:text-slate-300">
+                  <div className="grid grid-cols-2 gap-3">
+                    {navItems.map((item) => {
+                      const isActive = active === item.id;
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => goTo(item.id)}
+                          className={[
+                            "text-left rounded-2xl px-4 py-3 border transition",
+                            "border-black/10 dark:border-white/10",
+                            "bg-white/60 dark:bg-white/5",
+                            "hover:bg-white/80 dark:hover:bg-white/10",
+                            isActive
+                              ? "text-slate-900 dark:text-white border-indigo-500/40"
+                              : "text-slate-700 dark:text-slate-300",
+                          ].join(" ")}
+                        >
+                          <div className="text-sm font-semibold">{item.label}</div>
+                          <div className="text-[11px] opacity-70">#{item.id}</div>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <div className="mt-5 flex items-center justify-between rounded-2xl border border-black/10 dark:border-white/10 bg-white/50 dark:bg-white/5 px-4 py-3">
+                    <div className="text-xs font-medium">Theme</div>
+                    <button
+                      onClick={toggleTheme}
+                      type="button"
+                      aria-label="Toggle theme"
                       className={[
-                        "transition",
-                        "hover:text-slate-900 dark:hover:text-white",
-                        isActive ? "text-slate-900 dark:text-white" : "",
+                        "inline-flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium transition",
+                        "bg-black/5 hover:bg-black/10 border border-black/10 text-slate-800",
+                        "dark:bg-white/5 dark:hover:bg-white/10 dark:border-white/10 dark:text-slate-200",
                       ].join(" ")}
                     >
-                      {item.label}
-                    </a>
-                  );
-                })}
-              </div>
-            </motion.div>
+                      <span>{theme === "dark" ? "Dark" : "Light"}</span>
+                      <span className="opacity-70">{theme === "dark" ? "🌙" : "☀️"}</span>
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </>
           )}
         </AnimatePresence>
       </div>
