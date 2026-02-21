@@ -173,27 +173,23 @@ export default function ProjectsManager() {
     const nextDraft = deepClone(draft);
 
     nextDraft.projects = (nextDraft.projects ?? []).map((p) => ({
-      ...p,
-      title: String(p.title ?? ""),
-      desc: String(p.desc ?? ""),
-      image: normalizeCloudinaryUrl(String(p.image ?? "")),
-      tags: normalizeTags(p.tags),
-      links: {
-        live: String(p.links?.live ?? ""),
-        repo: String(p.links?.repo ?? ""),
-        pdf: String(p.links?.pdf ?? ""),
-      },
-      problem: String(p.problem ?? ""),
-      system: String(p.system ?? ""),
-      solution: String(p.solution ?? ""),
-      impact: String(p.impact ?? ""),
-        desc: String(it?.desc ?? ""),
-        iconKey: String(it?.iconKey ?? "spark"),
-        iconUrl: normalizeCloudinaryUrl(String(it?.iconUrl ?? "")),
-      })),
-    }));
+  ...p,
+  title: String(p.title ?? ""),
+  desc: String(p.desc ?? ""),
+  image: normalizeCloudinaryUrl(String(p.image ?? "")),
+  tags: normalizeTags(p.tags),
+  links: {
+    live: String(p.links?.live ?? ""),
+    repo: String(p.links?.repo ?? ""),
+    pdf: String(p.links?.pdf ?? ""),
+  },
+  problem: String(p.problem ?? ""),
+  system: String(p.system ?? ""),
+  solution: String(p.solution ?? ""),
+  impact: String(p.impact ?? ""),
+}));
 
-    const nextErrors = validateProjects(nextDraft);
+const nextErrors = validateProjects(nextDraft);
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length) {
       setToast("Fix validation errors before saving.");
