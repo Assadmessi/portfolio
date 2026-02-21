@@ -54,7 +54,8 @@ const normalizeProof = (raw) => {
   return arr
     .filter(Boolean)
     .map((it) => {
-      if (typeof it === "string") return { title: it, desc: "", iconKey: "spark", iconUrl: "" };
+      if (typeof it === "string")
+        return { title: it, desc: "", iconKey: "spark", iconUrl: "" };
       return {
         title: it?.title ?? "",
         desc: it?.desc ?? "",
@@ -80,7 +81,6 @@ const getHighlights = (project) => {
   return [...three, ...fallbackHighlights(project)].slice(0, 3);
 };
 
-
 const getKey = (p, i) => String(p?.id ?? p?.slug ?? p?.title ?? i);
 const getDesc = (p) => p?.description ?? p?.desc ?? "";
 
@@ -88,10 +88,7 @@ const Projects = () => {
   const { projects: rawProjects, sectionTitle } = projectsContent;
 
   const projects = useMemo(() => normalizeProjects(rawProjects), [rawProjects]);
-  const items = useMemo(
-    () => projects.map((p, i) => ({ p, i, key: getKey(p, i) })),
-    [projects]
-  );
+  const items = useMemo(() => projects.map((p, i) => ({ p, i, key: getKey(p, i) })), [projects]);
 
   const [featuredKey, setFeaturedKey] = useState(() => getKey(projects?.[0], 0));
   const [activeProject, setActiveProject] = useState(null);
@@ -112,7 +109,8 @@ const Projects = () => {
 
   return (
     <>
-      <MotionSection id="projects" variants={staggerContainer} className="py-28 scroll-mt-24">
+      {/* ✅ smaller padding on mobile, same on desktop */}
+      <MotionSection id="projects" variants={staggerContainer} className="py-20 sm:py-28 scroll-mt-24">
         <div className="nb-container">
           {/* Header */}
           <motion.div variants={fadeUp} className="flex items-start justify-between gap-6 flex-wrap">
@@ -129,8 +127,8 @@ const Projects = () => {
             </div>
           </motion.div>
 
-          {/* Layout */}
-          <div className="mt-12 grid gap-10 lg:grid-cols-12">
+          {/* ✅ tighter spacing on small screens */}
+          <div className="mt-10 sm:mt-12 grid gap-8 sm:gap-10 lg:grid-cols-12">
             {/* Featured */}
             <motion.div variants={fadeUp} className="lg:col-span-8">
               {featuredItem ? (
@@ -160,17 +158,18 @@ const Projects = () => {
                     </div>
                   </div>
 
-                  <div className="p-7">
-                    <div className="flex items-start justify-between gap-4">
+                  {/* ✅ responsive padding */}
+                  <div className="p-5 sm:p-7">
+                    <div className="flex items-start justify-between gap-3 sm:gap-4">
                       <div className="min-w-0">
-                        <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100 truncate">
+                        <h3 className="text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-100 truncate">
                           {featuredItem.p?.title}
                         </h3>
-                        <p className="mt-2 text-slate-600 dark:text-slate-400 leading-relaxed">
+                        <p className="mt-2 text-slate-600 dark:text-slate-400 leading-relaxed break-words">
                           {getDesc(featuredItem.p)}
                         </p>
 
-                        {/* Project story grid (matches the screenshot) */}
+                        {/* ✅ story grid: 1 col on mobile, 2 cols from sm */}
                         <div key={`story-${featuredKey}`} className="mt-5 grid gap-3 sm:grid-cols-2">
                           {[
                             { label: "Problem (Project story)", value: featuredItem.p?.problem },
@@ -182,7 +181,9 @@ const Projects = () => {
                               <div className="text-xs font-semibold text-slate-500 dark:text-slate-400">
                                 {it.label}
                               </div>
-                              <div className="mt-2 relative rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 px-4 py-4 overflow-hidden">
+
+                              {/* ✅ smaller padding on mobile + break long text */}
+                              <div className="mt-2 relative rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 px-3 sm:px-4 py-3 sm:py-4 overflow-hidden">
                                 {/* subtle inner highlight ring */}
                                 <span
                                   aria-hidden
@@ -198,16 +199,18 @@ const Projects = () => {
                                   className="pointer-events-none absolute bottom-2 right-2 h-px w-10 rotate-45 origin-right bg-slate-200/70 dark:bg-white/10"
                                 />
 
-                                <div className="relative text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                                {/* ✅ FIX: complete className + close string */}
+                                <div className="relative text-sm text-slate-700 dark:text-slate-300 leading-relaxed break-words">
                                   {it.value ? it.value : "—"}
                                 </div>
                               </div>
                             </div>
                           ))}
                         </div>
-
                       </div>
-                      <span className="shrink-0 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition">
+
+                      {/* ✅ hide on tiny screens so it doesn't squeeze text */}
+                      <span className="hidden sm:inline shrink-0 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition">
                         View →
                       </span>
                     </div>
@@ -227,7 +230,7 @@ const Projects = () => {
                   </div>
                 </button>
               ) : (
-                <div className="rounded-3xl border border-slate-200/70 dark:border-white/10 bg-white/70 dark:bg-white/5 p-10 text-slate-600 dark:text-slate-400">
+                <div className="rounded-3xl border border-slate-200/70 dark:border-white/10 bg-white/70 dark:bg-white/5 p-8 sm:p-10 text-slate-600 dark:text-slate-400">
                   No projects yet.
                 </div>
               )}
@@ -237,7 +240,7 @@ const Projects = () => {
             <div className="lg:col-span-4 flex flex-col gap-4">
               <motion.div
                 variants={fadeUp}
-                className="rounded-3xl border border-slate-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 p-6"
+                className="rounded-3xl border border-slate-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 p-5 sm:p-6"
               >
                 <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">All projects</div>
                 <p className="mt-2 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -261,15 +264,16 @@ const Projects = () => {
                         initial={false}
                         type="button"
                         onClick={() => !isActive && swapFeatured(item)}
-                        className={`w-full text-left px-5 py-4 bg-white/70 dark:bg-[#0B0F19]/40 transition flex items-center gap-4 ${
+                        className={`w-full text-left px-4 sm:px-5 py-3.5 sm:py-4 bg-white/70 dark:bg-[#0B0F19]/40 transition flex items-center gap-3 sm:gap-4 ${
                           isActive
                             ? "opacity-80 cursor-default"
                             : "hover:bg-slate-50 dark:hover:bg-white/5 cursor-pointer"
                         }`}
                       >
-                        <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 w-6">
+                        <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 w-6 shrink-0">
                           {String(item.i + 1).padStart(2, "0")}
                         </div>
+
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 min-w-0">
                             <div className="font-semibold text-slate-900 dark:text-slate-100 truncate">
@@ -285,7 +289,8 @@ const Projects = () => {
                             {getDesc(item.p)}
                           </div>
                         </div>
-                        <div className="ml-auto text-slate-400">↔</div>
+
+                        <div className="ml-auto text-slate-400 shrink-0">↔</div>
                       </motion.button>
                     );
                   })}
