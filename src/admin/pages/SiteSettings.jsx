@@ -12,6 +12,12 @@ const DEFAULT_PROOF_BLOCKS = [
   { title: "Production mindset", desc: "Performance, maintainability, and deploy-friendly structure.", iconKey: "sparkles" },
 ];
 
+const DEFAULT_HERO_PROFILE_STATS = [
+  { title: "UI", subtitle: "Systems" },
+  { title: "Motion", subtitle: "Details" },
+  { title: "Build", subtitle: "Ship" },
+];
+
 function SectionHeader({ title, desc, right }) {
   return (
     <div className="flex items-start justify-between gap-4">
@@ -53,6 +59,10 @@ export default function SiteSettings() {
       if (!Array.isArray(next?.about?.proofBlocks) || next.about.proofBlocks.length === 0) {
         next.about = next.about ?? {};
         next.about.proofBlocks = deepClone(DEFAULT_PROOF_BLOCKS);
+      }
+      if (!Array.isArray(next?.hero?.profileStats) || next.hero.profileStats.length === 0) {
+        next.hero = next.hero ?? {};
+        next.hero.profileStats = deepClone(DEFAULT_HERO_PROFILE_STATS);
       }
       return next;
     });
@@ -272,7 +282,65 @@ export default function SiteSettings() {
               </div>
             </div>
             <div>
-              <SectionHeader title="Primary button" desc="Label + href (e.g. #services)" />
+              
+            <div className="md:col-span-2 mt-6">
+              <SectionHeader title="Hero profile card (right block)" desc="Edit the mini-stats shown under your profile photo." />
+              <div className="mt-3 grid md:grid-cols-3 gap-3">
+                {(draft?.hero?.profileStats ?? []).slice(0,3).map((s, idx) => (
+                  <div key={`hero-stat-${idx}`} className="rounded-2xl border border-black/10 dark:border-white/10 bg-white/50 dark:bg-white/5 p-4">
+                    <div className="text-xs font-medium mb-1">Top text</div>
+                    <Input
+                      value={s?.title ?? ""}
+                      onChange={(e) => {
+                        const next = [...(draft?.hero?.profileStats ?? [])];
+                        next[idx] = { ...(next[idx] ?? {}), title: e.target.value, subtitle: next[idx]?.subtitle ?? "" };
+                        setByPath("hero.profileStats", next);
+                      }}
+                      placeholder="UI"
+                    />
+                    <div className="mt-3 text-xs font-medium mb-1">Bottom text</div>
+                    <Input
+                      value={s?.subtitle ?? ""}
+                      onChange={(e) => {
+                        const next = [...(draft?.hero?.profileStats ?? [])];
+                        next[idx] = { ...(next[idx] ?? {}), title: next[idx]?.title ?? "", subtitle: e.target.value };
+                        setByPath("hero.profileStats", next);
+                      }}
+                      placeholder="Systems"
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-3 flex gap-2">
+                <Button variant="ghost" type="button" onClick={() => setByPath("hero.profileStats", deepClone(DEFAULT_HERO_PROFILE_STATS))}>
+                  Reset stats defaults
+                </Button>
+              </div>
+            </div>
+
+            <div className="md:col-span-2 mt-6">
+              <SectionHeader title="Hero footer links" desc="Labels in the small link row under the main hero text." />
+              <div className="mt-3 grid md:grid-cols-2 gap-3">
+                <div>
+                  <div className="text-xs font-medium mb-1">GitHub label</div>
+                  <Input value={draft?.hero?.footerLinks?.githubLabel ?? ""} onChange={(e) => setByPath("hero.footerLinks.githubLabel", e.target.value)} />
+                </div>
+                <div>
+                  <div className="text-xs font-medium mb-1">LinkedIn label</div>
+                  <Input value={draft?.hero?.footerLinks?.linkedinLabel ?? ""} onChange={(e) => setByPath("hero.footerLinks.linkedinLabel", e.target.value)} />
+                </div>
+                <div>
+                  <div className="text-xs font-medium mb-1">Contact label</div>
+                  <Input value={draft?.hero?.footerLinks?.contactLabel ?? ""} onChange={(e) => setByPath("hero.footerLinks.contactLabel", e.target.value)} />
+                </div>
+                <div>
+                  <div className="text-xs font-medium mb-1">Contact href</div>
+                  <Input value={draft?.hero?.footerLinks?.contactHref ?? ""} onChange={(e) => setByPath("hero.footerLinks.contactHref", e.target.value)} placeholder="#contact" />
+                </div>
+              </div>
+            </div>
+<SectionHeader title="Primary button" desc="Label + href (e.g. #services)" />
               <div className="mt-2 grid grid-cols-1 gap-3">
                 <div>
                   <div className="text-xs font-medium mb-1">Label</div>
@@ -341,7 +409,89 @@ export default function SiteSettings() {
               </div>
             </div>
           </div>
-        </Card>
+        
+          <div className="md:col-span-2 mt-6">
+            <SectionHeader title="About proof cards" desc="These 3 cards appear under About. Each supports a default iconKey or a custom icon upload." />
+            <div className="mt-3 grid gap-3">
+              {(draft?.about?.proofBlocks ?? []).map((card, idx) => (
+                <div key={`about-proof-${idx}`} className="rounded-2xl border border-black/10 dark:border-white/10 bg-white/50 dark:bg-white/5 p-4">
+                  <div className="grid md:grid-cols-3 gap-3 items-start">
+                    <div className="md:col-span-2">
+                      <div className="text-xs font-medium mb-1">Title</div>
+                      <Input
+                        value={card?.title ?? ""}
+                        onChange={(e) => setArrayItem("about.proofBlocks", idx, { ...card, title: e.target.value })}
+                        placeholder="UI + Motion"
+                      />
+                    </div>
+                    <div>
+                      <div className="text-xs font-medium mb-1">Icon key</div>
+                      <select
+                        className="w-full rounded-xl border border-black/10 dark:border-white/10 bg-white/70 dark:bg-white/5 px-3 py-2 text-sm"
+                        value={card?.iconKey ?? "ui"}
+                        onChange={(e) => setArrayItem("about.proofBlocks", idx, { ...card, iconKey: e.target.value, iconUrl: "" })}
+                      >
+                        {["ui","dashboard","sparkles"].map((k) => (
+                          <option key={k} value={k}>{k}</option>
+                        ))}
+                      </select>
+                      <HelperText>Pick a default icon (or upload below).</HelperText>
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <div className="text-xs font-medium mb-1">Description</div>
+                      <Textarea
+                        rows={2}
+                        value={card?.desc ?? ""}
+                        onChange={(e) => setArrayItem("about.proofBlocks", idx, { ...card, desc: e.target.value })}
+                        placeholder="Short, specific proof."
+                      />
+                    </div>
+
+                    <div>
+                      <div className="text-xs font-medium mb-1">Custom icon URL (optional)</div>
+                      <Input
+                        value={card?.iconUrl ?? ""}
+                        onChange={(e) => setArrayItem("about.proofBlocks", idx, { ...card, iconUrl: e.target.value })}
+                        placeholder="https://res.cloudinary.com/.../image/upload/..."
+                      />
+                      <div className="mt-2">
+                        <CloudinaryUpload
+                          folder="portfolio/about-proof"
+                          resourceType="image"
+                          onUploaded={(url) => setArrayItem("about.proofBlocks", idx, { ...card, iconUrl: url })}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="md:col-span-3 flex justify-end">
+                      <Button variant="ghost" type="button" onClick={() => removeFromArray("about.proofBlocks", idx)}>
+                        Remove
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => addToArray("about.proofBlocks", { title: "", desc: "", iconKey: "ui", iconUrl: "" })}
+                >
+                  + Add proof card
+                </Button>
+                <Button
+                  variant="ghost"
+                  type="button"
+                  onClick={() => setByPath("about.proofBlocks", deepClone(DEFAULT_PROOF_BLOCKS))}
+                >
+                  Reset to defaults
+                </Button>
+              </div>
+            </div>
+          </div>
+</Card>
 
         <Card title="Contact" subtitle="Email + copy.">
           <div className="grid md:grid-cols-2 gap-4">

@@ -29,7 +29,21 @@
       "contactLabel": "Contact",
       "contactHref": "#contact"
     },
-    "photoUrl": "/uploads/profile.jpg"
+    "photoUrl": "/uploads/profile.jpg",
+    "profileStats": [
+      {
+        "title": "UI",
+        "subtitle": "Systems"
+      },
+      {
+        "title": "Motion",
+        "subtitle": "Details"
+      },
+      {
+        "title": "Build",
+        "subtitle": "Ship"
+      }
+    ]
   },
   "about": {
     "title": "About",

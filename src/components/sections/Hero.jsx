@@ -89,19 +89,17 @@ const Hero = () => {
               </div>
 
               <div className="mt-7 grid grid-cols-3 gap-3">
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <div className="text-lg font-semibold">UI</div>
-                  <div className="text-xs nb-muted mt-1">Systems</div>
-                </div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <div className="text-lg font-semibold">Motion</div>
-                  <div className="text-xs nb-muted mt-1">Details</div>
-                </div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <div className="text-lg font-semibold">Build</div>
-                  <div className="text-xs nb-muted mt-1">Ship</div>
-                </div>
-              </div>
+                {(hero.profileStats?.length ? hero.profileStats : [
+                  { title: "UI", subtitle: "Systems" },
+                  { title: "Motion", subtitle: "Details" },
+                  { title: "Build", subtitle: "Ship" },
+                ]).slice(0,3).map((s, idx) => (
+                  <div key={idx} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                    <div className="text-lg font-semibold">{s.title}</div>
+                    <div className="text-xs nb-muted mt-1">{s.subtitle}</div>
+                  </div>
+                ))}
+              </div></div>
 
               <div className="mt-7 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm nb-muted">
                 Fast iteration, clean components, and scalable content updates.
