@@ -54,8 +54,7 @@ const normalizeProof = (raw) => {
   return arr
     .filter(Boolean)
     .map((it) => {
-      if (typeof it === "string")
-        return { title: it, desc: "", iconKey: "spark", iconUrl: "" };
+      if (typeof it === "string") return { title: it, desc: "", iconKey: "spark", iconUrl: "" };
       return {
         title: it?.title ?? "",
         desc: it?.desc ?? "",
@@ -109,7 +108,6 @@ const Projects = () => {
 
   return (
     <>
-      {/* ✅ smaller padding on mobile, same on desktop */}
       <MotionSection id="projects" variants={staggerContainer} className="py-20 sm:py-28 scroll-mt-24">
         <div className="nb-container">
           {/* Header */}
@@ -127,7 +125,6 @@ const Projects = () => {
             </div>
           </motion.div>
 
-          {/* ✅ tighter spacing on small screens */}
           <div className="mt-10 sm:mt-12 grid gap-8 sm:gap-10 lg:grid-cols-12">
             {/* Featured */}
             <motion.div variants={fadeUp} className="lg:col-span-8">
@@ -139,18 +136,19 @@ const Projects = () => {
                 >
                   <div className="relative">
                     {featuredItem.p?.image ? (
-                      <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] bg-slate-100 dark:bg-white/10">
+                      // ✅ FIX 1: make mobile less tall (16:9)
+                      <div className="relative w-full aspect-[16/9] sm:aspect-[16/10] bg-slate-100 dark:bg-white/10">
                         <img
                           src={featuredItem.p.image}
                           alt={featuredItem.p.title}
-                          // ✅ FIX: cover on mobile too (so it feels responsive)
+                          // ✅ FIX 2: fill the frame on mobile (no more "floating small image")
                           className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-[1.01] transition duration-500"
                           loading="eager"
                           decoding="async"
                         />
                       </div>
                     ) : (
-                      <div className="aspect-[16/10] sm:aspect-[16/9] w-full bg-slate-100 dark:bg-white/10" />
+                      <div className="aspect-[16/9] sm:aspect-[16/10] w-full bg-slate-100 dark:bg-white/10" />
                     )}
                     <div className="absolute top-4 left-4">
                       <span className="text-[10px] uppercase tracking-wider px-3 py-1 rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900">
@@ -159,7 +157,6 @@ const Projects = () => {
                     </div>
                   </div>
 
-                  {/* ✅ responsive padding */}
                   <div className="p-5 sm:p-7">
                     <div className="flex items-start justify-between gap-3 sm:gap-4">
                       <div className="min-w-0">
@@ -170,7 +167,6 @@ const Projects = () => {
                           {getDesc(featuredItem.p)}
                         </p>
 
-                        {/* ✅ story grid: 1 col on mobile, 2 cols from sm */}
                         <div key={`story-${featuredKey}`} className="mt-5 grid gap-3 sm:grid-cols-2">
                           {[
                             { label: "Problem (Project story)", value: featuredItem.p?.problem },
@@ -183,14 +179,11 @@ const Projects = () => {
                                 {it.label}
                               </div>
 
-                              {/* ✅ smaller padding on mobile + break long text */}
                               <div className="mt-2 relative rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 px-3 sm:px-4 py-3 sm:py-4 overflow-hidden">
-                                {/* subtle inner highlight ring */}
                                 <span
                                   aria-hidden
                                   className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-black/5 dark:ring-white/10"
                                 />
-                                {/* corner accent (bottom-right) */}
                                 <span
                                   aria-hidden
                                   className="pointer-events-none absolute -bottom-px -right-px h-7 w-7 rounded-br-2xl border-b border-r border-slate-200/70 dark:border-white/10"
@@ -209,7 +202,6 @@ const Projects = () => {
                         </div>
                       </div>
 
-                      {/* ✅ hide on tiny screens so it doesn't squeeze text */}
                       <span className="hidden sm:inline shrink-0 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition">
                         View →
                       </span>
