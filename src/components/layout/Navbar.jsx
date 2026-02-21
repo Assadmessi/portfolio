@@ -20,7 +20,7 @@ const Navbar = () => {
   const navRef = useRef(null);
   const [navH, setNavH] = useState(72);
 
-  // Lock body scroll when mobile menu is open (prevents background scroll/jank on iOS)
+  // Lock body scroll when mobile menu is open
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
@@ -30,7 +30,7 @@ const Navbar = () => {
     };
   }, [open]);
 
-  // Keep mobile menu aligned to the real navbar height (works with scroll shrink)
+  // Keep mobile menu aligned to actual navbar height
   useEffect(() => {
     if (!navRef.current) return;
     const el = navRef.current;
@@ -62,7 +62,6 @@ const Navbar = () => {
       if (mq.matches) setOpen(false);
     };
 
-    // Safari fallback
     if (mq.addEventListener) mq.addEventListener("change", onChange);
     else mq.addListener(onChange);
 
@@ -81,7 +80,7 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Deep linking on load (if URL has #section)
+  // Deep linking on load
   useEffect(() => {
     const hash = window.location.hash.replace("#", "");
     if (!hash) return;
@@ -93,7 +92,7 @@ const Navbar = () => {
     el.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
-  // Scroll spy (IntersectionObserver)
+  // Scroll spy
   useEffect(() => {
     const ids = navItems.map((i) => i.id);
     const sections = ids.map((id) => document.getElementById(id)).filter(Boolean);
@@ -152,7 +151,7 @@ const Navbar = () => {
           {/* Logo / Name */}
           <button
             onClick={() => goTo("home")}
-            className="flex items-center gap-3 select-none"
+            className="flex items-center gap-3 select-none shrink-0"
             aria-label="Go to home"
             type="button"
           >
@@ -214,43 +213,50 @@ const Navbar = () => {
             </button>
           </div>
 
-          {/* Theme Toggle (mobile) */}
-          <button
-            onClick={toggleTheme}
-            type="button"
-            aria-label="Toggle theme"
-            className={[
-              "md:hidden ml-auto mr-3 inline-flex items-center justify-center rounded-xl px-3 py-2 text-xs font-medium transition",
-              "bg-black/5 hover:bg-black/10 border border-black/10 text-slate-800",
-              "dark:bg-white/5 dark:hover:bg-white/10 dark:border-white/10 dark:text-slate-200",
-            ].join(" ")}
-          >
-            {theme === "dark" ? "🌙" : "☀️"}
-          </button>
+          {/* ✅ Mobile right controls (prevents overflow on tiny screens) */}
+          <div className="md:hidden ml-auto flex items-center gap-2">
+            {/* Theme Toggle (mobile) */}
+            <button
+              onClick={toggleTheme}
+              type="button"
+              aria-label="Toggle theme"
+              className={[
+                "inline-flex items-center justify-center rounded-xl px-3 py-2 text-xs font-medium transition",
+                "bg-black/5 hover:bg-black/10 border border-black/10 text-slate-800",
+                "dark:bg-white/5 dark:hover:bg-white/10 dark:border-white/10 dark:text-slate-200",
+              ].join(" ")}
+            >
+              {theme === "dark" ? "🌙" : "☀️"}
+            </button>
 
-          {/* Hamburger */}
-          <button
-            onClick={() => setOpen(!open)}
-            className="md:hidden relative w-6 h-6"
-            aria-label="Toggle menu"
-            type="button"
-          >
-            <motion.span
-              animate={open ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
-              className="absolute top-1 w-6 h-[2px] bg-slate-900 dark:bg-white"
-            />
-            <motion.span
-              animate={open ? { opacity: 0 } : { opacity: 1 }}
-              className="absolute top-3 w-6 h-[2px] bg-slate-900 dark:bg-white"
-            />
-            <motion.span
-              animate={open ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }}
-              className="absolute top-5 w-6 h-[2px] bg-slate-900 dark:bg-white"
-            />
-          </button>
+            {/* Hamburger */}
+            <button
+              onClick={() => setOpen((v) => !v)}
+              className="relative w-10 h-10 grid place-items-center rounded-xl border border-black/10 dark:border-white/10 bg-white/40 dark:bg-white/5"
+              aria-label="Toggle menu"
+              aria-expanded={open}
+              aria-controls="mobile-nav"
+              type="button"
+            >
+              <div className="relative w-6 h-6">
+                <motion.span
+                  animate={open ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
+                  className="absolute top-1 w-6 h-[2px] bg-slate-900 dark:bg-white"
+                />
+                <motion.span
+                  animate={open ? { opacity: 0 } : { opacity: 1 }}
+                  className="absolute top-3 w-6 h-[2px] bg-slate-900 dark:bg-white"
+                />
+                <motion.span
+                  animate={open ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }}
+                  className="absolute top-5 w-6 h-[2px] bg-slate-900 dark:bg-white"
+                />
+              </div>
+            </button>
+          </div>
         </div>
 
-        {/* Mobile Menu (responsive overlay) */}
+        {/* Mobile Menu */}
         <AnimatePresence>
           {open && (
             <>
@@ -268,6 +274,7 @@ const Navbar = () => {
 
               {/* Panel */}
               <motion.div
+                id="mobile-nav"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
@@ -277,12 +284,16 @@ const Navbar = () => {
                   "fixed left-0 right-0 z-50",
                   "border-t border-black/5 dark:border-white/10",
                   "bg-[#F6F7FB] dark:bg-[#0B0F19]",
-                  "max-h-[calc(100vh-96px)] overflow-y-auto",
+                  "overflow-y-auto",
                 ].join(" ")}
-                style={{ top: navH }}
+                style={{
+                  top: navH,
+                  maxHeight: `calc(100vh - ${navH}px)`, // ✅ real responsive height
+                }}
               >
                 <div className="px-4 sm:px-8 py-6 text-slate-700 dark:text-slate-300">
-                  <div className="grid grid-cols-2 gap-3">
+                  {/* ✅ 1 col on xs, 2 cols from sm+ */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {navItems.map((item) => {
                       const isActive = active === item.id;
                       return (
