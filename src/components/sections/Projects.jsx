@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { MotionSection } from "../../animations/MotionWrappers";
 import { fadeUp, staggerContainer } from "../../animations/variants";
 import ProjectModal from "../common/ProjectModal";
-import { ProofIcon } from "../common/IconLibrary";
 import { projectsContent } from "../../content";
 
 // Supports data coming from JSON (array) OR admin/Firestore (object keyed by index)
@@ -142,15 +141,17 @@ const Projects = () => {
                 >
                   <div className="relative">
                     {featuredItem.p?.image ? (
-                      <img
-                        src={featuredItem.p.image}
-                        alt={featuredItem.p.title}
-                        className="h-56 sm:h-80 w-full object-cover group-hover:scale-[1.02] transition duration-500"
-                        loading="eager"
-                        decoding="async"
-                      />
+                      <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] bg-slate-100 dark:bg-white/10">
+                        <img
+                          src={featuredItem.p.image}
+                          alt={featuredItem.p.title}
+                          className="absolute inset-0 w-full h-full object-contain sm:object-cover group-hover:scale-[1.01] transition duration-500"
+                          loading="eager"
+                          decoding="async"
+                        />
+                      </div>
                     ) : (
-                      <div className="h-64 sm:h-80 w-full bg-slate-100 dark:bg-white/10" />
+                      <div className="aspect-[16/10] sm:aspect-[16/9] w-full bg-slate-100 dark:bg-white/10" />
                     )}
                     <div className="absolute top-4 left-4">
                       <span className="text-[10px] uppercase tracking-wider px-3 py-1 rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900">
@@ -169,42 +170,36 @@ const Projects = () => {
                           {getDesc(featuredItem.p)}
                         </p>
 
-                        {/* Per-project highlights (3 cards) */}
-                        <div key={`hl-${featuredKey}`} className="mt-5 grid gap-3 sm:grid-cols-3">
-                          {getHighlights(featuredItem.p).map((h, idx) => (
-                            <div
-                              key={`${featuredKey}-${idx}-${h.title}`}
-                              className="relative rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 px-4 py-3 overflow-hidden"
-                            >
-                              {/* subtle inner highlight ring */}
-                              <span
-                                aria-hidden
-                                className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-black/5 dark:ring-white/10"
-                              />
+                        {/* Project story grid (matches the screenshot) */}
+                        <div key={`story-${featuredKey}`} className="mt-5 grid gap-3 sm:grid-cols-2">
+                          {[
+                            { label: "Problem (Project story)", value: featuredItem.p?.problem },
+                            { label: "System (Architecture)", value: featuredItem.p?.system },
+                            { label: "Solution (What you built)", value: featuredItem.p?.solution },
+                            { label: "Impact (Result)", value: featuredItem.p?.impact },
+                          ].map((it, idx) => (
+                            <div key={`${featuredKey}-story-${idx}`} className="min-w-0">
+                              <div className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                                {it.label}
+                              </div>
+                              <div className="mt-2 relative rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 px-4 py-4 overflow-hidden">
+                                {/* subtle inner highlight ring */}
+                                <span
+                                  aria-hidden
+                                  className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-black/5 dark:ring-white/10"
+                                />
+                                {/* corner accent (bottom-right) */}
+                                <span
+                                  aria-hidden
+                                  className="pointer-events-none absolute -bottom-px -right-px h-7 w-7 rounded-br-2xl border-b border-r border-slate-200/70 dark:border-white/10"
+                                />
+                                <span
+                                  aria-hidden
+                                  className="pointer-events-none absolute bottom-2 right-2 h-px w-10 rotate-45 origin-right bg-slate-200/70 dark:bg-white/10"
+                                />
 
-                              {/* corner accent (bottom-right) */}
-                              <span
-                                aria-hidden
-                                className="pointer-events-none absolute -bottom-px -right-px h-7 w-7 rounded-br-2xl border-b border-r border-slate-200/70 dark:border-white/10"
-                              />
-                              <span
-                                aria-hidden
-                                className="pointer-events-none absolute bottom-2 right-2 h-px w-10 rotate-45 origin-right bg-slate-200/70 dark:bg-white/10"
-                              />
-
-                              <div className="flex items-start gap-2">
-                                <span className="mt-0.5 inline-flex items-center justify-center w-8 h-8 rounded-xl bg-slate-900/5 dark:bg-white/10 text-slate-900 dark:text-slate-100">
-                                  <ProofIcon iconKey={h.iconKey} iconUrl={h.iconUrl} />
-                                </span>
-                                <div className="min-w-0">
-                                  <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                                    {h.title}
-                                  </div>
-                                  {h.desc ? (
-                                    <div className="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
-                                      {h.desc}
-                                    </div>
-                                  ) : null}
+                                <div className="relative text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                                  {it.value ? it.value : "—"}
                                 </div>
                               </div>
                             </div>

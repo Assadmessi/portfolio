@@ -6,8 +6,6 @@ import { Button, Card, HelperText, Input, PageFade, Textarea } from "../componen
 import { normalizeTags, safeStringArray, validateSite } from "../utils/validate";
 import CloudinaryUpload from "../components/CloudinaryUpload";
 
-const PROOF_ICON_KEYS = ["ui","dashboard","rocket","shield","zap","sparkles","code","globe","wand"];
-
 const DEFAULT_PROOF_BLOCKS = [
   { title: "UI + Motion", desc: "Smooth interactions, scroll reveals, and clean component systems.", iconKey: "ui" },
   { title: "Admin-ready UX", desc: "Dashboards, role-based flows, and content editing patterns.", iconKey: "dashboard" },
@@ -251,6 +249,28 @@ export default function SiteSettings() {
               <Textarea rows={3} value={draft?.hero?.intro ?? ""} onChange={(e) => setByPath("hero.intro", e.target.value)} />
               {errors["hero.intro"] ? <HelperText tone="error">{errors["hero.intro"]}</HelperText> : null}
             </div>
+
+            <div className="md:col-span-2">
+              <SectionHeader title="Hero photo" desc="This photo appears in the hero card on the right." />
+              <div className="mt-2 grid md:grid-cols-3 gap-3 items-start">
+                <div className="md:col-span-2">
+                  <div className="text-xs font-medium mb-1">Photo URL</div>
+                  <Input
+                    value={draft?.hero?.photoUrl ?? ""}
+                    onChange={(e) => setByPath("hero.photoUrl", e.target.value)}
+                    placeholder="https://res.cloudinary.com/.../image/upload/..."
+                  />
+                  <HelperText>Tip: Upload below to Cloudinary and this URL will auto-fill.</HelperText>
+                </div>
+                <div className="pt-5 md:pt-0">
+                  <CloudinaryUpload
+                    folder="portfolio/hero"
+                    resourceType="image"
+                    onUploaded={(url) => setByPath("hero.photoUrl", url)}
+                  />
+                </div>
+              </div>
+            </div>
             <div>
               <SectionHeader title="Primary button" desc="Label + href (e.g. #services)" />
               <div className="mt-2 grid grid-cols-1 gap-3">
@@ -492,156 +512,6 @@ export default function SiteSettings() {
               }}
               placeholder="Build mobile-first, responsive layouts\nWrite reusable React components\n..."
             />
-          </div>
-        </Card>
-
-        <Card title="About proof cards" subtitle="These are the 3 proof cards under the About section (not Projects).">
-          <div className="space-y-4">
-            {(draft?.about?.proofBlocks ?? []).map((b, idx) => (
-              <div key={idx} className="rounded-2xl border border-black/10 dark:border-white/10 p-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="text-sm font-semibold">Proof card {idx + 1}</div>
-                  <Button variant="ghost" type="button" onClick={() => removeFromArray("about.proofBlocks", idx)}>
-                    Remove
-                  </Button>
-                </div>
-                <div className="mt-3 grid md:grid-cols-3 gap-3">
-                  <div>
-                    <div className="text-xs font-medium mb-1">Title</div>
-                    <Input value={b?.title ?? ""} onChange={(e) => setArrayItem("about.proofBlocks", idx, { ...b, title: e.target.value })} />
-                  </div>
-                  <div className="md:col-span-2">
-                    <div className="text-xs font-medium mb-1">Description</div>
-                    <Input value={b?.desc ?? ""} onChange={(e) => setArrayItem("about.proofBlocks", idx, { ...b, desc: e.target.value })} />
-                  </div>
-                  <div>
-                    <div className="text-xs font-medium mb-1">Icon</div>
-
-                    {/* Custom icon (Cloudinary) overrides iconKey */}
-                    {b?.iconUrl ? (
-                      <div className="flex items-center justify-between gap-3 rounded-xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 px-3 py-2">
-                        <div className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-200">
-                          <img src={b.iconUrl} alt="" className="w-6 h-6 object-contain" loading="lazy" />
-                          <span className="truncate">Custom icon</span>
-                        </div>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          onClick={() => setArrayItem("about.proofBlocks", idx, { ...b, iconUrl: "" })}
-                        >
-                          Remove
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="grid gap-2">
-                        <select
-                          className="w-full rounded-xl border border-black/10 dark:border-white/10 bg-white/80 dark:bg-white/5 px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500/40"
-                          value={b?.iconKey ?? "ui"}
-                          onChange={(e) => setArrayItem("about.proofBlocks", idx, { ...b, iconKey: e.target.value })}
-                        >
-                          {PROOF_ICON_KEYS.map((k) => (
-                            <option key={k} value={k}>
-                              {k}
-                            </option>
-                          ))}
-                        </select>
-
-                        <div className="flex items-center gap-2 rounded-xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 px-3 py-2">
-                          {/* Preview matches the About section icon set */}
-                          <span className="shrink-0 text-slate-700 dark:text-slate-200">
-                            {{
-                              ui: (
-                                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <path d="M4 7h16M4 12h16M4 17h10" />
-                                </svg>
-                              ),
-                              dashboard: (
-                                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <path d="M4 4h16v6H4zM4 14h7v6H4zM13 14h7v6h-7z" />
-                                </svg>
-                              ),
-                              rocket: (
-                                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <path d="M14 4c4 1 6 4 6 8-4 0-7 2-8 6-2 0-5-2-6-6 4 0 7-2 8-8z" />
-                                  <path d="M9 15l-2 2" />
-                                </svg>
-                              ),
-                              shield: (
-                                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <path d="M12 2l7 4v6c0 5-3 9-7 10-4-1-7-5-7-10V6l7-4z" />
-                                </svg>
-                              ),
-                              zap: (
-                                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <path d="M13 2L3 14h8l-1 8 11-14h-8l1-6z" />
-                                </svg>
-                              ),
-                              sparkles: (
-                                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <path d="M12 2l3 7h7l-5.5 4.3L18.5 21 12 16.8 5.5 21l2-7.7L2 9h7z" />
-                                </svg>
-                              ),
-                              code: (
-                                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <path d="M8 9l-3 3 3 3" />
-                                  <path d="M16 9l3 3-3 3" />
-                                  <path d="M14 6l-4 12" />
-                                </svg>
-                              ),
-                              globe: (
-                                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <circle cx="12" cy="12" r="10" />
-                                  <path d="M2 12h20" />
-                                  <path d="M12 2a15 15 0 0 1 0 20" />
-                                  <path d="M12 2a15 15 0 0 0 0 20" />
-                                </svg>
-                              ),
-                              wand: (
-                                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <path d="M4 20l9-9" />
-                                  <path d="M14 11l6-6" />
-                                  <path d="M15 5l4 4" />
-                                  <path d="M9 3l1 2" />
-                                  <path d="M3 9l2 1" />
-                                  <path d="M21 15l-2-1" />
-                                  <path d="M15 21l-1-2" />
-                                </svg>
-                              ),
-                            }[b?.iconKey ?? "ui"]}
-                          </span>
-                          <span className="text-xs text-slate-600 dark:text-slate-300">Preview</span>
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="mt-2">
-                      <CloudinaryUpload
-                        folder="portfolio/proof-icons"
-                        allowedFormats={["png", "jpg", "jpeg", "webp", "svg"]}
-                        resourceType="image"
-                        onUploaded={(url) => setArrayItem("about.proofBlocks", idx, { ...b, iconUrl: url })}
-                      />
-                      <HelperText>Optional: upload a custom icon (overrides the dropdown).</HelperText>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-
-            <Button
-              variant="outline"
-              type="button"
-              onClick={() => addToArray("about.proofBlocks", { title: "New proof", desc: "Short supporting line", iconKey: "ui" })}
-            >
-              + Add proof card
-            </Button>
-
-            {!(draft?.about?.proofBlocks ?? []).length ? (
-              <HelperText>
-                If this list is empty, the About section will fall back to the built-in default proof cards.
-                Add 3 items here to fully control them from the admin.
-              </HelperText>
-            ) : null}
           </div>
         </Card>
 
