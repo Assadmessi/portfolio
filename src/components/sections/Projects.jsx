@@ -143,7 +143,8 @@ const Projects = () => {
                         <img
                           src={featuredItem.p.image}
                           alt={featuredItem.p.title}
-                          className="absolute inset-0 w-full h-full object-contain sm:object-cover group-hover:scale-[1.01] transition duration-500"
+                          // ✅ FIX: cover on mobile too (so it feels responsive)
+                          className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-[1.01] transition duration-500"
                           loading="eager"
                           decoding="async"
                         />
@@ -199,7 +200,6 @@ const Projects = () => {
                                   className="pointer-events-none absolute bottom-2 right-2 h-px w-10 rotate-45 origin-right bg-slate-200/70 dark:bg-white/10"
                                 />
 
-                                {/* ✅ FIX: complete className + close string */}
                                 <div className="relative text-sm text-slate-700 dark:text-slate-300 leading-relaxed break-words">
                                   {it.value ? it.value : "—"}
                                 </div>
