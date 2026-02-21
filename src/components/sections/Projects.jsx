@@ -145,7 +145,7 @@ const Projects = () => {
                       <img
                         src={featuredItem.p.image}
                         alt={featuredItem.p.title}
-                        className="h-64 sm:h-80 w-full object-cover group-hover:scale-[1.02] transition duration-500"
+                        className="h-56 sm:h-80 w-full object-cover group-hover:scale-[1.02] transition duration-500"
                       />
                     ) : (
                       <div className="h-64 sm:h-80 w-full bg-slate-100 dark:bg-white/10" />
@@ -157,13 +157,13 @@ const Projects = () => {
                     </div>
                   </div>
 
-                  <div className="p-5 sm:p-7">
+                  <div className="p-7">
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0">
                         <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100 truncate">
                           {featuredItem.p?.title}
                         </h3>
-                        <p className="mt-2 text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
+                        <p className="mt-2 text-slate-600 dark:text-slate-400 leading-relaxed">
                           {getDesc(featuredItem.p)}
                         </p>
 
@@ -248,7 +248,7 @@ const Projects = () => {
                         initial={false}
                         type="button"
                         onClick={() => !isActive && swapFeatured(item)}
-                        className={`w-full text-left px-4 sm:px-5 py-3 sm:py-4 bg-white/70 dark:bg-[#0B0F19]/40 transition flex items-center gap-4 ${
+                        className={`w-full text-left px-5 py-4 bg-white/70 dark:bg-[#0B0F19]/40 transition flex items-center gap-4 ${
                           isActive
                             ? "opacity-80 cursor-default"
                             : "hover:bg-slate-50 dark:hover:bg-white/5 cursor-pointer"

@@ -246,83 +246,11 @@ export default function SiteSettings() {
               <div className="text-xs font-medium mb-1">Availability</div>
               <Input value={draft?.hero?.availability ?? ""} onChange={(e) => setByPath("hero.availability", e.target.value)} placeholder="Open to freelance..." />
             </div>
-            
-            <div className="md:col-span-2">
-              <div className="text-xs font-medium mb-1">Profile photo URL</div>
-              <Input
-                value={draft?.hero?.photoUrl ?? ""}
-                onChange={(e) => setByPath("hero.photoUrl", e.target.value)}
-                placeholder="/uploads/profile.jpg or https://..."
-              />
-              {errors["hero.photoUrl"] ? <HelperText tone="error">{errors["hero.photoUrl"]}</HelperText> : null}
-              <div className="mt-2">
-                <CloudinaryUpload folder="portfolio/profile" allowedFormats={["png","jpg","jpeg","webp"]} resourceType="image" onUploaded={(url) => setByPath("hero.photoUrl", url)} />
-                <HelperText>Upload a profile image and auto-fill the URL.</HelperText>
-              </div>
-            </div>
             <div className="md:col-span-2">
               <div className="text-xs font-medium mb-1">Intro</div>
               <Textarea rows={3} value={draft?.hero?.intro ?? ""} onChange={(e) => setByPath("hero.intro", e.target.value)} />
               {errors["hero.intro"] ? <HelperText tone="error">{errors["hero.intro"]}</HelperText> : null}
             </div>
-
-            <div className="md:col-span-2">
-              <div className="flex items-center justify-between gap-3 mb-2">
-                <div>
-                  <div className="text-xs font-medium">Hero mini cards</div>
-                  <div className="text-xs opacity-70">These are the 3 small cards under your profile in the hero.</div>
-                </div>
-                <Button
-                  type="button"
-                  onClick={() => addToArray("hero.highlights", { title: "", subtitle: "" })}
-                  disabled={(draft?.hero?.highlights?.length ?? 0) >= 6}
-                >
-                  Add card
-                </Button>
-              </div>
-
-              <div className="space-y-3">
-                {(draft?.hero?.highlights ?? []).slice(0, 6).map((h, idx) => (
-                  <div key={idx} className="rounded-2xl border border-black/10 dark:border-white/10 p-4">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="text-sm font-semibold">Card {idx + 1}</div>
-                      <Button variant="ghost" type="button" onClick={() => removeFromArray("hero.highlights", idx)}>
-                        Remove
-                      </Button>
-                    </div>
-
-                    <div className="grid md:grid-cols-2 gap-3 mt-3">
-                      <div>
-                        <div className="text-xs font-medium mb-1">Title</div>
-                        <Input
-                          value={h?.title ?? ""}
-                          onChange={(e) => setArrayItem("hero.highlights", idx, { ...(h ?? {}), title: e.target.value })}
-                          placeholder="UI"
-                        />
-                        {errors[`hero.highlights.${idx}.title`] ? (
-                          <HelperText tone="error">{errors[`hero.highlights.${idx}.title`]}</HelperText>
-                        ) : null}
-                      </div>
-
-                      <div>
-                        <div className="text-xs font-medium mb-1">Subtitle</div>
-                        <Input
-                          value={h?.subtitle ?? ""}
-                          onChange={(e) => setArrayItem("hero.highlights", idx, { ...(h ?? {}), subtitle: e.target.value })}
-                          placeholder="Systems"
-                        />
-                        {errors[`hero.highlights.${idx}.subtitle`] ? (
-                          <HelperText tone="error">{errors[`hero.highlights.${idx}.subtitle`]}</HelperText>
-                        ) : null}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {errors["hero.highlights"] ? <HelperText tone="error">{errors["hero.highlights"]}</HelperText> : null}
-            </div>
-
             <div>
               <SectionHeader title="Primary button" desc="Label + href (e.g. #services)" />
               <div className="mt-2 grid grid-cols-1 gap-3">

@@ -84,12 +84,6 @@ body::after{
   mask-image: radial-gradient(ellipse at top, black 40%, transparent 72%);
 }
 
-/* Mobile performance: reduce heavy fixed overlays (helps Safari/low-end GPUs) */
-@media (max-width: 640px){
-  body::after{ display: none; }
-  body::before{ opacity: 0.65; }
-}
-
 .dark body::after{
   opacity: 0.30;
   background:
@@ -227,4 +221,12 @@ html, body {
 html::-webkit-scrollbar,
 body::-webkit-scrollbar {
   display: none; /* Chrome, Safari */
+}
+
+
+/* Mobile perf: avoid fixed overlays that can stutter on iOS Safari */
+@media (max-width: 640px) {
+  .backdrop-blur, .backdrop-blur-sm, .backdrop-blur-md, .backdrop-blur-lg {
+    backdrop-filter: none !important;
+  }
 }

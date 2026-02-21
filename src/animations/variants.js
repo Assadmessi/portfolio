@@ -1,5 +1,5 @@
-// Nubien-inspired motion language (lift + spring)
-// NOTE: Avoid animating CSS filters (e.g. blur) — it can feel janky on mobile GPUs.
+// Premium motion language (lift + spring) — mobile friendly (no blur filters)
+// Keeps your content intact while making motion feel "Framer premium".
 
 export const sectionEnter = {
   hidden: {
@@ -41,15 +41,14 @@ export const staggerContainer = {
   hidden: {},
   visible: {
     transition: {
-      // Slightly tighter stagger = smoother on low-power devices
-      staggerChildren: 0.09,
-      delayChildren: 0.04,
+      staggerChildren: 0.12,
+      delayChildren: 0.06,
     },
   },
 };
 
 export const maskReveal = {
-  hidden: { opacity: 0, y: 8 },
+  hidden: { opacity: 0, y: 8, filter: "blur(8px)" },
   visible: {
     opacity: 1,
     y: 0,

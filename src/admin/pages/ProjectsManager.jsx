@@ -19,11 +19,26 @@ function emptyProject() {
     system: "",
     solution: "",
     impact: "",
+    proof: [
+      { title: "", desc: "", iconKey: "spark", iconUrl: "" },
+      { title: "", desc: "", iconKey: "spark", iconUrl: "" },
+      { title: "", desc: "", iconKey: "spark", iconUrl: "" },
+    ],
   };
 }
 
 
 
+function normalizeProofDraft(raw) {
+  if (!raw) return [];
+  if (Array.isArray(raw)) return raw;
+  if (typeof raw === "object") {
+    return Object.entries(raw)
+      .sort(([a], [b]) => Number(a) - Number(b))
+      .map(([, v]) => v);
+  }
+  return [];
+}
 
 function looksLikeDirectImageUrl(url) {
   if (!url) return true; // empty allowed
@@ -189,8 +204,15 @@ export default function ProjectsManager() {
       system: String(p.system ?? ""),
       solution: String(p.solution ?? ""),
       impact: String(p.impact ?? ""),
+      proof: normalizeProofDraft(p.proof).slice(0, 6).map((it) => ({
+        title: String(it?.title ?? ""),
+        desc: String(it?.desc ?? ""),
+        iconKey: String(it?.iconKey ?? "spark"),
+        iconUrl: normalizeCloudinaryUrl(String(it?.iconUrl ?? "")),
+      })),
     }));
-const nextErrors = validateProjects(nextDraft);
+
+    const nextErrors = validateProjects(nextDraft);
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length) {
       setToast("Fix validation errors before saving.");
@@ -331,6 +353,147 @@ const nextErrors = validateProjects(nextDraft);
                             </div>
                           </div>
                         ) : null}
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <div className="text-xs font-medium mb-1">Description</div>
+                        <Textarea
+                          rows={4}
+                          value={p.desc ?? ""}
+                          onChange={(e) => setProject(editingIndex, { ...p, desc: e.target.value })}
+                        />
+                        {errors[`${prefix}desc`] ? <HelperText tone="error">{errors[`${prefix}desc`]}</HelperText> : null}
+                      </div>
+
+                      <div className="md:col-span-2 grid md:grid-cols-2 gap-4">
+                        <div>
+                          <div className="text-xs font-medium mb-1">Problem (Project story)</div>
+                          <Textarea
+                            rows={3}
+                            value={p.problem ?? ""}
+                            onChange={(e) => setProject(editingIndex, { ...p, problem: e.target.value })}
+                            placeholder="What problem did this project solve?"
+                          />
+                        </div>
+                        <div>
+                          <div className="text-xs font-medium mb-1">System (Architecture)</div>
+                          <Textarea
+                            rows={3}
+                            value={p.system ?? ""}
+                            onChange={(e) => setProject(editingIndex, { ...p, system: e.target.value })}
+                            placeholder="Key tech + structure (brief)."
+                          />
+                        </div>
+                        <div>
+                          <div className="text-xs font-medium mb-1">Solution (What you built)</div>
+                          <Textarea
+                            rows={3}
+                            value={p.solution ?? ""}
+                            onChange={(e) => setProject(editingIndex, { ...p, solution: e.target.value })}
+                            placeholder="How did you solve it?"
+                          />
+                        </div>
+                        <div>
+                          <div className="text-xs font-medium mb-1">Impact (Result)</div>
+                          <Textarea
+                            rows={3}
+                            value={p.impact ?? ""}
+                            onChange={(e) => setProject(editingIndex, { ...p, impact: e.target.value })}
+                            placeholder="Outcome / improvement / value."
+                          />
+                        </div>
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <div className="text-xs font-semibold mb-2">Proof cards (3 small boxes shown under Featured)</div>
+                        <HelperText>Each card supports a default icon or a custom uploaded icon. Keep it short and specific.</HelperText>
+
+                        <div className="mt-3 grid gap-3">
+                          {normalizeProofDraft(p.proof).map((card, cidx) => (
+                            <div
+                              key={`${editingIndex}-proof-${cidx}`}
+                              className="rounded-2xl border border-black/10 dark:border-white/10 bg-white/40 dark:bg-white/5 p-4"
+                            >
+                              <div className="grid md:grid-cols-12 gap-3 items-start">
+                                <div className="md:col-span-4">
+                                  <div className="text-xs font-medium mb-1">Title</div>
+                                  <Input
+                                    value={card?.title ?? ""}
+                                    onChange={(e) => {
+                                      const next = normalizeProofDraft(p.proof);
+                                      next[cidx] = { ...card, title: e.target.value };
+                                      setProject(editingIndex, { ...p, proof: next });
+                                    }}
+                                    placeholder="e.g., Realtime sync"
+                                  />
+                                </div>
+
+                                <div className="md:col-span-5">
+                                  <div className="text-xs font-medium mb-1">Short explanation</div>
+                                  <Input
+                                    value={card?.desc ?? ""}
+                                    onChange={(e) => {
+                                      const next = normalizeProofDraft(p.proof);
+                                      next[cidx] = { ...card, desc: e.target.value };
+                                      setProject(editingIndex, { ...p, proof: next });
+                                    }}
+                                    placeholder="1-line explanation that matches this project."
+                                  />
+                                </div>
+
+                                <div className="md:col-span-3">
+                                  <div className="text-xs font-medium mb-1">Icon</div>
+                                  <div className="flex gap-2">
+                                    <select
+                                      className="w-full rounded-xl border border-black/10 dark:border-white/10 bg-white/70 dark:bg-white/5 px-3 py-2 text-sm"
+                                      value={card?.iconKey ?? "spark"}
+                                      onChange={(e) => {
+                                        const next = normalizeProofDraft(p.proof);
+                                        next[cidx] = { ...card, iconKey: e.target.value, iconUrl: "" };
+                                        setProject(editingIndex, { ...p, proof: next });
+                                      }}
+                                    >
+                                      {DEFAULT_ICON_KEYS.map((k) => (
+                                        <option key={k} value={k}>
+                                          {k}
+                                        </option>
+                                      ))}
+                                    </select>
+
+                                    <CloudinaryUpload
+                                      folder="portfolio/icons"
+                                      allowedFormats={["png", "jpg", "jpeg", "webp", "svg"]}
+                                      onUploaded={(url) => {
+                                        const next = normalizeProofDraft(p.proof);
+                                        next[cidx] = { ...card, iconUrl: url };
+                                        setProject(editingIndex, { ...p, proof: next });
+                                      }}
+                                    />
+                                  </div>
+
+                                  {card?.iconUrl ? (
+                                    <HelperText tone="neutral">Custom icon uploaded. (Using iconUrl)</HelperText>
+                                  ) : (
+                                    <HelperText tone="neutral">Using default icon: {card?.iconKey ?? "spark"}</HelperText>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="mt-3">
+                          <Button
+                            tone="neutral"
+                            onClick={() => {
+                              const next = normalizeProofDraft(p.proof);
+                              next.push({ title: "", desc: "", iconKey: "spark", iconUrl: "" });
+                              setProject(editingIndex, { ...p, proof: next });
+                            }}
+                          >
+                            + Add proof card
+                          </Button>
+                        </div>
                       </div>
 
                       <div className="md:col-span-2 grid md:grid-cols-3 gap-4">

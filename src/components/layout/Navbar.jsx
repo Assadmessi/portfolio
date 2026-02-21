@@ -18,6 +18,16 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState("home");
 
+  // Lock body scroll when mobile menu is open (prevents background scroll/jank on iOS)
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
+
   // Shrink navbar on scroll
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -73,16 +83,11 @@ const Navbar = () => {
   }, []);
 
   // Close mobile menu when user scrolls
-  // (Removed) closing on scroll can feel "broken" on mobile.
-
-  // Lock body scroll when mobile menu is open
   useEffect(() => {
     if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
+    const closeOnScroll = () => setOpen(false);
+    window.addEventListener("scroll", closeOnScroll, { passive: true });
+    return () => window.removeEventListener("scroll", closeOnScroll);
   }, [open]);
 
   const goTo = (id) => {
@@ -98,9 +103,7 @@ const Navbar = () => {
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
       className={[
-        "fixed top-0 w-full z-50 transition-all",
-        // Backdrop blur is expensive on mobile GPUs → enable from md+
-        "md:backdrop-blur",
+        "fixed top-0 w-full z-50 md:backdrop-blur transition-all",
         // Nubien-ish glass (unique palette)
         "bg-white/60 dark:bg-black/30",
         "border-b border-black/5 dark:border-white/10",
@@ -220,11 +223,13 @@ const Navbar = () => {
             transition={{ duration: 0.25, ease: "easeOut" }}
             className={[
               "md:hidden",
+              "fixed left-0 right-0 top-full",
+              "max-h-[calc(100vh-72px)] overflow-y-auto",
               "border-t border-black/5 dark:border-white/10",
-              "bg-[#F6F7FB]/92 dark:bg-black/70",
+              "bg-[#F6F7FB] dark:bg-[#0B0F19]",
             ].join(" ")}
           >
-            <div className="max-h-[calc(100vh-72px)] overflow-y-auto flex flex-col items-end px-6 py-6 space-y-5 text-slate-700 dark:text-slate-300">
+            <div className="flex flex-col items-end px-4 sm:px-8 py-6 space-y-5 text-slate-700 dark:text-slate-300">
               {navItems.map((item) => {
                 const isActive = active === item.id;
 
