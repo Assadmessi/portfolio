@@ -2,7 +2,15 @@ import { useEffect, useMemo, useState } from "react";
 import { projectsContent, subscribeContent } from "../../content";
 import { saveProjectsContent } from "../../firebase/contentSync";
 import { deepClone, deepEqual } from "../utils/deep";
-import { Button, Card, HelperText, Input, PageFade, Textarea, Badge } from "../components/UI";
+import {
+  Button,
+  Card,
+  HelperText,
+  Input,
+  PageFade,
+  Textarea,
+  Badge,
+} from "../components/UI";
 import { normalizeTags, validateProjects } from "../utils/validate";
 import StorageUpload from "../components/StorageUpload";
 import CloudinaryUpload from "../components/CloudinaryUpload";
@@ -21,11 +29,10 @@ function emptyProject() {
   };
 }
 
-
-
 function looksLikeDirectImageUrl(url) {
   if (!url) return true; // empty allowed
   const s = String(url).trim();
+
   // allow common direct image extensions
   if (/\.(png|jpe?g|webp|gif|avif)(\?.*)?$/i.test(s)) return true;
 
@@ -34,7 +41,8 @@ function looksLikeDirectImageUrl(url) {
     const u = new URL(s);
     const host = u.hostname.toLowerCase();
     if (host.includes("res.cloudinary.com")) return true;
-    if (host.includes("imagekit.io") || host.includes("ik.imagekit.io")) return true;
+    if (host.includes("imagekit.io") || host.includes("ik.imagekit.io"))
+      return true;
     if (host.includes("cdn.jsdelivr.net")) return true;
   } catch {
     // ignore
@@ -45,7 +53,7 @@ function looksLikeDirectImageUrl(url) {
 /**
  * Cloudinary normalizer (admin-only):
  * - Converts plain Cloudinary delivery URLs into a "fill" variant that looks good on mobile + desktop
- * - Upgrades older "pad" URLs (that cause the image to look small/centered on mobile) into "fill"
+ * - Upgrades older "pad" URLs into "fill"
  * - Leaves already-transformed Cloudinary URLs untouched
  * - Leaves non-Cloudinary URLs untouched
  */
@@ -53,10 +61,11 @@ function normalizeCloudinaryUrl(url) {
   if (!url) return url;
   const s = String(url).trim();
 
-  // Only touch Cloudinary delivery URLs (keeps other hosts untouched)
-  if (!s.includes("res.cloudinary.com") || !s.includes("/image/upload/")) return s;
+  // Only touch Cloudinary delivery URLs
+  if (!s.includes("res.cloudinary.com") || !s.includes("/image/upload/"))
+    return s;
 
-  // ✅ Upgrade old PAD URLs automatically (fixes "middle" on mobile)
+  // Upgrade old PAD URLs automatically
   if (s.includes("/image/upload/c_pad")) {
     return s.replace(
       /\/image\/upload\/c_pad[^/]*\//,
@@ -64,8 +73,7 @@ function normalizeCloudinaryUrl(url) {
     );
   }
 
-  // If the URL already has transformations (c_* etc), keep it as-is.
-  // (Prevents double-applying or messing with user-provided transforms.)
+  // If the URL already has transformations, keep it as-is.
   const afterUpload = s.split("/image/upload/")[1] ?? "";
   const firstSegment = afterUpload.split("/")[0] ?? "";
   const alreadyTransformed =
@@ -77,12 +85,8 @@ function normalizeCloudinaryUrl(url) {
 
   if (alreadyTransformed) return s;
 
-  // ✅ Responsive-friendly default (fills frame, no padding)
-  // - c_fill,g_auto: fills frame with a smart crop
-  // - w_1200: reasonable max width
-  // - q_auto,f_auto: auto quality + best format
+  // Responsive-friendly default
   const tx = "c_fill,g_auto,w_1200,q_auto,f_auto";
-
   return s.replace("/image/upload/", `/image/upload/${tx}/`);
 }
 
@@ -98,8 +102,11 @@ export default function ProjectsManager() {
     const sync = () => {
       const next = deepClone(projectsContent);
       setBaseline(next);
-      setDraft((d) => (deepEqual(d, baseline) ? next : d));
+
+      // ✅ compare draft with the new baseline snapshot (not stale state)
+      setDraft((d) => (deepEqual(d, next) ? next : d));
     };
+
     const unsub = subscribeContent(sync);
     sync();
     return unsub;
@@ -132,7 +139,9 @@ export default function ProjectsManager() {
   function addProject() {
     setDraft((prev) => {
       const next = deepClone(prev);
-      next.projects = Array.isArray(next.projects) ? [...next.projects, emptyProject()] : [emptyProject()];
+      next.projects = Array.isArray(next.projects)
+        ? [...next.projects, emptyProject()]
+        : [emptyProject()];
       return next;
     });
     setEditingIndex((draft?.projects?.length ?? 0));
@@ -161,6 +170,7 @@ export default function ProjectsManager() {
       next.projects = arr;
       return next;
     });
+
     setEditingIndex((cur) => {
       if (cur === idx) return idx + dir;
       if (cur === idx + dir) return idx;
@@ -170,27 +180,29 @@ export default function ProjectsManager() {
 
   async function save() {
     setToast("");
+
     const nextDraft = deepClone(draft);
 
     nextDraft.projects = (nextDraft.projects ?? []).map((p) => ({
-  ...p,
-  title: String(p.title ?? ""),
-  desc: String(p.desc ?? ""),
-  image: normalizeCloudinaryUrl(String(p.image ?? "")),
-  tags: normalizeTags(p.tags),
-  links: {
-    live: String(p.links?.live ?? ""),
-    repo: String(p.links?.repo ?? ""),
-    pdf: String(p.links?.pdf ?? ""),
-  },
-  problem: String(p.problem ?? ""),
-  system: String(p.system ?? ""),
-  solution: String(p.solution ?? ""),
-  impact: String(p.impact ?? ""),
-}));
+      ...p,
+      title: String(p.title ?? ""),
+      desc: String(p.desc ?? ""),
+      image: normalizeCloudinaryUrl(String(p.image ?? "")),
+      tags: normalizeTags(p.tags),
+      links: {
+        live: String(p.links?.live ?? ""),
+        repo: String(p.links?.repo ?? ""),
+        pdf: String(p.links?.pdf ?? ""),
+      },
+      problem: String(p.problem ?? ""),
+      system: String(p.system ?? ""),
+      solution: String(p.solution ?? ""),
+      impact: String(p.impact ?? ""),
+    }));
 
-const nextErrors = validateProjects(nextDraft);
+    const nextErrors = validateProjects(nextDraft);
     setErrors(nextErrors);
+
     if (Object.keys(nextErrors).length) {
       setToast("Fix validation errors before saving.");
       return;
@@ -217,34 +229,71 @@ const nextErrors = validateProjects(nextDraft);
           <div>
             <div className="text-xl font-bold">Projects</div>
             <div className="text-sm text-slate-600 dark:text-slate-300">
-              Manage <span className="font-mono">portfolio/projects</span> — add/edit/delete and reorder. Save to publish instantly.
+              Manage <span className="font-mono">portfolio/projects</span> — add,
+              edit, delete and reorder. Save to publish instantly.
             </div>
           </div>
 
           <div className="flex items-center gap-2">
-            <Button variant="outline" type="button" onClick={addProject}>+ Add</Button>
-            <Button variant="ghost" type="button" onClick={reset} disabled={!dirty || busy}>Reset</Button>
-            <Button type="button" onClick={save} disabled={!dirty || busy}>{busy ? "Saving..." : "Save"}</Button>
+            <Button variant="outline" type="button" onClick={addProject}>
+              + Add
+            </Button>
+            <Button
+              variant="ghost"
+              type="button"
+              onClick={reset}
+              disabled={!dirty || busy}
+            >
+              Reset
+            </Button>
+            <Button type="button" onClick={save} disabled={!dirty || busy}>
+              {busy ? "Saving..." : "Save"}
+            </Button>
           </div>
         </div>
 
-        {toast ? <HelperText tone={toast.includes("Saved") ? "success" : toast.includes("Fix") ? "error" : "neutral"}>{toast}</HelperText> : null}
+        {toast ? (
+          <HelperText
+            tone={
+              toast.includes("Saved")
+                ? "success"
+                : toast.includes("Fix")
+                ? "error"
+                : "neutral"
+            }
+          >
+            {toast}
+          </HelperText>
+        ) : null}
 
         <Card title="Section title" subtitle="Shown above your projects on the public site.">
-          <Input value={draft?.sectionTitle ?? ""} onChange={(e) => setSectionTitle(e.target.value)} />
-          {errors["sectionTitle"] ? <HelperText tone="error">{errors["sectionTitle"]}</HelperText> : null}
+          <Input
+            value={draft?.sectionTitle ?? ""}
+            onChange={(e) => setSectionTitle(e.target.value)}
+          />
+          {errors["sectionTitle"] ? (
+            <HelperText tone="error">{errors["sectionTitle"]}</HelperText>
+          ) : null}
         </Card>
 
         <div className="grid lg:grid-cols-2 gap-6">
-          <Card title="Projects list" subtitle="Select a project to edit. Use arrows to reorder.">
+          <Card
+            title="Projects list"
+            subtitle="Select a project to edit. Use arrows to reorder."
+          >
             <div className="space-y-2">
               {items.length === 0 ? (
-                <div className="text-sm text-slate-600 dark:text-slate-300">No projects yet. Click “Add”.</div>
+                <div className="text-sm text-slate-600 dark:text-slate-300">
+                  No projects yet. Click “Add”.
+                </div>
               ) : null}
 
               {items.map((p, idx) => {
                 const selected = idx === editingIndex;
-                const hasErr = Object.keys(errors).some((k) => k.startsWith(`projects.${idx}.`));
+                const hasErr = Object.keys(errors).some((k) =>
+                  k.startsWith(`projects.${idx}.`)
+                );
+
                 return (
                   <button
                     key={idx}
@@ -262,13 +311,32 @@ const nextErrors = validateProjects(nextDraft);
                           {p?.title?.trim?.() ? p.title : `Untitled #${idx + 1}`}
                           {hasErr ? <Badge>Needs fixes</Badge> : null}
                         </div>
-                        <div className="text-xs text-slate-600 dark:text-slate-300 mt-1 line-clamp-2">{p?.desc ?? ""}</div>
+                        <div className="text-xs text-slate-600 dark:text-slate-300 mt-1 line-clamp-2">
+                          {p?.desc ?? ""}
+                        </div>
                       </div>
+
                       <div className="flex items-center gap-2 shrink-0">
-                        <Button variant="ghost" type="button" onClick={(e) => { e.stopPropagation(); move(idx, -1); }} disabled={idx === 0}>
+                        <Button
+                          variant="ghost"
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            move(idx, -1);
+                          }}
+                          disabled={idx === 0}
+                        >
                           ↑
                         </Button>
-                        <Button variant="ghost" type="button" onClick={(e) => { e.stopPropagation(); move(idx, 1); }} disabled={idx === items.length - 1}>
+                        <Button
+                          variant="ghost"
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            move(idx, 1);
+                          }}
+                          disabled={idx === items.length - 1}
+                        >
                           ↓
                         </Button>
                       </div>
@@ -284,34 +352,67 @@ const nextErrors = validateProjects(nextDraft);
             subtitle={editingIndex >= 0 ? "Update fields and save to publish." : "Select a project from the list."}
           >
             {editingIndex < 0 ? (
-              <div className="text-sm text-slate-600 dark:text-slate-300">Pick a project to start editing.</div>
+              <div className="text-sm text-slate-600 dark:text-slate-300">
+                Pick a project to start editing.
+              </div>
             ) : (
               (() => {
                 const p = items[editingIndex] ?? emptyProject();
                 const prefix = `projects.${editingIndex}.`;
+
                 return (
                   <div className="space-y-4">
+                    {/* Title + Thumbnail */}
                     <div className="grid md:grid-cols-2 gap-4">
                       <div>
                         <div className="text-xs font-medium mb-1">Title</div>
                         <Input
                           value={p.title ?? ""}
-                          onChange={(e) => setProject(editingIndex, { ...p, title: e.target.value })}
+                          onChange={(e) =>
+                            setProject(editingIndex, {
+                              ...p,
+                              title: e.target.value,
+                            })
+                          }
                         />
-                        {errors[`${prefix}title`] ? <HelperText tone="error">{errors[`${prefix}title`]}</HelperText> : null}
+                        {errors[`${prefix}title`] ? (
+                          <HelperText tone="error">
+                            {errors[`${prefix}title`]}
+                          </HelperText>
+                        ) : null}
                       </div>
+
                       <div>
-                        <div className="text-xs font-medium mb-1">Thumbnail URL</div>
+                        <div className="text-xs font-medium mb-1">
+                          Thumbnail URL
+                        </div>
                         <Input
                           value={p.image ?? ""}
-                          onChange={(e) => setProject(editingIndex, { ...p, image: e.target.value })}
-                          onBlur={(e) => setProject(editingIndex, { ...p, image: normalizeCloudinaryUrl(e.target.value) })}
+                          onChange={(e) =>
+                            setProject(editingIndex, {
+                              ...p,
+                              image: e.target.value,
+                            })
+                          }
+                          onBlur={(e) =>
+                            setProject(editingIndex, {
+                              ...p,
+                              image: normalizeCloudinaryUrl(e.target.value),
+                            })
+                          }
                           placeholder="https://... or /uploads/..."
                         />
-                        {errors[`${prefix}image`] ? <HelperText tone="error">{errors[`${prefix}image`]}</HelperText> : null}
+                        {errors[`${prefix}image`] ? (
+                          <HelperText tone="error">
+                            {errors[`${prefix}image`]}
+                          </HelperText>
+                        ) : null}
+
                         {p?.image && !looksLikeDirectImageUrl(p.image) ? (
                           <HelperText tone="neutral">
-                            Note: this URL may not be a direct image link. Prefer a direct .jpg/.png/.webp URL or a Cloudinary delivery URL.
+                            Note: this URL may not be a direct image link. Prefer
+                            a direct .jpg/.png/.webp URL or a Cloudinary delivery
+                            URL.
                           </HelperText>
                         ) : null}
 
@@ -332,130 +433,250 @@ const nextErrors = validateProjects(nextDraft);
                         ) : null}
                       </div>
 
+                      {/* Description */}
                       <div className="md:col-span-2">
-                        <div className="text-xs font-medium mb-1">Description</div>
+                        <div className="text-xs font-medium mb-1">
+                          Description
+                        </div>
                         <Textarea
                           rows={4}
                           value={p.desc ?? ""}
-                          onChange={(e) => setProject(editingIndex, { ...p, desc: e.target.value })}
+                          onChange={(e) =>
+                            setProject(editingIndex, {
+                              ...p,
+                              desc: e.target.value,
+                            })
+                          }
                         />
-                        {errors[`${prefix}desc`] ? <HelperText tone="error">{errors[`${prefix}desc`]}</HelperText> : null}
+                        {errors[`${prefix}desc`] ? (
+                          <HelperText tone="error">
+                            {errors[`${prefix}desc`]}
+                          </HelperText>
+                        ) : null}
                       </div>
 
+                      {/* Story fields */}
                       <div className="md:col-span-2 grid md:grid-cols-2 gap-4">
                         <div>
-                          <div className="text-xs font-medium mb-1">Problem (Project story)</div>
+                          <div className="text-xs font-medium mb-1">
+                            Problem (Project story)
+                          </div>
                           <Textarea
                             rows={3}
                             value={p.problem ?? ""}
-                            onChange={(e) => setProject(editingIndex, { ...p, problem: e.target.value })}
+                            onChange={(e) =>
+                              setProject(editingIndex, {
+                                ...p,
+                                problem: e.target.value,
+                              })
+                            }
                             placeholder="What problem did this project solve?"
                           />
                         </div>
+
                         <div>
-                          <div className="text-xs font-medium mb-1">System (Architecture)</div>
+                          <div className="text-xs font-medium mb-1">
+                            System (Architecture)
+                          </div>
                           <Textarea
                             rows={3}
                             value={p.system ?? ""}
-                            onChange={(e) => setProject(editingIndex, { ...p, system: e.target.value })}
+                            onChange={(e) =>
+                              setProject(editingIndex, {
+                                ...p,
+                                system: e.target.value,
+                              })
+                            }
                             placeholder="Key tech + structure (brief)."
                           />
                         </div>
+
                         <div>
-                          <div className="text-xs font-medium mb-1">Solution (What you built)</div>
+                          <div className="text-xs font-medium mb-1">
+                            Solution (What you built)
+                          </div>
                           <Textarea
                             rows={3}
                             value={p.solution ?? ""}
-                            onChange={(e) => setProject(editingIndex, { ...p, solution: e.target.value })}
+                            onChange={(e) =>
+                              setProject(editingIndex, {
+                                ...p,
+                                solution: e.target.value,
+                              })
+                            }
                             placeholder="How did you solve it?"
                           />
                         </div>
+
                         <div>
-                          <div className="text-xs font-medium mb-1">Impact (Result)</div>
+                          <div className="text-xs font-medium mb-1">
+                            Impact (Result)
+                          </div>
                           <Textarea
                             rows={3}
                             value={p.impact ?? ""}
-                            onChange={(e) => setProject(editingIndex, { ...p, impact: e.target.value })}
+                            onChange={(e) =>
+                              setProject(editingIndex, {
+                                ...p,
+                                impact: e.target.value,
+                              })
+                            }
                             placeholder="Outcome / improvement / value."
                           />
                         </div>
                       </div>
-                            </div>
-                          ))}
-                        </div>
-                      <div className="md:col-span-2 grid md:grid-cols-3 gap-4">
-                        <div>
-                          <div className="text-xs font-medium mb-1">Live URL</div>
-                          <Input
-                            value={p.links?.live ?? ""}
-                            onChange={(e) => setProject(editingIndex, { ...p, links: { ...(p.links ?? {}), live: e.target.value } })}
-                            placeholder="https://..."
-                          />
-                          {errors[`${prefix}links.live`] ? <HelperText tone="error">{errors[`${prefix}links.live`]}</HelperText> : null}
-                        </div>
-                        <div>
-                          <div className="text-xs font-medium mb-1">Repo URL</div>
-                          <Input
-                            value={p.links?.repo ?? ""}
-                            onChange={(e) => setProject(editingIndex, { ...p, links: { ...(p.links ?? {}), repo: e.target.value } })}
-                            placeholder="https://github.com/..."
-                          />
-                          {errors[`${prefix}links.repo`] ? <HelperText tone="error">{errors[`${prefix}links.repo`]}</HelperText> : null}
-                        </div>
-                        <div>
-                          <div className="text-xs font-medium mb-1">PDF URL (Optional)</div>
-                          <Input
-                            value={p.links?.pdf ?? ""}
-                            onChange={(e) => setProject(editingIndex, { ...p, links: { ...(p.links ?? {}), pdf: e.target.value } })}
-                            placeholder="https://.../case-study.pdf"
-                          />
-                          {errors[`${prefix}links.pdf`] ? <HelperText tone="error">{errors[`${prefix}links.pdf`]}</HelperText> : null}
-                          <div className="mt-2">
-                            <CloudinaryUpload
-                              folder="portfolio/files"
-                              resourceType="raw"
-                              allowedFormats={["pdf"]}
-                              presetEnvKey="VITE_CLOUDINARY_RESUME_UPLOAD_PRESET"
-                              onUploaded={(url) => setProject(editingIndex, { ...p, links: { ...(p.links ?? {}), pdf: url } })}
-                            />
-                          </div>
-                        </div>
-                      </div>
+                    </div>
 
+                    {/* Links */}
+                    <div className="grid md:grid-cols-3 gap-4">
+                      <div>
+                        <div className="text-xs font-medium mb-1">Live URL</div>
+                        <Input
+                          value={p.links?.live ?? ""}
+                          onChange={(e) =>
+                            setProject(editingIndex, {
+                              ...p,
+                              links: { ...(p.links ?? {}), live: e.target.value },
+                            })
+                          }
+                          placeholder="https://..."
+                        />
+                        {errors[`${prefix}links.live`] ? (
+                          <HelperText tone="error">
+                            {errors[`${prefix}links.live`]}
+                          </HelperText>
+                        ) : null}
                       </div>
 
                       <div>
-                        <div className="text-xs font-medium mb-1">Tags (comma separated)</div>
+                        <div className="text-xs font-medium mb-1">Repo URL</div>
                         <Input
-                          value={Array.isArray(p.tags) ? p.tags.join(", ") : (p.tags ?? "")}
-                          onChange={(e) => setProject(editingIndex, { ...p, tags: e.target.value })}
-                          placeholder="React, Tailwind, ..."
+                          value={p.links?.repo ?? ""}
+                          onChange={(e) =>
+                            setProject(editingIndex, {
+                              ...p,
+                              links: { ...(p.links ?? {}), repo: e.target.value },
+                            })
+                          }
+                          placeholder="https://github.com/..."
                         />
+                        {errors[`${prefix}links.repo`] ? (
+                          <HelperText tone="error">
+                            {errors[`${prefix}links.repo`]}
+                          </HelperText>
+                        ) : null}
                       </div>
 
-                      
-
-                    <div className="rounded-2xl border border-black/10 dark:border-white/10 p-4">
-                      <div className="text-sm font-semibold">Upload image (recommended: Cloudinary)</div>
-                      <div className="text-xs text-slate-600 dark:text-slate-300 mt-1">
-                        Upload here and auto-fill the Thumbnail URL. This is admin-only and does not change your public site code.
-                      </div>
-                      <div className="mt-3">
-                        <CloudinaryUpload onUploaded={(url) => setProject(editingIndex, { ...p, image: normalizeCloudinaryUrl(url) })} />
-                        <div className="mt-3 text-xs text-slate-600 dark:text-slate-300">
-                          Advanced: you can also use Firebase Storage if you have it enabled.
+                      <div>
+                        <div className="text-xs font-medium mb-1">
+                          PDF URL (Optional)
                         </div>
+                        <Input
+                          value={p.links?.pdf ?? ""}
+                          onChange={(e) =>
+                            setProject(editingIndex, {
+                              ...p,
+                              links: { ...(p.links ?? {}), pdf: e.target.value },
+                            })
+                          }
+                          placeholder="https://.../case-study.pdf"
+                        />
+                        {errors[`${prefix}links.pdf`] ? (
+                          <HelperText tone="error">
+                            {errors[`${prefix}links.pdf`]}
+                          </HelperText>
+                        ) : null}
+
                         <div className="mt-2">
-                          <StorageUpload onUploaded={(url) => setProject(editingIndex, { ...p, image: url })} />
+                          <CloudinaryUpload
+                            folder="portfolio/files"
+                            resourceType="raw"
+                            allowedFormats={["pdf"]}
+                            presetEnvKey="VITE_CLOUDINARY_RESUME_UPLOAD_PRESET"
+                            onUploaded={(url) =>
+                              setProject(editingIndex, {
+                                ...p,
+                                links: { ...(p.links ?? {}), pdf: url },
+                              })
+                            }
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Tags */}
+                    <div>
+                      <div className="text-xs font-medium mb-1">
+                        Tags (comma separated)
+                      </div>
+                      <Input
+                        value={
+                          Array.isArray(p.tags)
+                            ? p.tags.join(", ")
+                            : String(p.tags ?? "")
+                        }
+                        onChange={(e) =>
+                          setProject(editingIndex, { ...p, tags: e.target.value })
+                        }
+                        placeholder="React, Tailwind, ..."
+                      />
+                      {errors[`${prefix}tags`] ? (
+                        <HelperText tone="error">
+                          {errors[`${prefix}tags`]}
+                        </HelperText>
+                      ) : null}
+                    </div>
+
+                    {/* Upload block */}
+                    <div className="rounded-2xl border border-black/10 dark:border-white/10 p-4">
+                      <div className="text-sm font-semibold">
+                        Upload image (recommended: Cloudinary)
+                      </div>
+                      <div className="text-xs text-slate-600 dark:text-slate-300 mt-1">
+                        Upload here and auto-fill the Thumbnail URL. This is
+                        admin-only and does not change your public site code.
+                      </div>
+
+                      <div className="mt-3">
+                        <CloudinaryUpload
+                          onUploaded={(url) =>
+                            setProject(editingIndex, {
+                              ...p,
+                              image: normalizeCloudinaryUrl(url),
+                            })
+                          }
+                        />
+
+                        <div className="mt-3 text-xs text-slate-600 dark:text-slate-300">
+                          Advanced: you can also use Firebase Storage if you have
+                          it enabled.
+                        </div>
+
+                        <div className="mt-2">
+                          <StorageUpload
+                            onUploaded={(url) =>
+                              setProject(editingIndex, { ...p, image: url })
+                            }
+                          />
                         </div>
                       </div>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2 pt-2">
-                      <Button variant="danger" type="button" onClick={() => removeProject(editingIndex)}>
+                      <Button
+                        variant="danger"
+                        type="button"
+                        onClick={() => removeProject(editingIndex)}
+                      >
                         Delete project
                       </Button>
-                      <a href="/" className="text-sm underline hover:opacity-80 ml-auto">Preview public site</a>
+
+                      <a
+                        href="/"
+                        className="text-sm underline hover:opacity-80 ml-auto"
+                      >
+                        Preview public site
+                      </a>
                     </div>
                   </div>
                 );
@@ -467,11 +688,17 @@ const nextErrors = validateProjects(nextDraft);
         {Object.keys(errors).length ? (
           <Card title="Validation issues" subtitle="These must be fixed before saving.">
             <ul className="list-disc pl-5 text-sm">
-              {Object.entries(errors).slice(0, 30).map(([k, v]) => (
-                <li key={k} className="text-rose-600 dark:text-rose-400">{k}: {v}</li>
-              ))}
+              {Object.entries(errors)
+                .slice(0, 30)
+                .map(([k, v]) => (
+                  <li key={k} className="text-rose-600 dark:text-rose-400">
+                    {k}: {v}
+                  </li>
+                ))}
             </ul>
-            {Object.keys(errors).length > 30 ? <HelperText tone="warn">Showing first 30 issues.</HelperText> : null}
+            {Object.keys(errors).length > 30 ? (
+              <HelperText tone="warn">Showing first 30 issues.</HelperText>
+            ) : null}
           </Card>
         ) : null}
       </div>
