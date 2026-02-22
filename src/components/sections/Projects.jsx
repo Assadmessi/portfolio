@@ -1,6 +1,23 @@
 import { memo, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 
+
+// Cloudinary responsive helpers (keeps non-Cloudinary URLs untouched)
+const isCloudinaryUrl = (url) =>
+  typeof url === "string" && url.includes("res.cloudinary.com") && url.includes("/upload/");
+
+const cldTransform = (url, transform) => {
+  if (!isCloudinaryUrl(url)) return url;
+  // Insert transform right after `/upload/` (works even if the URL already has transforms/version)
+  return url.replace("/upload/", `/upload/${transform}/`);
+};
+
+const cldSrcSet = (url, widths = [480, 768, 1024, 1440, 1920]) => {
+  if (!isCloudinaryUrl(url)) return undefined;
+  return widths
+    .map((w) => `${cldTransform(url, `f_auto,q_auto,w_${w},c_fill,g_auto`)} ${w}w`)
+    .join(", ");
+};
 import { MotionSection } from "../../animations/MotionWrappers";
 import { fadeUp, staggerContainer } from "../../animations/variants";
 import ProjectModal from "../common/ProjectModal";
@@ -139,7 +156,9 @@ const Projects = () => {
                       // ✅ FIX 1: make mobile less tall (16:9)
                       <div className="relative w-full aspect-[16/9] sm:aspect-[16/10] bg-slate-100 dark:bg-white/10">
                         <img
-                          src={featuredItem.p.image}
+                          src={isCloudinaryUrl(featuredItem.p.image) ? cldTransform(featuredItem.p.image, "f_auto,q_auto,w_1200,c_fill,g_auto") : featuredItem.p.image}
+                          srcSet={cldSrcSet(featuredItem.p.image)}
+                          sizes="(max-width: 640px) 92vw, 100vw"
                           alt={featuredItem.p.title}
                           // ✅ FIX 2: fill the frame on mobile (no more "floating small image")
                           className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-[1.01] transition duration-500"

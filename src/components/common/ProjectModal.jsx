@@ -2,6 +2,22 @@ import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ProofIcon } from "./IconLibrary";
 
+
+// Cloudinary responsive helpers (keeps non-Cloudinary URLs untouched)
+const isCloudinaryUrl = (url) =>
+  typeof url === "string" && url.includes("res.cloudinary.com") && url.includes("/upload/");
+
+const cldTransform = (url, transform) => {
+  if (!isCloudinaryUrl(url)) return url;
+  return url.replace("/upload/", `/upload/${transform}/`);
+};
+
+const cldSrcSet = (url, widths = [480, 768, 1024, 1440, 1920]) => {
+  if (!isCloudinaryUrl(url)) return undefined;
+  return widths
+    .map((w) => `${cldTransform(url, `f_auto,q_auto,w_${w},c_fill,g_auto`)} ${w}w`)
+    .join(", ");
+};
 const backdrop = {
   hidden: { opacity: 0 },
   visible: { opacity: 1 },
@@ -80,7 +96,9 @@ const ProjectModal = ({ project, onClose }) => {
           >
             {project.image && (
               <img
-                src={project.image}
+                src={isCloudinaryUrl(project.image) ? cldTransform(project.image, "f_auto,q_auto,w_1400,c_fill,g_auto") : project.image}
+                srcSet={cldSrcSet(project.image)}
+                sizes="(max-width: 640px) 92vw, 100vw"
                 alt={project.title}
                 loading="lazy"
                 decoding="async"
