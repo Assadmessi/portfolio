@@ -157,11 +157,13 @@ const Projects = () => {
                       <div className="relative w-full aspect-[16/9] sm:aspect-[16/10] bg-slate-100 dark:bg-white/10">
                         <img
                           src={isCloudinaryUrl(featuredItem.p.image) ? cldTransform(featuredItem.p.image, "f_auto,q_auto,w_1200,c_fill,g_auto") : featuredItem.p.image}
-                          srcSet={cldSrcSet(featuredItem.p.image)}
-                          sizes="(max-width: 640px) 92vw, 100vw"
+                          srcSet={cldSrcSetFeatured(featuredItem.p.image)}
+                          // Accurate sizes helps the browser pick the right src for small screens
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 66vw"
                           alt={featuredItem.p.title}
                           // ✅ FIX 2: fill the frame on mobile (no more "floating small image")
-                          className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-[1.01] transition duration-500"
+                          // On very small screens, prefer "contain" so the image doesn't look overly cropped.
+                          className="absolute inset-0 w-full h-full object-contain sm:object-cover object-center group-hover:scale-[1.01] transition duration-500"
                           loading="eager"
                           decoding="async"
                         />
