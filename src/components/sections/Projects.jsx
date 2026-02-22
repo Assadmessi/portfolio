@@ -18,6 +18,17 @@ const cldSrcSet = (url, widths = [480, 768, 1024, 1440, 1920]) => {
     .map((w) => `${cldTransform(url, `f_auto,q_auto,w_${w},c_fill,g_auto`)} ${w}w`)
     .join(", ");
 };
+
+// Featured image: avoid aggressive crop on small screens, keep desktop look.
+const cldSrcSetFeatured = (url, widths = [480, 768, 1024, 1440, 1920]) => {
+  if (!isCloudinaryUrl(url)) return undefined;
+  return widths
+    .map((w) => {
+      const t = w <= 640 ? `f_auto,q_auto,w_${w},c_fit` : `f_auto,q_auto,w_${w},c_fill,g_auto`;
+      return `${cldTransform(url, t)} ${w}w`;
+    })
+    .join(", ");
+};
 import { MotionSection } from "../../animations/MotionWrappers";
 import { fadeUp, staggerContainer } from "../../animations/variants";
 import ProjectModal from "../common/ProjectModal";
