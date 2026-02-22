@@ -153,7 +153,8 @@ const Projects = () => {
             </div>
           </motion.div>
 
-          <div className="mt-10 sm:mt-12 grid gap-8 sm:gap-10 lg:grid-cols-12">
+          {/* Mobile: tighter spacing so the featured+list stack doesn't feel "too big" */}
+          <div className="mt-10 sm:mt-12 grid gap-6 sm:gap-10 lg:grid-cols-12">
             {/* Featured */}
             <motion.div variants={fadeUp} className="lg:col-span-8">
               {featuredItem ? (
@@ -164,8 +165,8 @@ const Projects = () => {
                 >
                   <div className="relative">
                     {featuredItem.p?.image ? (
-                      // ✅ FIX 1: make mobile less tall (16:9)
-                      <div className="relative w-full aspect-[16/9] sm:aspect-[16/10] bg-slate-100 dark:bg-white/10">
+                      // ✅ Mobile: make the frame shorter so it doesn't dominate the screen
+                      <div className="relative w-full aspect-[21/9] sm:aspect-[16/10] bg-slate-100 dark:bg-white/10">
                         <img
                           src={isCloudinaryUrl(featuredItem.p.image) ? cldTransform(featuredItem.p.image, "f_auto,q_auto,w_1200,c_fill,g_auto") : featuredItem.p.image}
                           srcSet={cldSrcSetFeatured(featuredItem.p.image)}
@@ -180,7 +181,7 @@ const Projects = () => {
                         />
                       </div>
                     ) : (
-                      <div className="aspect-[16/9] sm:aspect-[16/10] w-full bg-slate-100 dark:bg-white/10" />
+                      <div className="aspect-[21/9] sm:aspect-[16/10] w-full bg-slate-100 dark:bg-white/10" />
                     )}
                     <div className="absolute top-4 left-4">
                       <span className="text-[10px] uppercase tracking-wider px-3 py-1 rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900">
