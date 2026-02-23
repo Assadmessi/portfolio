@@ -154,9 +154,9 @@ const Projects = () => {
           </motion.div>
 
           {/* Mobile: tighter spacing so the featured+list stack doesn't feel "too big" */}
-          <div className="mt-10 sm:mt-12 grid gap-6 sm:gap-10 lg:grid-cols-12">
+          <div className="mt-10 sm:mt-12 grid gap-6 sm:gap-10 lg:grid-cols-12 min-w-0 max-w-full">
             {/* Featured */}
-            <motion.div variants={fadeUp} className="lg:col-span-8">
+            <motion.div variants={fadeUp} className="lg:col-span-8 min-w-0 max-w-full">
               {featuredItem ? (
                 <button
                   type="button"
@@ -191,7 +191,7 @@ const Projects = () => {
                   </div>
 
                   <div className="p-5 sm:p-7">
-                    <div className="flex items-start justify-between gap-3 sm:gap-4">
+                    <div className="flex items-start justify-between gap-3 sm:gap-4 min-w-0">
                       <div className="min-w-0">
                         <h3 className="text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-100 truncate">
                           {featuredItem.p?.title}
@@ -262,7 +262,7 @@ const Projects = () => {
             </motion.div>
 
             {/* List */}
-            <div className="lg:col-span-4 flex flex-col gap-4">
+            <div className="lg:col-span-4 flex flex-col gap-4 min-w-0 max-w-full">
               <motion.div
                 variants={fadeUp}
                 className="rounded-3xl border border-slate-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 p-5 sm:p-6"
