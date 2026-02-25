@@ -8,6 +8,11 @@ import logoMark from "../../assets/images/logo.png";
 const Hero = () => {
   const { hero, links } = siteContent;
 
+  // Show only the first sentence to keep the hero scan-friendly
+  const availabilityShort = typeof hero?.availability === "string"
+    ? (hero.availability.split(".")[0] + (hero.availability.includes(".") ? "." : ""))
+    : "";
+
   const RESUME_URL = links.resumeUrl;
   const GITHUB_URL = links.githubUrl;
   const LINKEDIN_URL = links.linkedinUrl;
@@ -37,7 +42,7 @@ const Hero = () => {
               {hero.intro}
             </motion.p>
             <motion.p variants={fadeUp} className="mt-3 nb-muted">
-              {hero.availability}
+              {availabilityShort}
             </motion.p>
 
             <motion.div variants={fadeUp} className="mt-10 flex flex-col sm:flex-row gap-4">

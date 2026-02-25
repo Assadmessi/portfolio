@@ -110,6 +110,11 @@ const getHighlights = (project) => {
 
 const getKey = (p, i) => String(p?.id ?? p?.slug ?? p?.title ?? i);
 const getDesc = (p) => p?.description ?? p?.desc ?? "";
+const shortText = (text = "", max = 120) => {
+  if (typeof text !== "string") return "";
+  const t = text.trim();
+  return t.length > max ? t.slice(0, max).trimEnd() + "…" : t;
+};
 
 const Projects = () => {
   const { projects: rawProjects, sectionTitle } = projectsContent;
@@ -197,7 +202,7 @@ const Projects = () => {
                           {featuredItem.p?.title}
                         </h3>
                         <p className="mt-2 text-slate-600 dark:text-slate-400 leading-relaxed break-words">
-                          {getDesc(featuredItem.p)}
+                          {shortText(getDesc(featuredItem.p), 160)}
                         </p>
 
                         <div key={`story-${featuredKey}`} className="mt-5 grid gap-3 sm:grid-cols-2">
@@ -311,7 +316,7 @@ const Projects = () => {
                             ) : null}
                           </div>
                           <div className="text-sm text-slate-600 dark:text-slate-400 truncate">
-                            {getDesc(item.p)}
+                            {shortText(getDesc(item.p), 90)}
                           </div>
                         </div>
 

@@ -45,7 +45,7 @@ const About = () => {
       <motion.div variants={fadeUp} className="max-w-3xl">
         <h2 className="text-3xl sm:text-4xl font-bold">{about.title}</h2>
 
-        {about.paragraphs.map((p, idx) => (
+        {about.paragraphs.slice(0, 2).map((p, idx) => (
           <p
             key={idx}
             className={
