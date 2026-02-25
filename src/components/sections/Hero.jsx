@@ -74,13 +74,13 @@ const Hero = () => {
 
           <div className="lg:col-span-5">
             <motion.div variants={fadeUp} className="nb-card nb-ring p-8 md:p-10">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl p-[2px] bg-gradient-to-br from-cyan-300/60 via-indigo-400/30 to-transparent">
-                  <div className="w-full h-full rounded-2xl overflow-hidden bg-white/70 dark:bg-white/5 backdrop-blur">
+              <div className="flex items-center gap-5">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full p-[2px] bg-gradient-to-br from-cyan-300/60 via-indigo-400/30 to-transparent">
+                  <div className="w-full h-full rounded-full overflow-hidden bg-white/70 dark:bg-white/5 backdrop-blur">
                     <img
                       src={hero.photoUrl || siteContent.photoUrl || logoMark}
                       alt={`${hero.name} profile`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover object-center"
                       loading="eager"
                       decoding="async"
                     />

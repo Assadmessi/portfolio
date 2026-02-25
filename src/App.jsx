@@ -45,11 +45,12 @@ const App = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const stopSync = startContentSync();
+    // Subscribe first so any immediate cache hydration triggers a re-render
     const unsub = subscribeContent(() => setTick((t) => t + 1));
+    const stopSync = startContentSync();
     return () => {
-      unsub();
       stopSync();
+      unsub();
     };
   }, []);
 
