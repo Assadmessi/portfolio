@@ -139,30 +139,6 @@ const ProjectModal = ({ project, onClose }) => {
               </div>
             ) : null}
 
-            {normalizeProof(project.proof ?? project.highlights).length ? (
-              <div className="mb-6">
-                <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-2">
-                  Proof
-                </div>
-                <div className="grid gap-3 sm:grid-cols-3">
-                  {normalizeProof(project.proof ?? project.highlights).slice(0, 3).map((h, i) => (
-                    <div key={`${project.title}-proof-${i}`} className="rounded-xl border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 p-3">
-                      <div className="flex items-start gap-2">
-                        <span className="mt-0.5 inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white/60 dark:bg-white/10 text-slate-900 dark:text-slate-100">
-                          <ProofIcon iconKey={h.iconKey} iconUrl={h.iconUrl} />
-                        </span>
-                        <div className="min-w-0">
-                          <div className="text-sm font-semibold">{h.title}</div>
-                          {h.desc ? <div className="mt-1 text-xs text-slate-600 dark:text-slate-400">{h.desc}</div> : null}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-
-
             <div className="flex justify-end">
               <button
                 onClick={onClose}
