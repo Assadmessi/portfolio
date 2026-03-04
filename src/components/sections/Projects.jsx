@@ -183,7 +183,8 @@ const Projects = ({ tick }) => {
   const swapFeatured = (item) => setFeaturedKey(item.key);
 
   const featuredLinks = useMemo(() => getProjectLinks(featuredItem?.p), [featuredItem]);
-  const featuredImg = featuredItem?.p?.image || getAutoThumbnail(featuredLinks.live);
+  const featuredImgRaw = featuredItem?.p?.image ?? featuredItem?.p?.imageUrl ?? featuredItem?.p?.cover ?? featuredItem?.p?.thumbnail ?? "";
+  const featuredImg = featuredImgRaw ? featuredImgRaw : getAutoThumbnail(featuredLinks.live);
 
 
   return (
