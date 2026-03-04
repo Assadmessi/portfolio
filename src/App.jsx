@@ -18,18 +18,18 @@ import { subscribeContent } from "./content";
 const Admin = lazy(() => import("./pages/Admin"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
-const HomeLayout = () => {
+const HomeLayout = ({ tick }) => {
   return (
     <div className="nb-page text-slate-900 dark:text-slate-100">
       <ScrollProgress />
       <Navbar />
 
-      <Hero />
+      <Hero tick={tick} />
       <About />
-      <Services />
+      <Services tick={tick} />
       <Toolbox />
       <HowIWork />
-      <Projects />
+      <Projects tick={tick} />
       <Contact />
       <Footer />
     </div>
@@ -131,7 +131,7 @@ const App = () => {
         {/* ✅ If /admin.html ever appears, force it to real /admin */}
         <Route path="/admin.html" element={<Navigate to="/admin" replace />} />
 
-        <Route path="/" element={<HomeLayout />} />
+        <Route path="/" element={<HomeLayout tick={tick} />} />
 
         <Route path="/admin" element={<Admin />} />
 

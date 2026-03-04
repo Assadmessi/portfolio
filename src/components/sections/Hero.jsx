@@ -5,7 +5,10 @@ import { motion } from "framer-motion";
 import { siteContent } from "../../content";
 import logoMark from "../../assets/images/logo.png";
 
-const Hero = () => {
+const Hero = ({ tick }) => {
+  // re-render when live content updates
+  void tick;
+
   const { hero, links } = siteContent;
 
   // Show only the first sentence to keep the hero scan-friendly

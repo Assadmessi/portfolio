@@ -116,7 +116,10 @@ const shortText = (text = "", max = 120) => {
   return t.length > max ? t.slice(0, max).trimEnd() + "…" : t;
 };
 
-const Projects = () => {
+const Projects = ({ tick }) => {
+  // re-render when live content updates
+  void tick;
+
   const { projects: rawProjects, sectionTitle } = projectsContent;
 
   const projects = useMemo(() => normalizeProjects(rawProjects), [rawProjects]);

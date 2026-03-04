@@ -4,7 +4,10 @@ import { fadeUp, staggerContainer } from "../../animations/variants";
 import { motion } from "framer-motion";
 import { siteContent } from "../../content";
 
-const Services = () => {
+const Services = ({ tick }) => {
+  // re-render when live content updates
+  void tick;
+
   const { services } = siteContent;
 
   const EMAIL = services.email;
