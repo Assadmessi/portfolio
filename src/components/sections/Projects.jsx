@@ -116,6 +116,46 @@ const shortText = (text = "", max = 120) => {
   return t.length > max ? t.slice(0, max).trimEnd() + "…" : t;
 };
 
+
+const normalizeUrl = (url) => {
+  if (!url) return "";
+  const u = String(url).trim();
+  if (!u) return "";
+  return /^https?:\/\//i.test(u) ? u : `https://${u}`;
+};
+
+const getAutoThumbnail = (liveUrl) => {
+  const url = normalizeUrl(liveUrl);
+  if (!url) return "";
+  // Uses thum.io public screenshot endpoint (works as an <img src>)
+  return `https://image.thum.io/get/${encodeURIComponent(url)}`;
+};
+
+const getProjectLinks = (p) => {
+  const links = p?.links ?? {};
+  return {
+    live: normalizeUrl(links.live ?? links.liveUrl ?? links.url ?? p?.live ?? p?.liveUrl),
+    repo: normalizeUrl(links.repo ?? links.github ?? links.repoUrl ?? p?.repo ?? p?.repoUrl),
+    pdf: normalizeUrl(links.pdf ?? links.pdfUrl ?? p?.pdf ?? p?.pdfUrl),
+  };
+};
+
+const LinkChip = ({ href, label, icon }) => {
+  if (!href) return null;
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className="inline-flex items-center gap-2 rounded-full border border-slate-200/70 dark:border-white/10 bg-white/70 dark:bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-white hover:shadow-sm transition"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <span className="text-slate-500 dark:text-slate-300">{icon}</span>
+      <span>{label}</span>
+    </a>
+  );
+};
+
 const Projects = ({ tick }) => {
   // re-render when live content updates
   void tick;
@@ -141,6 +181,10 @@ const Projects = ({ tick }) => {
   );
 
   const swapFeatured = (item) => setFeaturedKey(item.key);
+
+  const featuredLinks = useMemo(() => getProjectLinks(featuredItem?.p), [featuredItem]);
+  const featuredImg = featuredItem?.p?.image || getAutoThumbnail(featuredLinks.live);
+
 
   return (
     <>
@@ -172,12 +216,12 @@ const Projects = ({ tick }) => {
                   className="group w-full text-left rounded-3xl overflow-hidden border border-slate-200/70 dark:border-white/10 bg-white/70 dark:bg-white/5 hover:bg-white transition shadow-sm hover:shadow-xl"
                 >
                   <div className="relative">
-                    {featuredItem.p?.image ? (
+                    {featuredImg ? (
                       // ✅ Mobile: make the frame shorter so it doesn't dominate the screen
                       <div className="relative w-full aspect-[21/9] sm:aspect-[16/10] bg-slate-100 dark:bg-white/10">
                         <img
-                          src={isCloudinaryUrl(featuredItem.p.image) ? cldTransform(featuredItem.p.image, "f_auto,q_auto,w_1200,c_fill,g_auto") : featuredItem.p.image}
-                          srcSet={cldSrcSetFeatured(featuredItem.p.image)}
+                          src={isCloudinaryUrl(featuredImg) ? cldTransform(featuredImg, "f_auto,q_auto,w_1200,c_fill,g_auto") : featuredImg}
+                          srcSet={cldSrcSetFeatured(featuredImg)}
                           // Accurate sizes helps the browser pick the right src for small screens
                           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 66vw"
                           alt={featuredItem.p.title}
@@ -259,7 +303,42 @@ const Projects = ({ tick }) => {
                           </span>
                         ))}
                       </div>
-                    ) : null}
+                    
+
+
+                    {/* Links (auto from admin fields) */}
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      <LinkChip
+                        href={featuredLinks.live}
+                        label="Live URL"
+                        icon={
+                          <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M10 13a5 5 0 0 1 0-7l1-1a5 5 0 0 1 7 7l-1 1" />
+                            <path d="M14 11a5 5 0 0 1 0 7l-1 1a5 5 0 0 1-7-7l1-1" />
+                          </svg>
+                        }
+                      />
+                      <LinkChip
+                        href={featuredLinks.repo}
+                        label="Repo URL"
+                        icon={
+                          <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M16 2H8a2 2 0 0 0-2 2v16l6-3 6 3V4a2 2 0 0 0-2-2z" />
+                          </svg>
+                        }
+                      />
+                      <LinkChip
+                        href={featuredLinks.pdf}
+                        label="PDF URL"
+                        icon={
+                          <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <path d="M14 2v6h6" />
+                          </svg>
+                        }
+                      />
+                    </div>
+
                   </div>
                 </button>
               ) : (

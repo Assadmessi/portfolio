@@ -18,6 +18,44 @@ const cldSrcSet = (url, widths = [480, 768, 1024, 1440, 1920]) => {
     .map((w) => `${cldTransform(url, `f_auto,q_auto,w_${w},c_fill,g_auto`)} ${w}w`)
     .join(", ");
 };
+
+
+const normalizeUrl = (url) => {
+  if (!url) return "";
+  const u = String(url).trim();
+  if (!u) return "";
+  return /^https?:\/\//i.test(u) ? u : `https://${u}`;
+};
+
+const getAutoThumbnail = (liveUrl) => {
+  const url = normalizeUrl(liveUrl);
+  if (!url) return "";
+  return `https://image.thum.io/get/${encodeURIComponent(url)}`;
+};
+
+const getProjectLinks = (p) => {
+  const links = p?.links ?? {};
+  return {
+    live: normalizeUrl(links.live ?? links.liveUrl ?? links.url ?? p?.live ?? p?.liveUrl),
+    repo: normalizeUrl(links.repo ?? links.github ?? links.repoUrl ?? p?.repo ?? p?.repoUrl),
+    pdf: normalizeUrl(links.pdf ?? links.pdfUrl ?? p?.pdf ?? p?.pdfUrl),
+  };
+};
+
+const LinkChip = ({ href, label, icon }) => {
+  if (!href) return null;
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className="inline-flex items-center gap-2 rounded-full border border-black/10 dark:border-white/10 bg-white/70 dark:bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-white hover:shadow-sm transition"
+    >
+      <span className="text-slate-500 dark:text-slate-300">{icon}</span>
+      <span>{label}</span>
+    </a>
+  );
+};
 const backdrop = {
   hidden: { opacity: 0 },
   visible: { opacity: 1 },
@@ -94,10 +132,10 @@ const ProjectModal = ({ project, onClose }) => {
                        border border-black/10 bg-white/80 text-slate-900
                        dark:border-white/10 dark:bg-[#0f1621] dark:text-slate-100"
           >
-            {project.image && (
+            {imageSrc && (
               <img
-                src={isCloudinaryUrl(project.image) ? cldTransform(project.image, "f_auto,q_auto,w_1400,c_fill,g_auto") : project.image}
-                srcSet={cldSrcSet(project.image)}
+                src={isCloudinaryUrl(imageSrc) ? cldTransform(imageSrc, "f_auto,q_auto,w_1400,c_fill,g_auto") : imageSrc}
+                srcSet={cldSrcSet(imageSrc)}
                 sizes="(max-width: 640px) 92vw, 100vw"
                 alt={project.title}
                 loading="lazy"
@@ -108,7 +146,40 @@ const ProjectModal = ({ project, onClose }) => {
 
             <h3 className="text-2xl font-bold mb-3">{project.title}</h3>
 
-            <p className="text-slate-700 dark:text-slate-400 mb-6">{project.desc}</p>
+            <div className="flex flex-wrap gap-2 mb-5">
+              <LinkChip
+                href={links.live}
+                label="Live URL"
+                icon={
+                  <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M10 13a5 5 0 0 1 0-7l1-1a5 5 0 0 1 7 7l-1 1" />
+                    <path d="M14 11a5 5 0 0 1 0 7l-1 1a5 5 0 0 1-7-7l1-1" />
+                  </svg>
+                }
+              />
+              <LinkChip
+                href={links.repo}
+                label="Repo URL"
+                icon={
+                  <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M16 2H8a2 2 0 0 0-2 2v16l6-3 6 3V4a2 2 0 0 0-2-2z" />
+                  </svg>
+                }
+              />
+              <LinkChip
+                href={links.pdf}
+                label="PDF URL"
+                icon={
+                  <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <path d="M14 2v6h6" />
+                  </svg>
+                }
+              />
+            </div>
+
+
+            <p className="text-slate-700 dark:text-slate-400 mb-6">{project.desc ?? project.description ?? project.description ?? project?.desc}</p>
 
             {(project.problem || project.system || project.solution || project.impact) ? (
               <div className="space-y-4 mb-6">
