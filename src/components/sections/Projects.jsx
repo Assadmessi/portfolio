@@ -128,7 +128,7 @@ const getAutoThumbnail = (liveUrl) => {
   const url = normalizeUrl(liveUrl);
   if (!url) return "";
   // Uses thum.io public screenshot endpoint (works as an <img src>)
-  return `https://image.thum.io/get/${encodeURIComponent(url)}`;
+  return `https://image.thum.io/get/${url}`;
 };
 
 const getProjectLinks = (p) => {
@@ -230,6 +230,7 @@ const Projects = ({ tick }) => {
                           className="absolute inset-0 w-full h-full object-contain sm:object-cover object-center group-hover:scale-[1.01] transition duration-500"
                           loading="eager"
                           decoding="async"
+                          onError={(e) => { e.currentTarget.style.display = "none"; }}
                         />
                       </div>
                     ) : (

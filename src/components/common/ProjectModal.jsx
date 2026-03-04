@@ -30,7 +30,7 @@ const normalizeUrl = (url) => {
 const getAutoThumbnail = (liveUrl) => {
   const url = normalizeUrl(liveUrl);
   if (!url) return "";
-  return `https://image.thum.io/get/${encodeURIComponent(url)}`;
+  return `https://image.thum.io/get/${url}`;
 };
 
 const getProjectLinks = (p) => {
@@ -108,6 +108,10 @@ const ProjectModal = ({ project, onClose }) => {
     };
   }, [project, onClose]);
 
+  const links = getProjectLinks(project);
+  const imageSrcRaw = project?.image ?? project?.imageUrl ?? project?.cover ?? project?.thumbnail ?? "";
+  const imageSrc = imageSrcRaw ? imageSrcRaw : (links.live ? getAutoThumbnail(links.live) : "");
+
   return (
     <AnimatePresence>
       {project && (
@@ -140,6 +144,7 @@ const ProjectModal = ({ project, onClose }) => {
                 alt={project.title}
                 loading="lazy"
                 decoding="async"
+                onError={(e) => { e.currentTarget.style.display = "none"; }}
                 className="w-full h-44 sm:h-52 md:h-56 object-contain sm:object-cover rounded-xl mb-6 bg-black/5 dark:bg-white/5"
               />
             )}
