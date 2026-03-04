@@ -303,6 +303,8 @@ const Projects = ({ tick }) => {
                           </span>
                         ))}
                       </div>
+                      ) : null}
+
                     
 
 
