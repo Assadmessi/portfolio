@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ProofIcon } from "./IconLibrary";
 
@@ -47,45 +47,24 @@ const isDirectImageUrl = (url) => {
   return false;
 };
 
-const getMShotsThumbnail = (liveUrl, width = 1100, height = 760) => {
-  const url = normalizeUrl(liveUrl);
-  if (!url) return "";
-  return `https://s.wordpress.com/mshots/v1/${encodeURIComponent(url)}?w=${width}&h=${height}`;
-};
-
-const getThumThumbnail = (liveUrl, width = 1100, height = 760) => {
-  const url = normalizeUrl(liveUrl);
-  if (!url) return "";
-  return `https://image.thum.io/get/width/${width}/crop/${height}/${url}`;
-};
-
-const getAutoThumbnailSources = (liveUrl) => {
+const getAutoThumbnailCandidates = (liveUrl) => {
   const url = normalizeUrl(liveUrl);
   if (!url) return [];
+
   return [
-    getMShotsThumbnail(url),
-    getThumThumbnail(url),
-  ].filter(Boolean);
+    `https://s.wordpress.com/mshots/v1/${encodeURIComponent(url)}?w=1600`,
+    `https://image.thum.io/get/width/1200/crop/800/${url}`,
+  ];
 };
 
-const resolveProjectImage = (rawImage, fallbackLiveUrl = "") => {
+const resolveProjectImageCandidates = (rawImage, fallbackLiveUrl = "") => {
   const img = normalizeUrl(rawImage);
 
   if (img) {
-    if (isDirectImageUrl(img)) {
-      return { src: img, fallbacks: [], isDirect: true };
-    }
-
-    const fallbacks = getAutoThumbnailSources(img);
-    return { src: fallbacks[0] ?? "", fallbacks: fallbacks.slice(1), isDirect: false };
+    return isDirectImageUrl(img) ? [img] : getAutoThumbnailCandidates(img);
   }
 
-  if (!fallbackLiveUrl) {
-    return { src: "", fallbacks: [], isDirect: false };
-  }
-
-  const fallbacks = getAutoThumbnailSources(fallbackLiveUrl);
-  return { src: fallbacks[0] ?? "", fallbacks: fallbacks.slice(1), isDirect: false };
+  return fallbackLiveUrl ? getAutoThumbnailCandidates(fallbackLiveUrl) : [];
 };
 
 const getProjectLinks = (p) => {
@@ -144,7 +123,6 @@ const normalizeProof = (raw) => {
   }));
 };
 const ProjectModal = ({ project, onClose }) => {
-  const [sourceIndex, setSourceIndex] = useState(0);
   useEffect(() => {
     if (!project) return;
 
@@ -166,18 +144,14 @@ const ProjectModal = ({ project, onClose }) => {
 
   const links = getProjectLinks(project);
   const imageSrcRaw = project?.image ?? project?.imageUrl ?? project?.cover ?? project?.thumbnail ?? "";
-  const imageSrc = resolveProjectImage(imageSrcRaw, links.live);
-
-  const imageSources = useMemo(() => {
-    if (!imageSrc?.src) return [];
-    return [imageSrc.src, ...(imageSrc.fallbacks ?? [])].filter(Boolean);
-  }, [imageSrc]);
+  const imageCandidates = resolveProjectImageCandidates(imageSrcRaw, links.live);
+  const [imageIndex, setImageIndex] = useState(0);
 
   useEffect(() => {
-    setSourceIndex(0);
-  }, [imageSrc?.src, imageSrc?.fallbacks, project]);
+    setImageIndex(0);
+  }, [project?.id, project?.title, imageSrcRaw, links.live]);
 
-  const currentImageSrc = imageSources[sourceIndex] ?? "";
+  const imageSrc = imageCandidates[imageIndex] ?? "";
 
   return (
     <AnimatePresence>
@@ -203,21 +177,20 @@ const ProjectModal = ({ project, onClose }) => {
                        border border-black/10 bg-white/80 text-slate-900
                        dark:border-white/10 dark:bg-[#0f1621] dark:text-slate-100"
           >
-            {currentImageSrc && (
+            {imageSrc && (
               <img
-                src={currentImageSrc}
-                srcSet={imageSrc?.isDirect ? cldSrcSet(imageSrc.src) : undefined}
+                src={isCloudinaryUrl(imageSrc) ? cldTransform(imageSrc, "f_auto,q_auto,w_1400,c_fill,g_auto") : imageSrc}
+                srcSet={cldSrcSet(imageSrc)}
                 sizes="(max-width: 640px) 92vw, 100vw"
                 alt={project.title}
-                loading="eager"
+                loading="lazy"
                 decoding="async"
                 referrerPolicy="no-referrer"
-                onError={(e) => {
-                  if (sourceIndex < imageSources.length - 1) {
-                    setSourceIndex((prev) => prev + 1);
-                    return;
-                  }
-                  e.currentTarget.style.display = "none";
+                onError={() => {
+                  setImageIndex((idx) => {
+                    const next = idx + 1;
+                    return next < imageCandidates.length ? next : idx;
+                  });
                 }}
                 className="w-full h-44 sm:h-52 md:h-56 object-contain sm:object-cover rounded-xl mb-6 bg-black/5 dark:bg-white/5"
               />

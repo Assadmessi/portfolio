@@ -144,92 +144,24 @@ const isDirectImageUrl = (url) => {
   return false;
 };
 
-const getMShotsThumbnail = (liveUrl, width = 900, height = 620) => {
-  const url = normalizeUrl(liveUrl);
-  if (!url) return "";
-  return `https://s.wordpress.com/mshots/v1/${encodeURIComponent(url)}?w=${width}&h=${height}`;
-};
-
-const getThumThumbnail = (liveUrl, width = 900, height = 620) => {
-  const url = normalizeUrl(liveUrl);
-  if (!url) return "";
-  return `https://image.thum.io/get/width/${width}/crop/${height}/${url}`;
-};
-
-const getAutoThumbnailSources = (liveUrl, { featured = false } = {}) => {
+const getAutoThumbnailCandidates = (liveUrl) => {
   const url = normalizeUrl(liveUrl);
   if (!url) return [];
 
-  const width = featured ? 1200 : 900;
-  const height = featured ? 800 : 620;
-
   return [
-    getMShotsThumbnail(url, width, height),
-    getThumThumbnail(url, width, height),
-  ].filter(Boolean);
+    `https://s.wordpress.com/mshots/v1/${encodeURIComponent(url)}?w=1600`,
+    `https://image.thum.io/get/width/1200/crop/800/${url}`,
+  ];
 };
 
-const resolveProjectImage = (rawImage, fallbackLiveUrl = "", options = {}) => {
+const resolveProjectImageCandidates = (rawImage, fallbackLiveUrl = "") => {
   const img = normalizeUrl(rawImage);
 
   if (img) {
-    if (isDirectImageUrl(img)) {
-      return { src: img, fallbacks: [], isDirect: true };
-    }
-
-    const fallbacks = getAutoThumbnailSources(img, options);
-    return { src: fallbacks[0] ?? "", fallbacks: fallbacks.slice(1), isDirect: false };
+    return isDirectImageUrl(img) ? [img] : getAutoThumbnailCandidates(img);
   }
 
-  if (!fallbackLiveUrl) {
-    return { src: "", fallbacks: [], isDirect: false };
-  }
-
-  const fallbacks = getAutoThumbnailSources(fallbackLiveUrl, options);
-  return { src: fallbacks[0] ?? "", fallbacks: fallbacks.slice(1), isDirect: false };
-};
-
-const ProjectThumbImage = ({
-  imageData,
-  alt,
-  className,
-  sizes,
-  srcSet,
-  loading = "lazy",
-}) => {
-  const sources = useMemo(() => {
-    if (!imageData?.src) return [];
-    return [imageData.src, ...(imageData.fallbacks ?? [])].filter(Boolean);
-  }, [imageData]);
-
-  const [sourceIndex, setSourceIndex] = useState(0);
-
-  useEffect(() => {
-    setSourceIndex(0);
-  }, [imageData?.src, imageData?.fallbacks]);
-
-  const currentSrc = sources[sourceIndex] ?? "";
-  if (!currentSrc) return null;
-
-  return (
-    <img
-      src={currentSrc}
-      srcSet={imageData?.isDirect ? srcSet : undefined}
-      sizes={sizes}
-      alt={alt}
-      className={className}
-      loading={loading}
-      decoding="async"
-      referrerPolicy="no-referrer"
-      onError={(e) => {
-        if (sourceIndex < sources.length - 1) {
-          setSourceIndex((prev) => prev + 1);
-          return;
-        }
-        e.currentTarget.style.display = "none";
-      }}
-    />
-  );
+  return fallbackLiveUrl ? getAutoThumbnailCandidates(fallbackLiveUrl) : [];
 };
 
 const getProjectLinks = (p) => {
@@ -285,7 +217,17 @@ const Projects = ({ tick }) => {
 
   const featuredLinks = useMemo(() => getProjectLinks(featuredItem?.p), [featuredItem]);
   const featuredImgRaw = featuredItem?.p?.image ?? featuredItem?.p?.imageUrl ?? featuredItem?.p?.cover ?? featuredItem?.p?.thumbnail ?? "";
-  const featuredImg = resolveProjectImage(featuredImgRaw, featuredLinks.live, { featured: true });
+  const featuredImgCandidates = useMemo(
+    () => resolveProjectImageCandidates(featuredImgRaw, featuredLinks.live),
+    [featuredImgRaw, featuredLinks.live]
+  );
+  const [featuredImgIndex, setFeaturedImgIndex] = useState(0);
+
+  useEffect(() => {
+    setFeaturedImgIndex(0);
+  }, [featuredItem?.key, featuredImgRaw, featuredLinks.live]);
+
+  const featuredImg = featuredImgCandidates[featuredImgIndex] ?? "";
 
 
   return (
@@ -321,14 +263,24 @@ const Projects = ({ tick }) => {
                     {featuredImg ? (
                       // ✅ Mobile: make the frame shorter so it doesn't dominate the screen
                       <div className="relative w-full aspect-[21/9] sm:aspect-[16/10] bg-slate-100 dark:bg-white/10">
-                        <ProjectThumbImage
-                          imageData={featuredImg}
-                          srcSet={featuredImg?.isDirect ? cldSrcSetFeatured(featuredImg.src) : undefined}
+                        <img
+                          src={isCloudinaryUrl(featuredImg) ? cldTransform(featuredImg, "f_auto,q_auto,w_1200,c_fill,g_auto") : featuredImg}
+                          srcSet={cldSrcSetFeatured(featuredImg)}
                           // Accurate sizes helps the browser pick the right src for small screens
                           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 66vw"
                           alt={featuredItem.p.title}
+                          // ✅ FIX 2: fill the frame on mobile (no more "floating small image")
+                          // On very small screens, prefer "contain" so the image doesn't look overly cropped.
                           className="absolute inset-0 w-full h-full object-contain sm:object-cover object-center group-hover:scale-[1.01] transition duration-500"
                           loading="eager"
+                          decoding="async"
+                          referrerPolicy="no-referrer"
+                          onError={() => {
+                            setFeaturedImgIndex((idx) => {
+                              const next = idx + 1;
+                              return next < featuredImgCandidates.length ? next : idx;
+                            });
+                          }}
                         />
                       </div>
                     ) : (

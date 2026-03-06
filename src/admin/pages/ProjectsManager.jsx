@@ -83,7 +83,7 @@ function getAutoThumbnail(url) {
   const s = String(url).trim();
   if (!s) return "";
   const full = /^https?:\/\//i.test(s) ? s : `https://${s}`;
-  return `https://s.wordpress.com/mshots/v1/${encodeURIComponent(full)}?w=900&h=620`;
+  return `https://image.thum.io/get/width/1200/crop/800/${full}`;
 }
 
 function resolveAdminPreviewImage(url) {
