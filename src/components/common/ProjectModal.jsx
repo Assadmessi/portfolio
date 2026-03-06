@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ProofIcon } from "./IconLibrary";
 
@@ -47,20 +47,45 @@ const isDirectImageUrl = (url) => {
   return false;
 };
 
-const getAutoThumbnail = (liveUrl) => {
+const getMShotsThumbnail = (liveUrl, width = 1100, height = 760) => {
   const url = normalizeUrl(liveUrl);
   if (!url) return "";
-  return `https://image.thum.io/get/width/1200/crop/800/${url}`;
+  return `https://s.wordpress.com/mshots/v1/${encodeURIComponent(url)}?w=${width}&h=${height}`;
+};
+
+const getThumThumbnail = (liveUrl, width = 1100, height = 760) => {
+  const url = normalizeUrl(liveUrl);
+  if (!url) return "";
+  return `https://image.thum.io/get/width/${width}/crop/${height}/${url}`;
+};
+
+const getAutoThumbnailSources = (liveUrl) => {
+  const url = normalizeUrl(liveUrl);
+  if (!url) return [];
+  return [
+    getMShotsThumbnail(url),
+    getThumThumbnail(url),
+  ].filter(Boolean);
 };
 
 const resolveProjectImage = (rawImage, fallbackLiveUrl = "") => {
   const img = normalizeUrl(rawImage);
 
   if (img) {
-    return isDirectImageUrl(img) ? img : getAutoThumbnail(img);
+    if (isDirectImageUrl(img)) {
+      return { src: img, fallbacks: [], isDirect: true };
+    }
+
+    const fallbacks = getAutoThumbnailSources(img);
+    return { src: fallbacks[0] ?? "", fallbacks: fallbacks.slice(1), isDirect: false };
   }
 
-  return fallbackLiveUrl ? getAutoThumbnail(fallbackLiveUrl) : "";
+  if (!fallbackLiveUrl) {
+    return { src: "", fallbacks: [], isDirect: false };
+  }
+
+  const fallbacks = getAutoThumbnailSources(fallbackLiveUrl);
+  return { src: fallbacks[0] ?? "", fallbacks: fallbacks.slice(1), isDirect: false };
 };
 
 const getProjectLinks = (p) => {
@@ -119,6 +144,7 @@ const normalizeProof = (raw) => {
   }));
 };
 const ProjectModal = ({ project, onClose }) => {
+  const [sourceIndex, setSourceIndex] = useState(0);
   useEffect(() => {
     if (!project) return;
 
@@ -141,6 +167,17 @@ const ProjectModal = ({ project, onClose }) => {
   const links = getProjectLinks(project);
   const imageSrcRaw = project?.image ?? project?.imageUrl ?? project?.cover ?? project?.thumbnail ?? "";
   const imageSrc = resolveProjectImage(imageSrcRaw, links.live);
+
+  const imageSources = useMemo(() => {
+    if (!imageSrc?.src) return [];
+    return [imageSrc.src, ...(imageSrc.fallbacks ?? [])].filter(Boolean);
+  }, [imageSrc]);
+
+  useEffect(() => {
+    setSourceIndex(0);
+  }, [imageSrc?.src, imageSrc?.fallbacks, project]);
+
+  const currentImageSrc = imageSources[sourceIndex] ?? "";
 
   return (
     <AnimatePresence>
@@ -166,15 +203,22 @@ const ProjectModal = ({ project, onClose }) => {
                        border border-black/10 bg-white/80 text-slate-900
                        dark:border-white/10 dark:bg-[#0f1621] dark:text-slate-100"
           >
-            {imageSrc && (
+            {currentImageSrc && (
               <img
-                src={isCloudinaryUrl(imageSrc) ? cldTransform(imageSrc, "f_auto,q_auto,w_1400,c_fill,g_auto") : imageSrc}
-                srcSet={cldSrcSet(imageSrc)}
+                src={currentImageSrc}
+                srcSet={imageSrc?.isDirect ? cldSrcSet(imageSrc.src) : undefined}
                 sizes="(max-width: 640px) 92vw, 100vw"
                 alt={project.title}
-                loading="lazy"
+                loading="eager"
                 decoding="async"
-                onError={(e) => { e.currentTarget.style.display = "none"; }}
+                referrerPolicy="no-referrer"
+                onError={(e) => {
+                  if (sourceIndex < imageSources.length - 1) {
+                    setSourceIndex((prev) => prev + 1);
+                    return;
+                  }
+                  e.currentTarget.style.display = "none";
+                }}
                 className="w-full h-44 sm:h-52 md:h-56 object-contain sm:object-cover rounded-xl mb-6 bg-black/5 dark:bg-white/5"
               />
             )}
