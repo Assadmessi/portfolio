@@ -124,11 +124,41 @@ const normalizeUrl = (url) => {
   return /^https?:\/\//i.test(u) ? u : `https://${u}`;
 };
 
+const isDirectImageUrl = (url) => {
+  if (!url) return false;
+  const s = String(url).trim();
+
+  if (/^data:image\//i.test(s)) return true;
+  if (/\.(png|jpe?g|webp|gif|avif|svg)(\?.*)?$/i.test(s)) return true;
+
+  try {
+    const u = new URL(normalizeUrl(s));
+    const host = u.hostname.toLowerCase();
+
+    if (host.includes("res.cloudinary.com")) return true;
+    if (host.includes("imagekit.io") || host.includes("ik.imagekit.io")) return true;
+  } catch {
+    return false;
+  }
+
+  return false;
+};
+
 const getAutoThumbnail = (liveUrl) => {
   const url = normalizeUrl(liveUrl);
   if (!url) return "";
   // Uses thum.io public screenshot endpoint (works as an <img src>)
-  return `https://image.thum.io/get/${url}`;
+  return `https://image.thum.io/get/width/1200/crop/800/${url}`;
+};
+
+const resolveProjectImage = (rawImage, fallbackLiveUrl = "") => {
+  const img = normalizeUrl(rawImage);
+
+  if (img) {
+    return isDirectImageUrl(img) ? img : getAutoThumbnail(img);
+  }
+
+  return fallbackLiveUrl ? getAutoThumbnail(fallbackLiveUrl) : "";
 };
 
 const getProjectLinks = (p) => {
@@ -184,7 +214,7 @@ const Projects = ({ tick }) => {
 
   const featuredLinks = useMemo(() => getProjectLinks(featuredItem?.p), [featuredItem]);
   const featuredImgRaw = featuredItem?.p?.image ?? featuredItem?.p?.imageUrl ?? featuredItem?.p?.cover ?? featuredItem?.p?.thumbnail ?? "";
-  const featuredImg = featuredImgRaw ? featuredImgRaw : getAutoThumbnail(featuredLinks.live);
+  const featuredImg = resolveProjectImage(featuredImgRaw, featuredLinks.live);
 
 
   return (

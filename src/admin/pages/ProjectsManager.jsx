@@ -32,12 +32,14 @@ function looksLikeDirectImageUrl(url) {
   if (!url) return true; // empty allowed
   const s = String(url).trim();
 
+  if (/^data:image\//i.test(s)) return true;
+
   // allow common direct image extensions
-  if (/\.(png|jpe?g|webp|gif|avif)(\?.*)?$/i.test(s)) return true;
+  if (/\.(png|jpe?g|webp|gif|avif|svg)(\?.*)?$/i.test(s)) return true;
 
   // allow Cloudinary delivery URLs even without extensions
   try {
-    const u = new URL(s);
+    const u = new URL(/^https?:\/\//i.test(s) ? s : `https://${s}`);
     const host = u.hostname.toLowerCase();
     if (host.includes("res.cloudinary.com")) return true;
     if (host.includes("imagekit.io") || host.includes("ik.imagekit.io"))
@@ -74,6 +76,22 @@ function normalizeCloudinaryUrl(url) {
 
   // Keep Cloudinary URLs as-is (no forced width transformations)
   return s;
+}
+
+function getAutoThumbnail(url) {
+  if (!url) return "";
+  const s = String(url).trim();
+  if (!s) return "";
+  const full = /^https?:\/\//i.test(s) ? s : `https://${s}`;
+  return `https://image.thum.io/get/width/1200/crop/800/${full}`;
+}
+
+function resolveAdminPreviewImage(url) {
+  if (!url) return "";
+  const s = String(url).trim();
+  return looksLikeDirectImageUrl(s)
+    ? normalizeCloudinaryUrl(s)
+    : getAutoThumbnail(s);
 }
 
 export default function ProjectsManager() {
@@ -396,16 +414,14 @@ export default function ProjectsManager() {
 
                         {p?.image && !looksLikeDirectImageUrl(p.image) ? (
                           <HelperText tone="neutral">
-                            Note: this URL may not be a direct image link. Prefer
-                            a direct .jpg/.png/.webp URL or a Cloudinary delivery
-                            URL.
+                            Note: page links such as thumbnail.html will be auto-converted into a screenshot preview.
                           </HelperText>
                         ) : null}
 
                         {p?.image ? (
                           <div className="mt-2 overflow-hidden rounded-xl border border-black/10 dark:border-white/10 bg-white/40 dark:bg-white/5">
                             <img
-                              src={normalizeCloudinaryUrl(p.image)}
+                              src={resolveAdminPreviewImage(p.image)}
                               alt="Thumbnail preview"
                               className="h-40 w-full object-cover"
                               onError={(e) => {

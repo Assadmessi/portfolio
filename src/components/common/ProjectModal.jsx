@@ -27,10 +27,40 @@ const normalizeUrl = (url) => {
   return /^https?:\/\//i.test(u) ? u : `https://${u}`;
 };
 
+const isDirectImageUrl = (url) => {
+  if (!url) return false;
+  const s = String(url).trim();
+
+  if (/^data:image\//i.test(s)) return true;
+  if (/\.(png|jpe?g|webp|gif|avif|svg)(\?.*)?$/i.test(s)) return true;
+
+  try {
+    const u = new URL(normalizeUrl(s));
+    const host = u.hostname.toLowerCase();
+
+    if (host.includes("res.cloudinary.com")) return true;
+    if (host.includes("imagekit.io") || host.includes("ik.imagekit.io")) return true;
+  } catch {
+    return false;
+  }
+
+  return false;
+};
+
 const getAutoThumbnail = (liveUrl) => {
   const url = normalizeUrl(liveUrl);
   if (!url) return "";
-  return `https://image.thum.io/get/${url}`;
+  return `https://image.thum.io/get/width/1200/crop/800/${url}`;
+};
+
+const resolveProjectImage = (rawImage, fallbackLiveUrl = "") => {
+  const img = normalizeUrl(rawImage);
+
+  if (img) {
+    return isDirectImageUrl(img) ? img : getAutoThumbnail(img);
+  }
+
+  return fallbackLiveUrl ? getAutoThumbnail(fallbackLiveUrl) : "";
 };
 
 const getProjectLinks = (p) => {
@@ -110,7 +140,7 @@ const ProjectModal = ({ project, onClose }) => {
 
   const links = getProjectLinks(project);
   const imageSrcRaw = project?.image ?? project?.imageUrl ?? project?.cover ?? project?.thumbnail ?? "";
-  const imageSrc = imageSrcRaw ? imageSrcRaw : (links.live ? getAutoThumbnail(links.live) : "");
+  const imageSrc = resolveProjectImage(imageSrcRaw, links.live);
 
   return (
     <AnimatePresence>
