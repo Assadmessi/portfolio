@@ -16,6 +16,7 @@ import { startContentSync } from "./firebase/contentSync";
 import { subscribeContent } from "./content";
 
 const Admin = lazy(() => import("./pages/Admin"));
+const ProjectsPage = lazy(() => import("./pages/ProjectsPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const HomeLayout = ({ tick }) => {
@@ -132,6 +133,7 @@ const App = () => {
         <Route path="/admin.html" element={<Navigate to="/admin" replace />} />
 
         <Route path="/" element={<HomeLayout tick={tick} />} />
+        <Route path="/projects" element={<ProjectsPage />} />
 
         <Route path="/admin" element={<Admin />} />
 

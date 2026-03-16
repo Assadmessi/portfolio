@@ -4,6 +4,7 @@
     {
       "title": "Landing Page Template",
       "desc": "A clean, responsive startup landing with premium motion + sections.",
+      "publishedAt": "2026-03-16",
       "image": "/uploads/project1.png",
       "problem": "You need a production-ready UI foundation without reinventing layouts every time.",
       "system": "Reusable components + consistent motion + responsive grid + theme support.",
@@ -39,6 +40,7 @@
     {
       "title": "Admin Dashboard UI",
       "desc": "Modern dashboard layout patterns (cards, tables, states) ready to wire to data.",
+      "publishedAt": "2026-03-10",
       "image": "/uploads/project2.png",
       "problem": "You need a production-ready UI foundation without reinventing layouts every time.",
       "system": "Reusable components + consistent motion + responsive grid + theme support.",
@@ -74,6 +76,7 @@
     {
       "title": "Auth + Profile Flow",
       "desc": "Login/signup screens with polished forms, states, and UX details.",
+      "publishedAt": "2026-03-05",
       "image": "/uploads/project3.png",
       "problem": "You need a production-ready UI foundation without reinventing layouts every time.",
       "system": "Reusable components + consistent motion + responsive grid + theme support.",

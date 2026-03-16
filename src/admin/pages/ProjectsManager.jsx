@@ -18,6 +18,7 @@ function emptyProject() {
   return {
     title: "",
     desc: "",
+    publishedAt: "",
     image: "",
     tags: [],
     links: { live: "", repo: "", pdf: "" },
@@ -192,6 +193,7 @@ export default function ProjectsManager() {
       title: String(p.title ?? ""),
       desc: String(p.desc ?? ""),
       image: normalizeCloudinaryUrl(String(p.image ?? "")),
+      publishedAt: String(p.publishedAt ?? p.date ?? ""),
       tags: normalizeTags(p.tags),
       links: {
         live: String(p.links?.live ?? ""),

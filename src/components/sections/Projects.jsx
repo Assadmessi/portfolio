@@ -33,29 +33,8 @@ import { MotionSection } from "../../animations/MotionWrappers";
 import { fadeUp, staggerContainer } from "../../animations/variants";
 import ProjectModal from "../common/ProjectModal";
 import { projectsContent } from "../../content";
+import { formatProjectDate, getProjectDesc, getProjectKey, normalizeProjects, sortProjects } from "../../utils/projects";
 
-// Supports data coming from JSON (array) OR admin/Firestore (object keyed by index)
-// Examples supported:
-// - projects: [ {...}, {...} ]
-// - projects: { "0": {...}, "1": {...} }
-// - projects: { items: [ ... ] }
-const normalizeProjects = (raw) => {
-  if (!raw) return [];
-  if (Array.isArray(raw)) return raw;
-  if (Array.isArray(raw.items)) return raw.items;
-  if (typeof raw === "object") {
-    return Object.entries(raw)
-      .filter(([k]) => k !== "items")
-      .sort(([a], [b]) => {
-        const na = Number(a);
-        const nb = Number(b);
-        if (!Number.isNaN(na) && !Number.isNaN(nb)) return na - nb;
-        return String(a).localeCompare(String(b));
-      })
-      .map(([, v]) => v);
-  }
-  return [];
-};
 
 // Highlights can also come from admin/Firestore as an object keyed by index.
 // Supported:
@@ -108,8 +87,6 @@ const getHighlights = (project) => {
   return [...three, ...fallbackHighlights(project)].slice(0, 3);
 };
 
-const getKey = (p, i) => String(p?.id ?? p?.slug ?? p?.title ?? i);
-const getDesc = (p) => p?.description ?? p?.desc ?? "";
 const shortText = (text = "", max = 120) => {
   if (typeof text !== "string") return "";
   const t = text.trim();
@@ -195,10 +172,11 @@ const Projects = ({ tick }) => {
 
   const { projects: rawProjects, sectionTitle } = projectsContent;
 
-  const projects = useMemo(() => normalizeProjects(rawProjects), [rawProjects]);
-  const items = useMemo(() => projects.map((p, i) => ({ p, i, key: getKey(p, i) })), [projects]);
+  const projects = useMemo(() => sortProjects(normalizeProjects(rawProjects), "latest"), [rawProjects]);
+  const latestProjects = useMemo(() => projects.slice(0, 3), [projects]);
+  const items = useMemo(() => latestProjects.map((p, i) => ({ p, i, key: getProjectKey(p, i) })), [latestProjects]);
 
-  const [featuredKey, setFeaturedKey] = useState(() => getKey(projects?.[0], 0));
+  const [featuredKey, setFeaturedKey] = useState(() => getProjectKey(latestProjects?.[0], 0));
   const [activeProject, setActiveProject] = useState(null);
 
   // Keep featured valid when content updates
@@ -299,8 +277,13 @@ const Projects = ({ tick }) => {
                         <h3 className="text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-100 truncate">
                           {featuredItem.p?.title}
                         </h3>
+                        {formatProjectDate(featuredItem.p) ? (
+                          <div className="mt-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+                            {formatProjectDate(featuredItem.p)}
+                          </div>
+                        ) : null}
                         <p className="mt-2 text-slate-600 dark:text-slate-400 leading-relaxed break-words">
-                          {shortText(getDesc(featuredItem.p), 160)}
+                          {shortText(getProjectDesc(featuredItem.p), 160)}
                         </p>
 
                         <div key={`story-${featuredKey}`} className="mt-5 grid gap-3 sm:grid-cols-2">
@@ -407,10 +390,17 @@ const Projects = ({ tick }) => {
                 variants={fadeUp}
                 className="rounded-3xl border border-slate-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 p-5 sm:p-6"
               >
-                <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">All projects</div>
+                <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">Latest projects</div>
                 <p className="mt-2 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                  Click any project to feature it.
+                  Only the 3 most recent projects show here.
                 </p>
+                <a
+                  href="/projects"
+                  className="mt-4 inline-flex items-center gap-2 rounded-full border border-slate-200/70 dark:border-white/10 bg-white/80 dark:bg-white/5 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-white transition"
+                >
+                  View all projects
+                  <span aria-hidden>→</span>
+                </a>
               </motion.div>
 
               {items.length ? (
@@ -451,8 +441,13 @@ const Projects = ({ tick }) => {
                             ) : null}
                           </div>
                           <div className="text-sm text-slate-600 dark:text-slate-400 truncate">
-                            {shortText(getDesc(item.p), 90)}
+                            {shortText(getProjectDesc(item.p), 90)}
                           </div>
+                          {formatProjectDate(item.p) ? (
+                            <div className="mt-1 text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                              {formatProjectDate(item.p)}
+                            </div>
+                          ) : null}
                         </div>
 
                         <div className="ml-auto text-slate-400 shrink-0">↔</div>
