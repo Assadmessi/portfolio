@@ -33,7 +33,7 @@ import { MotionSection } from "../../animations/MotionWrappers";
 import { fadeUp, staggerContainer } from "../../animations/variants";
 import ProjectModal from "../common/ProjectModal";
 import { projectsContent } from "../../content";
-import { formatProjectDate, getProjectDesc, getProjectKey, normalizeProjects, sortProjects } from "../../utils/projects";
+import { getProjectDesc, getProjectKey, normalizeProjects, sortProjects } from "../../utils/projects";
 
 
 // Highlights can also come from admin/Firestore as an object keyed by index.
@@ -277,11 +277,6 @@ const Projects = ({ tick }) => {
                         <h3 className="text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-100 truncate">
                           {featuredItem.p?.title}
                         </h3>
-                        {formatProjectDate(featuredItem.p) ? (
-                          <div className="mt-2 text-xs font-medium text-slate-500 dark:text-slate-400">
-                            {formatProjectDate(featuredItem.p)}
-                          </div>
-                        ) : null}
                         <p className="mt-2 text-slate-600 dark:text-slate-400 leading-relaxed break-words">
                           {shortText(getProjectDesc(featuredItem.p), 160)}
                         </p>
@@ -443,11 +438,6 @@ const Projects = ({ tick }) => {
                           <div className="text-sm text-slate-600 dark:text-slate-400 truncate">
                             {shortText(getProjectDesc(item.p), 90)}
                           </div>
-                          {formatProjectDate(item.p) ? (
-                            <div className="mt-1 text-[11px] text-slate-500 dark:text-slate-400 truncate">
-                              {formatProjectDate(item.p)}
-                            </div>
-                          ) : null}
                         </div>
 
                         <div className="ml-auto text-slate-400 shrink-0">↔</div>

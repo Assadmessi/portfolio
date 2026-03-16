@@ -5,7 +5,6 @@ import Footer from "../components/layout/Footer";
 import ProjectModal from "../components/common/ProjectModal";
 import { projectsContent } from "../content";
 import {
-  formatProjectDate,
   getProjectDesc,
   getProjectKey,
   normalizeProjects,
@@ -145,11 +144,6 @@ function ProjectsPage() {
                         <div className="text-lg font-semibold text-slate-900 dark:text-slate-100">
                           {project?.title || "Untitled project"}
                         </div>
-                        {formatProjectDate(project) ? (
-                          <div className="mt-2 text-xs font-medium text-slate-500 dark:text-slate-400">
-                            {formatProjectDate(project)}
-                          </div>
-                        ) : null}
                       </div>
                       <span className="text-slate-400 transition group-hover:text-slate-600 dark:group-hover:text-slate-200">
                         →
