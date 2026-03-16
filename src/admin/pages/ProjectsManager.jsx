@@ -14,11 +14,17 @@ import {
 import { normalizeTags, validateProjects } from "../utils/validate";
 import CloudinaryUpload from "../components/CloudinaryUpload";
 
+function getTodayDateInputValue() {
+  const now = new Date();
+  const tzOffsetMs = now.getTimezoneOffset() * 60 * 1000;
+  return new Date(now.getTime() - tzOffsetMs).toISOString().slice(0, 10);
+}
+
 function emptyProject() {
   return {
     title: "",
     desc: "",
-    publishedAt: "",
+    publishedAt: getTodayDateInputValue(),
     image: "",
     tags: [],
     links: { live: "", repo: "", pdf: "" },
@@ -193,7 +199,7 @@ export default function ProjectsManager() {
       title: String(p.title ?? ""),
       desc: String(p.desc ?? ""),
       image: normalizeCloudinaryUrl(String(p.image ?? "")),
-      publishedAt: String(p.publishedAt ?? p.date ?? ""),
+      publishedAt: String(p.publishedAt ?? p.date ?? getTodayDateInputValue()),
       tags: normalizeTags(p.tags),
       links: {
         live: String(p.links?.live ?? ""),
@@ -386,6 +392,23 @@ export default function ProjectsManager() {
                             {errors[`${prefix}title`]}
                           </HelperText>
                         ) : null}
+
+                        <div className="mt-4">
+                          <div className="text-xs font-medium mb-1">Date</div>
+                          <Input
+                            type="date"
+                            value={p.publishedAt ?? p.date ?? getTodayDateInputValue()}
+                            onChange={(e) =>
+                              setProject(editingIndex, {
+                                ...p,
+                                publishedAt: e.target.value || getTodayDateInputValue(),
+                              })
+                            }
+                          />
+                          <HelperText tone="neutral">
+                            Defaults to today if you do not choose a date.
+                          </HelperText>
+                        </div>
                       </div>
 
                       <div>
