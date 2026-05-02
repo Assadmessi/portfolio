@@ -95,10 +95,56 @@ body::after {
   background-size: 72px 72px;
 }
 
+/* ─────────────────────────────────────────────────────────────
+   ORYZO-STYLE SCROLL SNAP
+   - Each section snaps to viewport (full-screen panels)
+   - Only applies when the home layout renders (.snap-home class)
+   - Admin / Projects / NotFound pages keep free scroll
+───────────────────────────────────────────────────────────── */
+html.snap-home {
+  scroll-snap-type: y mandatory;
+  scroll-padding-block-start: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.snap-home { scroll-snap-type: none; }
+}
+/* Mobile / tablet: don't force snap (lets users scroll freely on touch) */
+@media (max-width: 1023px) {
+  html.snap-home { scroll-snap-type: none; }
+}
+
+html.snap-home section {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+/* Long sections snap loosely so users can scroll through them */
+html.snap-home section#projects,
+html.snap-home section#services {
+  scroll-snap-stop: normal;
+}
+
 /* All sections need z-index above canvas */
 section, nav, footer {
   position: relative;
   z-index: 1;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   PANEL HEIGHTS — full viewport for ORYZO feel
+   Sections that are short become exactly 100vh so each scroll
+   snaps to a fresh full-screen panel.
+   We use min-height (not height) so content is never clipped.
+   We do NOT use flex/grid here — sections have their own internal
+   layout including absolute-positioned sticky labels.
+───────────────────────────────────────────────────────────── */
+@media (min-width: 1024px) {
+  section#home,
+  section#about,
+  section#skills,
+  section#toolbox,
+  section#contact {
+    min-height: 100vh;
+  }
 }
 
 /* ─────────────────────────────────────────────────────────────

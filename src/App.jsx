@@ -21,6 +21,12 @@ const ProjectsPage = lazy(() => import("./pages/ProjectsPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const HomeLayout = ({ tick }) => {
+  // Enable ORYZO-style scroll snap only on the home page
+  useEffect(() => {
+    document.documentElement.classList.add("snap-home");
+    return () => document.documentElement.classList.remove("snap-home");
+  }, []);
+
   return (
     <div className="nb-page text-slate-900 dark:text-slate-100">
       {/* 3D canvas lives below everything, above body bg */}
