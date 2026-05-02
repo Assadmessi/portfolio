@@ -8,6 +8,7 @@ import Projects from "./components/sections/Projects";
 import Contact from "./components/sections/Contact";
 import Footer from "./components/layout/Footer";
 import ScrollProgress from "./components/common/ScrollProgress";
+import ThreeBackground from "./components/three/ThreeBackground";
 
 import { useEffect, useMemo, useState, lazy, Suspense } from "react";
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
@@ -22,6 +23,9 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const HomeLayout = ({ tick }) => {
   return (
     <div className="nb-page text-slate-900 dark:text-slate-100">
+      {/* 3D canvas lives below everything, above body bg */}
+      <ThreeBackground />
+
       <ScrollProgress />
       <Navbar />
 
@@ -46,7 +50,6 @@ const App = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // Subscribe first so any immediate cache hydration triggers a re-render
     const unsub = subscribeContent(() => setTick((t) => t + 1));
     const stopSync = startContentSync();
     return () => {
@@ -67,29 +70,13 @@ const App = () => {
 
     const setFavicon = (variant) => {
       const cacheBust = `?v=${Date.now()}`;
-
       const isAdminVariant = variant === "admin";
-      const png32 = isAdminVariant
-        ? "/favicons/admin/favicon-32.png"
-        : "/favicons/public/favicon-32.png";
-      const png16 = isAdminVariant
-        ? "/favicons/admin/favicon-16.png"
-        : "/favicons/public/favicon-16.png";
-      const ico = isAdminVariant
-        ? "/favicons/admin/favicon.ico"
-        : "/favicons/public/favicon.ico";
-      const appleTouch = isAdminVariant
-        ? "/favicons/admin/apple-touch-icon.png"
-        : "/favicons/public/apple-touch-icon.png";
+      const png32       = isAdminVariant ? "/favicons/admin/favicon-32.png"       : "/favicons/public/favicon-32.png";
+      const png16       = isAdminVariant ? "/favicons/admin/favicon-16.png"       : "/favicons/public/favicon-16.png";
+      const ico         = isAdminVariant ? "/favicons/admin/favicon.ico"          : "/favicons/public/favicon.ico";
+      const appleTouch  = isAdminVariant ? "/favicons/admin/apple-touch-icon.png" : "/favicons/public/apple-touch-icon.png";
 
-      const ids = [
-        "app-favicon-main",
-        "app-favicon",
-        "app-favicon-16",
-        "app-favicon-ico",
-        "app-favicon-shortcut",
-        "app-apple-touch",
-      ];
+      const ids = ["app-favicon-main","app-favicon","app-favicon-16","app-favicon-ico","app-favicon-shortcut","app-apple-touch"];
       ids.forEach((id) => {
         const el = document.getElementById(id);
         if (el && el.parentNode) el.parentNode.removeChild(el);
@@ -97,8 +84,7 @@ const App = () => {
 
       const addLink = ({ id, rel, href, type, sizes }) => {
         const el = document.createElement("link");
-        el.id = id;
-        el.rel = rel;
+        el.id = id; el.rel = rel;
         if (type) el.type = type;
         if (sizes) el.sizes = sizes;
         el.href = href + cacheBust;
@@ -106,12 +92,12 @@ const App = () => {
         return el;
       };
 
-      addLink({ id: "app-favicon-main", rel: "icon", href: ico, type: "image/x-icon" });
-      addLink({ id: "app-favicon", rel: "icon", href: png32, type: "image/png", sizes: "32x32" });
-      addLink({ id: "app-favicon-16", rel: "icon", href: png16, type: "image/png", sizes: "16x16" });
-      addLink({ id: "app-favicon-ico", rel: "icon", href: ico, type: "image/x-icon" });
-      addLink({ id: "app-favicon-shortcut", rel: "shortcut icon", href: ico, type: "image/x-icon" });
-      addLink({ id: "app-apple-touch", rel: "apple-touch-icon", href: appleTouch });
+      addLink({ id: "app-favicon-main",     rel: "icon",          href: ico,         type: "image/x-icon" });
+      addLink({ id: "app-favicon",          rel: "icon",          href: png32,        type: "image/png", sizes: "32x32" });
+      addLink({ id: "app-favicon-16",       rel: "icon",          href: png16,        type: "image/png", sizes: "16x16" });
+      addLink({ id: "app-favicon-ico",      rel: "icon",          href: ico,          type: "image/x-icon" });
+      addLink({ id: "app-favicon-shortcut", rel: "shortcut icon", href: ico,          type: "image/x-icon" });
+      addLink({ id: "app-apple-touch",      rel: "apple-touch-icon", href: appleTouch });
     };
 
     if (isAdminRoute) {
@@ -126,21 +112,13 @@ const App = () => {
   return (
     <Suspense fallback={<LoadingScreen />}>
       <Routes>
-        {/* ✅ Netlify/Vite sometimes hits /index.html directly */}
         <Route path="/index.html" element={<Navigate to="/" replace />} />
-
-        {/* ✅ If /admin.html ever appears, force it to real /admin */}
         <Route path="/admin.html" element={<Navigate to="/admin" replace />} />
-
-        <Route path="/" element={<HomeLayout tick={tick} />} />
+        <Route path="/"        element={<HomeLayout tick={tick} />} />
         <Route path="/projects" element={<ProjectsPage />} />
-
-        <Route path="/admin" element={<Admin />} />
-
-        {/* Block deep admin paths like /admin/anything */}
+        <Route path="/admin"   element={<Admin />} />
         <Route path="/admin/*" element={<NotFound />} />
-
-        <Route path="*" element={<NotFound />} />
+        <Route path="*"        element={<NotFound />} />
       </Routes>
     </Suspense>
   );

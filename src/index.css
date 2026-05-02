@@ -4,14 +4,12 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 110px; /* adjust if your navbar height differs */
+  scroll-padding-top: 110px;
 }
 
-/* Prevent accidental horizontal overflow on small screens */
 html, body {
   overflow-x: hidden;
 }
-
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -22,27 +20,26 @@ html, body {
   }
 }
 
-/* --- Nubien-inspired "premium dark" theme (unique palette) --- */
-:root{
-  --nb-bg: 246 247 251;          /* light */
+/* --- 3D-Enhanced Premium Dark Theme --- */
+:root {
+  --nb-bg: 246 247 251;
   --nb-fg: 15 23 42;
   --nb-card: 255 255 255;
   --nb-border: 15 23 42 / 0.10;
-  --nb-a: 99 102 241;            /* indigo */
-  --nb-b: 34 211 238;            /* cyan */
+  --nb-a: 99 102 241;
+  --nb-b: 34 211 238;
 }
 
-.dark{
-  --nb-bg: 7 10 18;              /* deep navy */
+.dark {
+  --nb-bg: 7 10 18;
   --nb-fg: 226 232 240;
-  --nb-card: 10 14 26;           /* panel */
+  --nb-card: 10 14 26;
   --nb-border: 255 255 255 / 0.10;
-  --nb-a: 129 140 248;           /* indigo */
-  --nb-b: 34 211 238;            /* cyan */
+  --nb-a: 129 140 248;
+  --nb-b: 34 211 238;
 }
 
-/* Back-compat vars (older classes may still reference these) */
-:root{
+:root {
   --sv-bg: var(--nb-bg);
   --sv-fg: var(--nb-fg);
   --sv-card: var(--nb-card);
@@ -52,7 +49,7 @@ html, body {
 
 html { text-rendering: geometricPrecision; }
 
-body{
+body {
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
   background: rgb(var(--nb-bg));
   color: rgb(var(--nb-fg));
@@ -61,52 +58,56 @@ body{
   position: relative;
 }
 
-/* Global background: subtle glow + grid + noise */
-body::before{
-  content:"";
+/* 3D-Enhanced global background: richer depth layers */
+body::before {
+  content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: -1;
+  z-index: 0;
   background:
-    radial-gradient(900px 560px at 14% 4%, rgba(var(--nb-b) / 0.18), transparent 55%),
-    radial-gradient(820px 520px at 86% 10%, rgba(var(--nb-a) / 0.20), transparent 60%),
-    radial-gradient(900px 700px at 50% 110%, rgba(var(--nb-a) / 0.10), transparent 60%),
-    linear-gradient(to bottom, rgba(255,255,255,0.00), rgba(255,255,255,0.00));
+    radial-gradient(900px 560px at 14% 4%,   rgba(var(--nb-b) / 0.18), transparent 55%),
+    radial-gradient(820px 520px at 86% 10%,   rgba(var(--nb-a) / 0.20), transparent 60%),
+    radial-gradient(900px 700px at 50% 110%,  rgba(var(--nb-a) / 0.10), transparent 60%),
+    radial-gradient(600px 400px at 70% 50%,   rgba(var(--nb-b) / 0.06), transparent 70%);
 }
 
-body::after{
-  content:"";
+/* Grid overlay — sits above canvas, below content */
+body::after {
+  content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: -1;
+  z-index: 0;
   opacity: 0.50;
   background:
-    /* grid */
-    linear-gradient(to right, rgba(15,23,42,0.04) 1px, transparent 1px),
+    linear-gradient(to right,  rgba(15,23,42,0.04) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(15,23,42,0.04) 1px, transparent 1px);
   background-size: 64px 64px;
   mask-image: radial-gradient(ellipse at top, black 40%, transparent 72%);
 }
 
-.dark body::after{
+.dark body::after {
   opacity: 0.30;
   background:
-    linear-gradient(to right, rgba(255,255,255,0.06) 1px, transparent 1px),
+    linear-gradient(to right,  rgba(255,255,255,0.06) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255,255,255,0.06) 1px, transparent 1px);
   background-size: 72px 72px;
 }
 
-/* SV primitives */
-@layer components {
-  .sv-page { @apply min-h-screen font-sans antialiased; }
+/* All sections need z-index above canvas */
+section, nav, footer {
+  position: relative;
+  z-index: 1;
+}
 
-  /* Nubien-inspired primitives (different names to avoid "copy" look) */
-  .nb-page { @apply min-h-screen font-sans antialiased; }
-  /* mobile-first container padding (prevents overflow on very small screens) */
+/* ── 3D Card base with depth shadow ── */
+@layer components {
+  .sv-page  { @apply min-h-screen font-sans antialiased; }
+  .nb-page  { @apply min-h-screen font-sans antialiased; }
   .nb-container { @apply mx-auto w-full max-w-7xl px-4 sm:px-6; }
 
+  /* Enhanced 3D card with layered depth */
   .nb-card {
     @apply rounded-3xl border backdrop-blur;
     background: linear-gradient(
@@ -116,16 +117,31 @@ body::after{
     );
     border-color: rgba(var(--nb-border));
     box-shadow:
-      0 1px 0 rgba(255,255,255,0.06) inset,
-      0 18px 50px rgba(0,0,0,0.18);
-  }
-  .dark .nb-card{
-    box-shadow:
-      0 1px 0 rgba(255,255,255,0.05) inset,
-      0 28px 80px rgba(0,0,0,0.55);
+      0 1px 0   rgba(255,255,255,0.06) inset,
+      0 1px 0   rgba(255,255,255,0.04) inset,
+      0 18px 50px rgba(0,0,0,0.18),
+      0 4px  12px rgba(0,0,0,0.08);
+    transform-style: preserve-3d;
+    transition: box-shadow 0.35s ease, transform 0.35s ease;
   }
 
-  .nb-pill{
+  .dark .nb-card {
+    box-shadow:
+      0 1px 0   rgba(255,255,255,0.05) inset,
+      0 28px 80px rgba(0,0,0,0.55),
+      0 6px  18px rgba(0,0,0,0.35);
+  }
+
+  /* Hover lift for nb-cards that aren't wrapped in Tilt3DCard */
+  .nb-card:hover {
+    box-shadow:
+      0 1px 0   rgba(255,255,255,0.08) inset,
+      0 32px 70px rgba(0,0,0,0.28),
+      0 8px  22px rgba(0,0,0,0.14);
+    transform: translateY(-4px);
+  }
+
+  .nb-pill {
     @apply inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium border;
     border-color: rgba(var(--nb-border));
     background: rgba(var(--nb-card) / 0.50);
@@ -134,14 +150,18 @@ body::after{
   .nb-muted { color: rgba(var(--nb-fg) / 0.72); }
   .dark .nb-muted { color: rgba(var(--nb-fg) / 0.68); }
 
-  .nb-btn{
+  .nb-btn {
     @apply inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition;
     border: 1px solid rgba(var(--nb-border));
     background: rgba(var(--nb-card) / 0.62);
+    transform-style: preserve-3d;
   }
-  .nb-btn:hover{ transform: translateY(-1px); }
+  .nb-btn:hover {
+    transform: translateY(-2px) translateZ(4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  }
 
-  .nb-btn-primary{
+  .nb-btn-primary {
     @apply nb-btn;
     border-color: rgba(var(--nb-a) / 0.35);
     background: linear-gradient(
@@ -150,34 +170,43 @@ body::after{
       rgba(var(--nb-b) / 0.16)
     );
   }
+  .nb-btn-primary:hover {
+    border-color: rgba(var(--nb-a) / 0.55);
+    background: linear-gradient(
+      135deg,
+      rgba(var(--nb-a) / 0.32),
+      rgba(var(--nb-b) / 0.24)
+    );
+    box-shadow: 0 8px 24px rgba(var(--nb-a) / 0.20);
+  }
 
-  .nb-title{
-    @apply text-3xl md:text-5xl font-semibold tracking-tight;
-  }
-  .nb-subtitle{
-    @apply mt-4 text-base md:text-lg leading-relaxed;
-    color: rgba(var(--nb-fg) / 0.78);
-  }
+  .nb-title    { @apply text-3xl md:text-5xl font-semibold tracking-tight; }
+  .nb-subtitle { @apply mt-4 text-base md:text-lg leading-relaxed; color: rgba(var(--nb-fg) / 0.78); }
 
-  .nb-ring{
-    position: relative;
-  }
-  .nb-ring::before{
-    content:"";
-    position:absolute;
-    inset:-1px;
+  /* ── nb-ring: glowing gradient border ── */
+  .nb-ring { position: relative; }
+  .nb-ring::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
     border-radius: 28px;
     padding: 1px;
-    background: linear-gradient(135deg, rgba(var(--nb-b) / 0.55), rgba(var(--nb-a) / 0.55), rgba(255,255,255,0.0));
-    -webkit-mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
+    background: linear-gradient(
+      135deg,
+      rgba(var(--nb-b) / 0.55),
+      rgba(var(--nb-a) / 0.55),
+      rgba(255,255,255,0.0)
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
-    pointer-events:none;
+    pointer-events: none;
     opacity: 0.65;
+    transition: opacity 0.3s ease;
   }
+  .nb-ring:hover::before { opacity: 1; }
 
+  /* Back-compat sv-* classes */
   .sv-card {
     @apply rounded-2xl border backdrop-blur;
     background: rgba(var(--sv-card) / 0.72);
@@ -192,7 +221,7 @@ body::after{
   .sv-muted { color: rgba(var(--sv-fg) / 0.72); }
   .dark .sv-muted { color: rgba(var(--sv-fg) / 0.70); }
 
-  .sv-pill{
+  .sv-pill {
     @apply inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium border;
     border-color: rgba(var(--sv-border));
     background: rgba(var(--sv-card) / 0.60);
@@ -205,35 +234,119 @@ body::after{
   }
   .sv-btn:hover { transform: translateY(-1px); }
 
-  .sv-btn-primary{
+  .sv-btn-primary {
     @apply sv-btn;
     border-color: rgba(var(--sv-accent) / 0.35);
     background: linear-gradient(180deg, rgba(var(--sv-accent) / 0.18), rgba(var(--sv-accent) / 0.10));
   }
 
-  .sv-kbd{
+  .sv-kbd {
     font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
     @apply text-xs px-2 py-1 rounded-lg border;
     border-color: rgba(var(--sv-border));
     background: rgba(var(--sv-card) / 0.55);
   }
+
+  /* ── 3D Section wrapper — ensures stacking context ── */
+  .section-3d {
+    position: relative;
+    z-index: 1;
+    transform-style: preserve-3d;
+  }
+
+  /* ── Floating 3D badge / chip ── */
+  .badge-3d {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    border: 1px solid rgba(var(--nb-a) / 0.30);
+    background: rgba(var(--nb-a) / 0.08);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: rgb(var(--nb-a));
+    box-shadow:
+      0 0 0   1px rgba(var(--nb-a) / 0.10),
+      0 4px 12px rgba(var(--nb-a) / 0.15),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+    transform: translateZ(6px);
+  }
+
+  /* ── Glow line (decorative horizontal separator) ── */
+  .glow-line {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(var(--nb-b) / 0.6) 30%,
+      rgba(var(--nb-a) / 0.6) 70%,
+      transparent
+    );
+    margin: 0;
+    border: none;
+  }
 }
 
-/* Hide scrollbar but keep scroll functionality */
+/* Scroll progress bar */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 200;
+  background: linear-gradient(90deg, rgb(var(--nb-b)), rgb(var(--nb-a)));
+  transform-origin: left;
+}
+
+/* Hide scrollbar */
 html, body {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE & Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
-
 html::-webkit-scrollbar,
-body::-webkit-scrollbar {
-  display: none; /* Chrome, Safari */
-}
+body::-webkit-scrollbar { display: none; }
 
-
-/* Mobile perf: avoid fixed overlays that can stutter on iOS Safari */
+/* Mobile: disable heavy backdrop blur */
 @media (max-width: 640px) {
   .backdrop-blur, .backdrop-blur-sm, .backdrop-blur-md, .backdrop-blur-lg {
     backdrop-filter: none !important;
   }
+  /* Tone down 3D on mobile for performance */
+  .nb-card:hover { transform: none; }
+  .nb-btn:hover  { transform: translateY(-1px); }
+}
+
+/* ── Animated gradient text utility ── */
+.gradient-text {
+  background: linear-gradient(
+    135deg,
+    rgb(var(--nb-b)) 0%,
+    rgb(var(--nb-a)) 50%,
+    rgb(var(--nb-b)) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 4s linear infinite;
+}
+
+@keyframes shimmer {
+  from { background-position: 200% center; }
+  to   { background-position: -200% center; }
+}
+
+/* ── Depth shadow on hover for interactive blocks ── */
+.depth-hover {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.3s ease;
+}
+.depth-hover:hover {
+  transform: translateY(-6px) translateZ(12px);
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.25),
+    0 4px  12px rgba(0,0,0,0.12);
 }

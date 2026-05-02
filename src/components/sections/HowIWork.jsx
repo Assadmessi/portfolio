@@ -1,5 +1,3 @@
-import { MotionSection } from "../../animations/MotionWrappers";
-import { fadeUp, staggerContainer } from "../../animations/variants";
 import { motion } from "framer-motion";
 import { siteContent } from "../../content";
 
@@ -7,36 +5,66 @@ const HowIWork = () => {
   const { howIWork } = siteContent;
 
   return (
-    <MotionSection
-      id="skills"
-      variants={staggerContainer}
-      className="py-24 scroll-mt-24"
-    >
-      <div className="nb-container">
-      <motion.div variants={fadeUp} className="max-w-3xl">
-        <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-100">
-          {howIWork.title}
-        </h2>
-
-        <p className="mt-4 text-slate-700 dark:text-slate-400 leading-relaxed">
-          {howIWork.intro}
-        </p>
-
-        <ul className="mt-8 space-y-4">
-          {howIWork.points.map((p) => (
-            <li key={p} className="flex items-start gap-3 text-slate-800 dark:text-slate-200">
-              <span
-                className="mt-[7px] h-2.5 w-2.5 rounded-full shrink-0
-                           bg-gradient-to-br from-cyan-300/90 via-indigo-400/90 to-indigo-500/70
-                           ring-4 ring-white/10"
-              />
-              <span className="leading-relaxed font-medium">{p}</span>
-            </li>
-          ))}
-        </ul>
-      </motion.div>
+    <section id="skills" className="relative py-32 sm:py-44 overflow-hidden scroll-mt-24">
+      {/* Sticky label */}
+      <div className="absolute top-10 left-6 sm:left-10 z-10 pointer-events-none">
+        <p className="font-mono text-[10px] tracking-[0.3em] text-cyan-500 dark:text-cyan-400/70 uppercase">/ 04 — How I Work</p>
       </div>
-    </MotionSection>
+
+      <div className="relative z-10 max-w-[1600px] mx-auto px-6 sm:px-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
+          {/* LEFT — title + intro */}
+          <div className="lg:col-span-5">
+            <motion.h2
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+              className="font-extrabold leading-[0.9] tracking-[-0.04em] sticky top-32"
+              style={{ fontSize: "clamp(2.5rem, 6vw, 6rem)" }}
+            >
+              {howIWork.title}
+            </motion.h2>
+          </div>
+
+          {/* RIGHT — intro + numbered list */}
+          <div className="lg:col-span-7">
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7 }}
+              className="text-base sm:text-lg text-slate-700 dark:text-white/65 leading-relaxed mb-12 font-mono"
+            >
+              {howIWork.intro}
+            </motion.p>
+
+            <ul>
+              {howIWork.points.map((p, i) => (
+                <motion.li
+                  key={p}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1, duration: 0.6 }}
+                  className="group flex items-start gap-5 sm:gap-8 py-5 sm:py-6 border-b border-black/5 dark:border-white/5 hover:border-cyan-400/30 transition-colors"
+                >
+                  <span className="font-mono text-[10px] sm:text-xs tracking-[0.25em] text-cyan-500 dark:text-cyan-400/70 uppercase shrink-0 w-10 sm:w-12 pt-1.5">
+                    /{String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span
+                    className="text-base sm:text-xl text-slate-800 dark:text-white/85 leading-relaxed flex-1"
+                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                  >
+                    {p}
+                  </span>
+                </motion.li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 };
 

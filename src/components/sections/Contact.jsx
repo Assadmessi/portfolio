@@ -1,88 +1,149 @@
-import { MotionSection } from "../../animations/MotionWrappers";
-import { fadeUp, staggerContainer } from "../../animations/variants";
 import { motion } from "framer-motion";
 import { siteContent } from "../../content";
 
 const Contact = () => {
   const { contact, links, hero } = siteContent;
-
   const EMAIL = contact.email;
   const RESUME_URL = links.resumeUrl;
   const GITHUB_URL = links.githubUrl;
   const LINKEDIN_URL = links.linkedinUrl;
 
   return (
-    <MotionSection
-      id="contact"
-      variants={staggerContainer}
-      className="py-24 px-6 max-w-4xl mx-auto text-center scroll-mt-24"
-    >
-      <motion.h2
-        variants={fadeUp}
-        className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-100"
-      >
-        {contact.title}
-      </motion.h2>
+    <section id="contact" className="relative py-32 sm:py-44 overflow-hidden scroll-mt-24">
+      {/* Sticky label */}
+      <div className="absolute top-10 left-6 sm:left-10 z-10 pointer-events-none">
+        <p className="font-mono text-[10px] tracking-[0.3em] text-cyan-500 dark:text-cyan-400/70 uppercase">/ 06 — Contact</p>
+      </div>
 
-      <motion.p
-        variants={fadeUp}
-        className="mt-6 text-slate-700 dark:text-slate-400 leading-relaxed"
-      >
-        {contact.description}
-      </motion.p>
+      {/* Big background marquee word */}
+      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 overflow-hidden pointer-events-none opacity-[0.025] z-0">
+        <div className="whitespace-nowrap font-extrabold leading-none tracking-[-0.06em]"
+          style={{ fontSize: "clamp(8rem, 22vw, 22rem)" }}>
+          {contact.title.toUpperCase()} · {contact.title.toUpperCase()}
+        </div>
+      </div>
 
-      <motion.div variants={fadeUp} className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-        <a
+      <div className="relative z-10 max-w-[1600px] mx-auto px-6 sm:px-10">
+        {/* MASSIVE TITLE */}
+        <motion.h2
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+          className="font-extrabold leading-[0.85] tracking-[-0.045em] mb-12 sm:mb-16"
+          style={{ fontSize: "clamp(3rem, 11vw, 12rem)" }}
+        >
+          {contact.title}
+        </motion.h2>
+
+        {/* Description + email actions */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 mb-20 sm:mb-28">
+          <div className="lg:col-span-7">
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="text-base sm:text-xl text-slate-700 dark:text-white/65 leading-relaxed max-w-2xl mb-10 font-mono"
+            >
+              {contact.description}
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.15, duration: 0.7 }}
+              className="flex flex-wrap gap-3"
+            >
+              <a
+                href={`mailto:${EMAIL}?subject=${encodeURIComponent(contact.mailtoSubject)}`}
+                className="px-7 py-3.5 rounded-md text-sm font-semibold transition-all bg-gradient-to-br from-indigo-500/30 to-cyan-400/15 border border-indigo-400/40 hover:translate-y-[-2px] hover:border-indigo-400/70 hover:shadow-[0_8px_24px_rgba(99,102,241,0.25)] font-mono tracking-wider"
+              >
+                {contact.emailButtonLabel}
+              </a>
+              <a
+                href={RESUME_URL}
+                download
+                className="px-7 py-3.5 rounded-md text-sm font-semibold border border-black/15 dark:border-white/15 text-slate-700 dark:text-white/70 hover:border-black/30 dark:hover:border-white/30 hover:text-slate-900 dark:hover:text-white transition-all font-mono tracking-wider"
+              >
+                {contact.resumeButtonLabel}
+              </a>
+            </motion.div>
+          </div>
+
+          {/* Right: email card with crosshair corners */}
+          <div className="lg:col-span-5">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2, duration: 0.7 }}
+              className="relative rounded-2xl border border-black/10 dark:border-white/10 bg-gradient-to-br from-white/[0.02] to-transparent p-7 overflow-hidden"
+            >
+              {/* Crosshair corners */}
+              <div className="absolute top-3 left-3 w-3 h-3 border-l border-t border-cyan-400/40" />
+              <div className="absolute top-3 right-3 w-3 h-3 border-r border-t border-cyan-400/40" />
+              <div className="absolute bottom-3 left-3 w-3 h-3 border-l border-b border-cyan-400/40" />
+              <div className="absolute bottom-3 right-3 w-3 h-3 border-r border-b border-cyan-400/40" />
+
+              <p className="font-mono text-[10px] tracking-[0.25em] text-cyan-500 dark:text-cyan-400/70 uppercase mb-4">
+                {contact.quoteBoxTitle}
+              </p>
+              <ul className="space-y-3">
+                {contact.quoteBoxItems.map((item) => (
+                  <li
+                    key={item}
+                    className="flex gap-3 text-sm text-slate-700 dark:text-white/70 leading-relaxed"
+                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                  >
+                    <span className="text-cyan-500 dark:text-cyan-400 mt-1 shrink-0 text-[10px]">→</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          </div>
+        </div>
+
+        {/* GIANT EMAIL DISPLAY (ORYZO closing accent) */}
+        <motion.a
           href={`mailto:${EMAIL}?subject=${encodeURIComponent(contact.mailtoSubject)}`}
-          className="px-6 py-3 rounded-xl font-medium transition
-                     bg-indigo-600/90 text-white hover:bg-indigo-600
-                     ring-1 ring-indigo-600/20
-                     dark:bg-indigo-500 dark:hover:bg-indigo-400 dark:ring-indigo-400/20"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          className="group block"
         >
-          {contact.emailButtonLabel}
-        </a>
+          <p className="font-mono text-[10px] tracking-[0.25em] text-cyan-500 dark:text-cyan-400/70 uppercase mb-3">
+            / Email
+          </p>
+          <p
+            className="font-extrabold leading-[0.95] tracking-[-0.03em] break-all transition-colors group-hover:text-cyan-500 dark:group-hover:text-cyan-300"
+            style={{ fontSize: "clamp(1.5rem, 5vw, 5rem)" }}
+          >
+            {EMAIL}
+          </p>
+        </motion.a>
 
-        <a
-          href={RESUME_URL}
-          download
-          className="px-6 py-3 rounded-xl transition
-                     border border-black/10 text-slate-800 hover:bg-black/5
-                     dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10"
+        {/* Social row */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3, duration: 0.6 }}
+          className="mt-12 flex items-center gap-6 text-sm font-mono"
         >
-          {contact.resumeButtonLabel}
-        </a>
-      </motion.div>
-
-      <motion.div
-        variants={fadeUp}
-        className="mt-10 max-w-2xl mx-auto text-left rounded-2xl
-                   border border-black/5 dark:border-white/10
-                   bg-white/70 dark:bg-white/5 p-6 backdrop-blur"
-      >
-        <p className="font-medium text-slate-900 dark:text-slate-100">{contact.quoteBoxTitle}</p>
-        <ul className="mt-3 space-y-2 text-sm text-slate-700 dark:text-slate-400">
-          {contact.quoteBoxItems.map((item) => (
-            <li key={item} className="flex gap-2">
-              <span className="mt-1 text-indigo-500/80 dark:text-indigo-300/80">•</span>
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
-      </motion.div>
-
-      <motion.div
-        variants={fadeUp}
-        className="mt-8 flex items-center justify-center gap-4 text-sm text-slate-600 dark:text-slate-400"
-      >
-        <a className="hover:text-slate-900 dark:hover:text-white transition" href={GITHUB_URL} target="_blank" rel="noreferrer">
-          {hero.footerLinks.githubLabel}
-        </a>
-        <span className="text-black/30 dark:text-white/20">•</span>
-        <a className="hover:text-slate-900 dark:hover:text-white transition" href={LINKEDIN_URL} target="_blank" rel="noreferrer">
-          {hero.footerLinks.linkedinLabel}
-        </a>
-      </motion.div>
-    </MotionSection>
+          <a className="hover:text-cyan-500 dark:hover:text-cyan-300 transition" href={GITHUB_URL} target="_blank" rel="noreferrer">
+            {hero.footerLinks.githubLabel} ↗
+          </a>
+          <span className="text-slate-300 dark:text-white/15">/</span>
+          <a className="hover:text-cyan-500 dark:hover:text-cyan-300 transition" href={LINKEDIN_URL} target="_blank" rel="noreferrer">
+            {hero.footerLinks.linkedinLabel} ↗
+          </a>
+        </motion.div>
+      </div>
+    </section>
   );
 };
 
