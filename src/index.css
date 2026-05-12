@@ -178,16 +178,17 @@ body::after{
     opacity: 0.65;
   }
 
-  .sv-card {
-    @apply rounded-2xl border backdrop-blur;
-    background: rgba(var(--sv-card) / 0.72);
-    border-color: rgba(var(--sv-border));
-    box-shadow: theme(boxShadow.sv);
-  }
-  .dark .sv-card {
-    background: rgba(var(--sv-card) / 0.62);
-    box-shadow: theme(boxShadow.sv-dark);
-  }
+ .sv-card {
+  @apply rounded-2xl border backdrop-blur;
+  background: rgba(var(--sv-card) / 0.72);
+  border-color: rgba(var(--sv-border));
+  box-shadow: theme('boxShadow.sv');
+}
+
+.dark .sv-card {
+  background: rgba(var(--sv-card) / 0.62);
+  box-shadow: theme('boxShadow.sv-dark');
+}
 
   .sv-muted { color: rgba(var(--sv-fg) / 0.72); }
   .dark .sv-muted { color: rgba(var(--sv-fg) / 0.70); }
