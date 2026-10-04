@@ -14,10 +14,12 @@ import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 
 import { startContentSync } from "./firebase/contentSync";
 import { subscribeContent } from "./content";
+import { loadDemoContent, restoreBundledContent } from "./demo/demoContent";
 
 const Admin = lazy(() => import("./pages/Admin"));
 const ProjectsPage = lazy(() => import("./pages/ProjectsPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const DemoEditor = lazy(() => import("./demo/DemoEditor"));
 
 const HomeLayout = ({ tick }) => {
   return (
@@ -45,15 +47,30 @@ const App = () => {
   const [tick, setTick] = useState(0);
   const location = useLocation();
 
+  // Public /demo route: local-only editing demo. It never starts Firebase sync.
+  const isDemoRoute = useMemo(() => {
+    const p = location.pathname || "";
+    return p === "/demo" || p === "/demo/";
+  }, [location.pathname]);
+
   useEffect(() => {
     // Subscribe first so any immediate cache hydration triggers a re-render
     const unsub = subscribeContent(() => setTick((t) => t + 1));
+
+    if (isDemoRoute) {
+      loadDemoContent();
+      return () => {
+        restoreBundledContent();
+        unsub();
+      };
+    }
+
     const stopSync = startContentSync();
     return () => {
       stopSync();
       unsub();
     };
-  }, []);
+  }, [isDemoRoute]);
 
   const isAdminRoute = useMemo(() => {
     const p = location.pathname || "";
@@ -117,11 +134,14 @@ const App = () => {
     if (isAdminRoute) {
       document.title = "Asaad Portfolio Admin";
       setFavicon("admin");
+    } else if (isDemoRoute) {
+      document.title = "Live Editing Demo | Asaad";
+      setFavicon("public");
     } else {
       document.title = originalTitle;
       setFavicon("public");
     }
-  }, [isAdminRoute, tick]);
+  }, [isAdminRoute, isDemoRoute, tick]);
 
   return (
     <Suspense fallback={<LoadingScreen />}>
@@ -134,6 +154,19 @@ const App = () => {
 
         <Route path="/" element={<HomeLayout tick={tick} />} />
         <Route path="/projects" element={<ProjectsPage />} />
+
+        {/* Public, no-login editing demo (local only — see src/demo) */}
+        <Route
+          path="/demo"
+          element={
+            <>
+              <HomeLayout tick={tick} />
+              <Suspense fallback={null}>
+                <DemoEditor />
+              </Suspense>
+            </>
+          }
+        />
 
         <Route path="/admin" element={<Admin />} />
 

@@ -1,6 +1,5 @@
 import { MotionSection } from "../../animations/MotionWrappers";
 import { cardEnter, sectionEnter, staggerContainer } from "../../animations/variants";
-import { motion } from "framer-motion";
 import { siteContent } from "../../content";
 
 // Extra section inspired by Nubien-style "integrations/toolbox" blocks.
