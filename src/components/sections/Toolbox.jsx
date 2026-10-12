@@ -1,6 +1,7 @@
 import { MotionSection } from "../../animations/MotionWrappers";
 import { cardEnter, sectionEnter, staggerContainer } from "../../animations/variants";
 import { siteContent } from "../../content";
+import { motion } from "framer-motion";
 
 // Extra section inspired by Nubien-style "integrations/toolbox" blocks.
 // It doesn't change your existing text/sections; it only adds visual proof.
